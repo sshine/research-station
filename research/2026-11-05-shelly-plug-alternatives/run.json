@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "job_id": "01a1ac10-1114-77fa-b7af-186b9164919b",
+  "question": "Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring",
+  "depth": "thorough",
+  "provider": "tavily",
+  "planner": "rule-based-v1",
+  "synthesizer": "extractive-v1",
+  "status": "completed-with-audit-findings",
+  "started_at": "2026-11-05T14:14:56.543606434Z",
+  "finished_at": "2026-11-05T14:15:32.378015321Z",
+  "output_dir": "/home/sshine/Projects/nursery/research-station/research/2026-11-05-shelly-plug-alternatives",
+  "usage": {
+    "queries": 8,
+    "sources": 29,
+    "claims": 4,
+    "credits": 16
+  },
+  "audit": {
+    "total_claims": 4,
+    "supported_claims": 4,
+    "covered_subquestions": 2,
+    "total_subquestions": 4,
+    "findings": [],
+    "passed": false
+  }
+}

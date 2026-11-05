@@ -1,0 +1,60 @@
+{
+  "id": "01a1ac10-1120-7577-b175-e29baa703969",
+  "version": 1,
+  "raw_topic": "Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring",
+  "sharpened_topic": "Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring",
+  "subquestions": [
+    {
+      "id": "01a1ac10-1120-7577-b175-e2977a9194e4",
+      "question": "Overview and definitions: Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring",
+      "source_class": "reference",
+      "query_seeds": [
+        "Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring overview",
+        "what is Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring definition"
+      ],
+      "success_criterion": "At least two independent sources define the topic consistently."
+    },
+    {
+      "id": "01a1ac10-1120-7577-b175-e298e226f210",
+      "question": "Primary sources and documentation: Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring",
+      "source_class": "primary",
+      "query_seeds": [
+        "Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring official documentation",
+        "Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring primary source"
+      ],
+      "success_criterion": "At least one primary source is retrieved."
+    },
+    {
+      "id": "01a1ac10-1120-7577-b175-e299719e7771",
+      "question": "Limitations, risks, and criticisms: Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring",
+      "source_class": "secondary",
+      "query_seeds": [
+        "Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring limitations",
+        "Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring criticism risks"
+      ],
+      "success_criterion": "At least two sources name a concrete limitation or risk."
+    },
+    {
+      "id": "01a1ac10-1120-7577-b175-e29a44d1f5f6",
+      "question": "Recent developments and comparisons: Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring",
+      "source_class": "news",
+      "query_seeds": [
+        "Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring recent developments",
+        "Shelly Plug S Gen3 alternatives smart plugs Denmark local control power monitoring comparison alternatives"
+      ],
+      "success_criterion": "At least one source is dated within the last year, or recency is noted as unavailable."
+    }
+  ],
+  "constraints": {
+    "include_domains": [],
+    "exclude_domains": []
+  },
+  "budget": {
+    "max_queries": 24,
+    "max_sources": 60,
+    "max_llm_tokens": 200000,
+    "max_credits": 200,
+    "max_wall_seconds": 900
+  },
+  "created_at": "2026-11-05T14:14:56.544271351Z"
+}

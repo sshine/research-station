@@ -1,0 +1,11 @@
+target/
+result
+result-*
+.direnv/
+.envrc
+research-daemon/config/researchd.toml
+research/**/raw/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+external-*

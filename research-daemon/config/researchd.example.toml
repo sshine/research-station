@@ -1,0 +1,36 @@
+# Tavily is the first provider. The key itself is never stored here.
+[provider.tavily]
+api_key_env = "TAVILY_API_KEY"
+base_url = "https://api.tavily.com"
+requests_per_minute = 60
+burst = 10
+max_concurrency = 4
+max_retries = 4
+timeout_seconds = 60
+cache_ttl_seconds = 21600
+# Optional explicit manifest for direct binaries. When omitted, SecretSpec
+# searches upward from the working directory and honours SECRETSPEC_FILE.
+# secretspec_file = "/path/to/research-station/secretspec.toml"
+
+[store]
+# Jobs, plans, evidence indexes, usage, and cache metadata share one database.
+# Omit to use $XDG_CACHE_HOME/research-station/cache.sqlite.
+# database_path = "/var/cache/research-station/researchd.sqlite"
+# cache_path is the older name for the same file; database_path wins if both
+# are set.
+# cache_path = "/var/cache/research-station/cache.sqlite"
+# blob_dir = "/var/cache/research-station/blobs"
+
+[jobs]
+# How long a worker owns a claimed job before another worker may reap it.
+lease_seconds = 60
+# Global cap on jobs executing at once.
+max_concurrent_jobs = 1
+# How often the service looks for expired leases.
+reap_interval_seconds = 30
+# How long an idle worker waits before polling the queue again.
+poll_interval_seconds = 2
+
+[budget]
+max_queries = 100
+max_credits = 1000
