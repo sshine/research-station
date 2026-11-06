@@ -2,14 +2,16 @@ use std::future::Future;
 use std::time::Duration;
 
 use chrono::Utc;
-use research_core::{Config, Job, JobStatus};
+use research_agent::AgentRunner;
+use research_core::{Config, Engine, Job, JobStatus};
+use research_llm::AnyLlm;
 use research_provider::SearchProvider;
-use research_store::JobStore;
+use research_store::{AgentStore, JobStore};
 use tokio::sync::watch;
 use tokio::time::MissedTickBehavior;
 
 use crate::ServiceError;
-use crate::runner::Runner;
+use crate::runner::{RunOutcome, Runner};
 
 #[derive(Debug, Clone)]
 pub struct WorkerOptions {
@@ -43,14 +45,37 @@ enum StopSignal {
 pub struct Worker<P: SearchProvider> {
     store: JobStore,
     provider: P,
+    llm: Option<AnyLlm>,
+    transcripts: Option<AgentStore>,
     options: WorkerOptions,
 }
 
 impl<P: SearchProvider> Worker<P> {
+    /// Deterministic worker without a model. Agent jobs fail clearly unless the
+    /// worker is built with [`Worker::with_agent`].
     pub fn new(store: JobStore, provider: P, options: WorkerOptions) -> Self {
         Self {
             store,
             provider,
+            llm: None,
+            transcripts: None,
+            options,
+        }
+    }
+
+    /// Worker that can execute the default agent engine.
+    pub fn with_agent(
+        store: JobStore,
+        provider: P,
+        llm: AnyLlm,
+        transcripts: AgentStore,
+        options: WorkerOptions,
+    ) -> Self {
+        Self {
+            store,
+            provider,
+            llm: Some(llm),
+            transcripts: Some(transcripts),
             options,
         }
     }
@@ -205,9 +230,44 @@ impl<P: SearchProvider> Worker<P> {
             }
         });
 
-        let runner = Runner::new(&self.store, &self.provider);
+        let run = async {
+            match job.request.engine {
+                Engine::Agent => {
+                    let llm = self.llm.as_ref().ok_or_else(|| {
+                        ServiceError::Message(format!(
+                            "job {} uses the agent engine but this worker has no model provider",
+                            job.id
+                        ))
+                    })?;
+                    let transcripts = self.transcripts.as_ref().ok_or_else(|| {
+                        ServiceError::Message(format!(
+                            "job {} uses the agent engine but this worker has no transcript store",
+                            job.id
+                        ))
+                    })?;
+                    let outcome = AgentRunner::new(&self.store, &self.provider, llm, transcripts)
+                        .run(job.clone())
+                        .await?;
+                    Ok::<RunOutcome, ServiceError>(RunOutcome {
+                        status: outcome.status,
+                        report_path: outcome.report_path,
+                        sources: outcome.sources,
+                        claims: outcome.claims,
+                        awaiting_review: outcome.awaiting_review,
+                        stop_reason: outcome.stop_reason,
+                        rounds: outcome.rounds,
+                    })
+                }
+                Engine::Deterministic => {
+                    Runner::new(&self.store, &self.provider)
+                        .run(job.clone())
+                        .await
+                }
+            }
+        };
+
         let outcome = tokio::select! {
-            result = tokio::time::timeout(job.request.budget.wall_time(), runner.run(job.clone())) => {
+            result = tokio::time::timeout(job.request.budget.wall_time(), run) => {
                 Some(result)
             }
             _ = signal_rx.changed() => None,

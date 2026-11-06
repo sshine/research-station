@@ -1,4 +1,6 @@
+use research_agent::AgentError;
 use research_core::{ConfigError, JobId};
+use research_llm::LlmError;
 use research_pipeline::PipelineError;
 use research_provider::ProviderError;
 use research_store::StoreError;
@@ -13,6 +15,10 @@ pub enum ServiceError {
     Pipeline(#[from] PipelineError),
     #[error("provider error: {0}")]
     Provider(#[from] ProviderError),
+    #[error("llm error: {0}")]
+    Llm(#[from] LlmError),
+    #[error("agent error: {0}")]
+    Agent(#[from] AgentError),
     #[error("i/o error: {0}")]
     Io(#[from] std::io::Error),
     #[error("job {0} was cancelled")]

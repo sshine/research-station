@@ -21,6 +21,7 @@
           pkgs.just
           pkgs.pkg-config
           pkgs.sqlx-cli
+          pkgs.sqlite
           pkgs.typos
           # Credentials are declared in research-daemon/secretspec.toml; the
           # CLI is normally invoked through `secretspec run` (see justfile).

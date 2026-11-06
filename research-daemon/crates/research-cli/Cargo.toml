@@ -15,6 +15,7 @@ anyhow = { workspace = true }
 chrono = { workspace = true }
 clap = { workspace = true }
 research-core = { path = "../research-core" }
+research-llm = { path = "../research-llm" }
 research-provider = { path = "../research-provider" }
 research-service = { path = "../research-service" }
 research-store = { path = "../research-store" }

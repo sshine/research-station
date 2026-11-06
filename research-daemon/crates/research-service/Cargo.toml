@@ -8,7 +8,9 @@ publish.workspace = true
 
 [dependencies]
 chrono = { workspace = true }
+research-agent = { path = "../research-agent" }
 research-core = { path = "../research-core" }
+research-llm = { path = "../research-llm" }
 research-pipeline = { path = "../research-pipeline" }
 research-provider = { path = "../research-provider" }
 research-store = { path = "../research-store" }

@@ -41,12 +41,16 @@ impl Progress {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RunUsage {
     pub queries: usize,
     pub sources: usize,
     pub claims: usize,
     pub credits: u64,
+    #[serde(default)]
+    pub llm_tokens: u64,
+    #[serde(default)]
+    pub llm_cost_usd: Option<f64>,
 }
 
 /// Stamped by the daemon after the audit, never by a model.
@@ -59,6 +63,18 @@ pub struct RunMetadata {
     pub provider: String,
     pub planner: String,
     pub synthesizer: String,
+    #[serde(default)]
+    pub engine: String,
+    #[serde(default)]
+    pub llm_provider: Option<String>,
+    #[serde(default)]
+    pub llm_model: Option<String>,
+    #[serde(default)]
+    pub prompt_version: Option<String>,
+    #[serde(default)]
+    pub agent_rounds: u32,
+    #[serde(default)]
+    pub stop_reason: Option<String>,
     pub status: String,
     pub started_at: DateTime<Utc>,
     pub finished_at: DateTime<Utc>,

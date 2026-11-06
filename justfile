@@ -32,9 +32,17 @@ provider *args='':
 secrets-set:
     secretspec set TAVILY_API_KEY
 
+# Store the optional OpenCode Go key used by the daemon's model client.
+secrets-set-llm:
+    secretspec set OPENCODE_GO_API_KEY
+
 # Report which provider credentials are missing from the configured provider.
 secrets-check:
     secretspec check --reason {{quote(secretspec_reason)}}
+
+# Check configuration, credentials, storage, and optionally the model.
+doctor *args='':
+    cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- doctor {{args}}
 
 # Search through the provider, with credentials from secretspec.
 search query *args='':
@@ -48,17 +56,25 @@ extract *urls:
 research query *args='':
     secretspec run --reason {{quote(secretspec_reason)}} -- cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- run "{{query}}" {{args}}
 
-# Run a question end to end with the deterministic fake provider.
+# Run a question end to end with the deterministic fake provider and engine.
 demo query *args='':
-    cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- run "{{query}}" --depth quick --fake {{args}}
+    cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- run "{{query}}" --depth quick --fake --engine deterministic {{args}}
+
+# Run the agent loop with the fake provider and fake model, without credentials.
+agent-demo query *args='':
+    cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- run "{{query}}" --depth quick --fake --fake-llm {{args}}
+
+# Print a job's agent transcript.
+transcript id *args='':
+    cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- job transcript {{id}} {{args}}
 
 # Process queued research jobs. Pass --once to drain the queue and exit.
 worker *args='':
     secretspec run --reason {{quote(secretspec_reason)}} -- cargo run -q --manifest-path research-daemon/Cargo.toml -p research-daemon -- {{args}}
 
-# Process queued jobs with the deterministic fake provider.
+# Process queued jobs with the deterministic fake provider and fake model.
 worker-fake *args='':
-    cargo run -q --manifest-path research-daemon/Cargo.toml -p research-daemon -- --fake {{args}}
+    cargo run -q --manifest-path research-daemon/Cargo.toml -p research-daemon -- --fake --fake-llm {{args}}
 
 # Run the CLI with raw arguments, without resolving secrets.
 run *args:

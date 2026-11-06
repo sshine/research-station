@@ -3218,6 +3218,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "research-agent"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "chrono",
+ "research-core",
+ "research-llm",
+ "research-pipeline",
+ "research-provider",
+ "research-store",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "research-cli"
 version = "0.1.0"
 dependencies = [
@@ -3225,6 +3245,7 @@ dependencies = [
  "chrono",
  "clap",
  "research-core",
+ "research-llm",
  "research-provider",
  "research-service",
  "research-store",
@@ -3261,6 +3282,22 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "research-llm"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "fastrand",
+ "reqwest",
+ "research-core",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "wiremock",
 ]
 
 [[package]]
@@ -3305,7 +3342,9 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "chrono",
+ "research-agent",
  "research-core",
+ "research-llm",
  "research-pipeline",
  "research-provider",
  "research-store",
@@ -3324,12 +3363,14 @@ dependencies = [
  "chrono",
  "hex",
  "research-core",
+ "serde",
  "serde_json",
  "sha2 0.10.9",
  "sqlx",
  "tempfile",
  "thiserror",
  "tokio",
+ "uuid",
 ]
 
 [[package]]

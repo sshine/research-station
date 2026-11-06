@@ -5,13 +5,15 @@ use anyhow::Context;
 use chrono::{NaiveDate, Utc};
 use clap::{Args, Parser, Subcommand, ValueEnum};
 use research_core::{
-    Config, Depth, ExtractDepth, ExtractFormat, ExtractRequest, Job, JobBudget, JobStatus,
+    Config, Depth, Engine, ExtractDepth, ExtractFormat, ExtractRequest, Job, JobBudget, JobStatus,
     RawContentFormat, ResearchRequest, ReviewPolicy, SearchDepth, SearchRequest, SearchTopic,
     TimeRange, slugify,
 };
+use research_llm::{LlmMessage, LlmProvider, LlmRequest};
 use research_provider::{ProviderResponse, SearchProvider, TavilyProvider};
 use research_service::{
-    Worker, WorkerOptions, approve_plan, build_provider, build_tavily_provider,
+    Worker, WorkerOptions, approve_plan, build_llm_provider, build_provider, build_tavily_provider,
+    resolve_api_key, resolve_llm_api_key,
 };
 use research_store::JobStore;
 use tracing_subscriber::EnvFilter;
@@ -53,6 +55,8 @@ enum Command {
         #[command(subcommand)]
         command: ConfigCommand,
     },
+    /// Check configuration, credentials, storage, and optionally the model.
+    Doctor(DoctorArgs),
 }
 
 #[derive(Debug, Subcommand)]
@@ -125,6 +129,14 @@ enum JobCommand {
         #[arg(long)]
         json: bool,
     },
+    /// Print the agent transcript, including model prompts and tool results.
+    Transcript {
+        /// Job ID.
+        id: String,
+        /// Print the transcript as JSON.
+        #[arg(long)]
+        json: bool,
+    },
     /// Claim the oldest queued job. Intended for workers and integration tests.
     #[command(hide = true)]
     Claim {
@@ -150,6 +162,10 @@ struct EnqueueArgs {
 
     #[arg(long, value_enum, default_value_t = ResearchDepthArg::Thorough)]
     depth: ResearchDepthArg,
+
+    /// Research engine. Defaults to the iterative agent.
+    #[arg(long, value_enum, default_value_t = EngineArg::Agent)]
+    engine: EngineArg,
 
     /// Pause for human plan review before collecting evidence.
     #[arg(long)]
@@ -196,6 +212,10 @@ struct ServeArgs {
     #[arg(long)]
     fake: bool,
 
+    /// Use the deterministic fake model instead of OpenCode Go.
+    #[arg(long)]
+    fake_llm: bool,
+
     /// Process the current queue once, then exit.
     #[arg(long)]
     once: bool,
@@ -217,6 +237,10 @@ struct RunArgs {
     #[arg(long, value_enum, default_value_t = ResearchDepthArg::Thorough)]
     depth: ResearchDepthArg,
 
+    /// Research engine. Defaults to the iterative agent.
+    #[arg(long, value_enum, default_value_t = EngineArg::Agent)]
+    engine: EngineArg,
+
     /// Pause for plan approval before collecting evidence.
     #[arg(long)]
     review: bool,
@@ -237,9 +261,28 @@ struct RunArgs {
     #[arg(long)]
     fake: bool,
 
+    /// Use the deterministic fake model instead of OpenCode Go.
+    #[arg(long)]
+    fake_llm: bool,
+
     /// Print the final job as JSON.
     #[arg(long)]
     json: bool,
+}
+
+#[derive(Debug, Args)]
+struct DoctorArgs {
+    /// Make a minimal model request to verify connectivity.
+    #[arg(long)]
+    probe: bool,
+
+    /// Use the deterministic fake model for the probe.
+    #[arg(long)]
+    fake_llm: bool,
+
+    /// Exit nonzero when credentials or storage checks fail.
+    #[arg(long)]
+    strict: bool,
 }
 
 #[derive(Debug, Args)]
@@ -347,6 +390,21 @@ impl From<DepthArg> for SearchDepth {
             DepthArg::UltraFast => Self::UltraFast,
             DepthArg::Basic => Self::Basic,
             DepthArg::Advanced => Self::Advanced,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, ValueEnum)]
+enum EngineArg {
+    Agent,
+    Deterministic,
+}
+
+impl From<EngineArg> for Engine {
+    fn from(value: EngineArg) -> Self {
+        match value {
+            EngineArg::Agent => Self::Agent,
+            EngineArg::Deterministic => Self::Deterministic,
         }
     }
 }
@@ -493,6 +551,7 @@ async fn main() -> anyhow::Result<()> {
         Command::Job { command } => run_job_command(config_path, command).await,
         Command::Serve(args) => run_serve(config_path, args).await,
         Command::Run(args) => run_research(config_path, args).await,
+        Command::Doctor(args) => run_doctor(config_path, args).await,
     }
 }
 
@@ -601,6 +660,36 @@ async fn run_job_command(config_path: Option<PathBuf>, command: JobCommand) -> a
                 Ok(())
             }
         }
+        JobCommand::Transcript { id, json } => {
+            let id = parse_job_id(&id)?;
+            let transcripts = research_store::AgentStore::open(config.database_path())
+                .await
+                .context("opening agent transcript store")?;
+            let run = transcripts.run(id).await?;
+            let events = transcripts.events(id).await?;
+            if json {
+                print_pretty_json(&serde_json::json!({ "run": run, "events": events }))
+            } else {
+                if let Some(run) = &run {
+                    println!(
+                        "run: {} {} / {} ({}) started {}",
+                        run.engine,
+                        run.provider,
+                        run.model,
+                        run.status,
+                        run.started_at.to_rfc3339()
+                    );
+                    if let Some(reason) = &run.stop_reason {
+                        println!("stop: {reason}");
+                    }
+                }
+                for event in events {
+                    println!("\n#{} {} {}", event.seq, event.kind, event.at.to_rfc3339());
+                    println!("{}", serde_json::to_string_pretty(&event.payload)?);
+                }
+                Ok(())
+            }
+        }
         JobCommand::Claim {
             owner,
             lease_seconds,
@@ -636,6 +725,7 @@ async fn run_job_command(config_path: Option<PathBuf>, command: JobCommand) -> a
 
 async fn run_job_enqueue(store: &JobStore, args: EnqueueArgs) -> anyhow::Result<()> {
     let mut request = ResearchRequest::new(args.question);
+    request.engine = args.engine.into();
     request.depth = args.depth.into();
     request.budget = JobBudget::for_depth(request.depth);
     request.review = if args.review {
@@ -714,7 +804,11 @@ async fn run_serve(config_path: Option<PathBuf>, args: ServeArgs) -> anyhow::Res
     let provider = build_provider(&config, args.fake)
         .await
         .context("creating provider")?;
-    let worker = Worker::new(store, provider, options);
+    let llm = build_llm_provider(&config, args.fake_llm).context("creating model provider")?;
+    let transcripts = research_store::AgentStore::open(config.database_path())
+        .await
+        .context("opening agent transcript store")?;
+    let worker = Worker::with_agent(store, provider, llm, transcripts, options);
     worker.reap_expired().await?;
 
     if args.once {
@@ -746,8 +840,13 @@ async fn run_research(config_path: Option<PathBuf>, args: RunArgs) -> anyhow::Re
     let provider = build_provider(&config, args.fake)
         .await
         .context("creating provider")?;
+    let llm = build_llm_provider(&config, args.fake_llm).context("creating model provider")?;
+    let transcripts = research_store::AgentStore::open(config.database_path())
+        .await
+        .context("opening agent transcript store")?;
 
     let mut request = ResearchRequest::new(args.question);
+    request.engine = args.engine.into();
     request.depth = args.depth.into();
     request.budget = JobBudget::for_depth(request.depth);
     request.review = if args.review {
@@ -771,7 +870,7 @@ async fn run_research(config_path: Option<PathBuf>, args: RunArgs) -> anyhow::Re
     let mut options = WorkerOptions::from_config(&config, "research-run");
     options.poll_interval = Duration::from_millis(200);
 
-    let worker = Worker::new(store.clone(), provider, options);
+    let worker = Worker::with_agent(store.clone(), provider, llm, transcripts, options);
 
     println!("running {} in {}", job.id, job.output_dir.display());
     let Some(outcome) = worker.run_job(job.id).await? else {
@@ -789,6 +888,12 @@ async fn run_research(config_path: Option<PathBuf>, args: RunArgs) -> anyhow::Re
         println!("completed {}", job.id);
         println!("report: {}", outcome.report_path.display());
         println!("sources: {}  claims: {}", outcome.sources, outcome.claims);
+        if let Some(reason) = &outcome.stop_reason {
+            println!("stop: {reason}");
+        }
+        if outcome.rounds > 0 {
+            println!("agent rounds: {}", outcome.rounds);
+        }
     } else if outcome.status == JobStatus::AwaitingReview {
         println!(
             "plan ready for review: {}",
@@ -851,6 +956,7 @@ async fn run_job_wait(store: &JobStore, args: WaitArgs) -> anyhow::Result<()> {
 fn print_job(job: &Job) {
     println!("id:         {}", job.id);
     println!("status:     {}", job.status);
+    println!("engine:     {}", job.request.engine.as_str());
     println!("depth:      {}", job.request.depth.as_str());
     println!(
         "review:     {}",
@@ -891,6 +997,120 @@ fn parse_job_id(value: &str) -> anyhow::Result<research_core::JobId> {
 fn default_output_dir(question: &str) -> PathBuf {
     let date = Utc::now().format("%Y-%m-%d");
     PathBuf::from("research").join(format!("{date}-{}", slugify(question, 48)))
+}
+
+async fn run_doctor(config_path: Option<PathBuf>, args: DoctorArgs) -> anyhow::Result<()> {
+    let discovered = Config::discover(config_path);
+    let config = Config::load(discovered.as_deref()).context("loading configuration")?;
+    let mut warnings = Vec::new();
+
+    let config_label = discovered
+        .as_ref()
+        .map(|path| path.display().to_string())
+        .unwrap_or_else(|| "built-in defaults".to_owned());
+    println!("config:       ok ({config_label})");
+
+    match resolve_api_key(&config) {
+        Ok(_) => println!("tavily key:   ok ({})", config.provider.tavily.api_key_env),
+        Err(err) => {
+            println!(
+                "tavily key:   missing ({})",
+                config.provider.tavily.api_key_env
+            );
+            warnings.push(err.to_string());
+        }
+    }
+
+    let llm_names = config.llm.api_key_names().join(" or ");
+    match resolve_llm_api_key(&config) {
+        Ok(_) => println!("llm key:      ok ({llm_names})"),
+        Err(err) => {
+            println!("llm key:      missing ({llm_names})");
+            warnings.push(err.to_string());
+        }
+    }
+    println!(
+        "llm:          {} / {}",
+        config.llm.provider, config.llm.model
+    );
+    println!("llm base:     {}", config.llm.base_url);
+
+    match JobStore::open(config.database_path()).await {
+        Ok(_) => println!("database:     ok ({})", config.database_path().display()),
+        Err(err) => {
+            println!(
+                "database:     failed ({})",
+                config.database_path().display()
+            );
+            warnings.push(format!("database: {err}"));
+        }
+    }
+
+    match std::fs::create_dir_all(config.blob_dir()) {
+        Ok(()) => println!("blobs:        ok ({})", config.blob_dir().display()),
+        Err(err) => {
+            println!("blobs:        failed ({})", config.blob_dir().display());
+            warnings.push(format!("blob directory: {err}"));
+        }
+    }
+
+    if args.probe {
+        match build_llm_provider(&config, args.fake_llm) {
+            Ok(provider) => {
+                let request = LlmRequest::new(vec![
+                    LlmMessage::system("You are a research-station health check."),
+                    LlmMessage::user("Reply with exactly OK."),
+                ])
+                .with_temperature(0.0)
+                .with_max_tokens(16);
+
+                match provider.complete(request).await {
+                    Ok(response) => {
+                        println!(
+                            "llm probe:    ok ({} / {}): {}",
+                            response.provider,
+                            response.model,
+                            response.content.trim()
+                        );
+                        println!(
+                            "llm usage:    prompt={} completion={} total={} cost={}",
+                            response.usage.prompt_tokens,
+                            response.usage.completion_tokens,
+                            response.usage.total_tokens,
+                            response
+                                .usage
+                                .cost_usd
+                                .map(|cost| format!("{cost:.6}"))
+                                .unwrap_or_else(|| "unknown".to_owned())
+                        );
+                    }
+                    Err(err) => {
+                        println!("llm probe:    failed");
+                        warnings.push(format!("llm probe: {err}"));
+                    }
+                }
+            }
+            Err(err) => {
+                println!("llm probe:    failed");
+                warnings.push(format!("llm probe: {err}"));
+            }
+        }
+    }
+
+    if warnings.is_empty() {
+        return Ok(());
+    }
+
+    println!("\n{} warning(s):", warnings.len());
+    for warning in &warnings {
+        println!("  - {warning}");
+    }
+    if args.strict {
+        anyhow::bail!("doctor found {} problem(s)", warnings.len());
+    }
+
+    println!("Run with `--strict` to fail on warnings.");
+    Ok(())
 }
 
 async fn run_provider_command(app: &App, command: ProviderCommand) -> anyhow::Result<()> {

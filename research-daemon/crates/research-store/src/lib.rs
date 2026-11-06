@@ -3,10 +3,12 @@
 //! Provides the SQLite query cache, the content-addressed blob store, and the
 //! durable job queue used by the service layer.
 
+pub mod agent;
 pub mod blobs;
 pub mod cache;
 pub mod jobs;
 
+pub use agent::{AgentEvent, AgentRun, AgentStore};
 pub use blobs::{BlobRef, BlobStore};
 pub use cache::{CachedResponse, SqliteCache};
 pub use jobs::{EnqueueOutcome, JobStore, ReapedJob};

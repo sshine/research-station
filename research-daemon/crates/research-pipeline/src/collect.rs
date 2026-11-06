@@ -2,8 +2,9 @@ use std::collections::HashSet;
 
 use chrono::Utc;
 use research_core::{
-    PlanConstraints, QueryId, QueryRecord, RawContentFormat, SearchDepth, SearchRequest,
-    SearchTopic, SourceClass, SourceId, SourceRecord, Subquestion, TimeRange,
+    ExtractDepth, ExtractFormat, ExtractRequest, PlanConstraints, QueryId, QueryRecord,
+    RawContentFormat, SearchDepth, SearchRequest, SearchTopic, SourceClass, SourceId, SourceRecord,
+    Subquestion, TimeRange,
 };
 use research_provider::SearchProvider;
 use sha2::{Digest, Sha256};
@@ -83,90 +84,218 @@ impl<'a, P: SearchProvider> Collector<'a, P> {
                 break;
             }
 
-            let request = self.search_request(subquestion, seed);
-            let response = self.provider.search(request).await?;
-            let credits = response.credits.unwrap_or(0);
-            credits_used = credits_used.saturating_add(credits);
-
-            collected.queries.push(QueryRecord {
-                id: QueryId::new(),
-                subquestion_id: subquestion.id,
-                provider: response.provider.clone(),
-                text: seed.clone(),
-                at: Utc::now(),
-                status: "ok".to_owned(),
-                result_count: response.data.results.len(),
-                latency_ms: response.latency_ms,
-                credits: response.credits,
-                raw_hash: response.raw_hash.clone(),
-                cache_hit: response.cache_hit,
-            });
-
-            for result in response.data.results {
-                if collected.sources.len() >= limits.max_sources {
-                    break;
-                }
-
-                let Some(canonical_url) = canonicalize_url(&result.url) else {
-                    continue;
-                };
-                if !known_urls.insert(canonical_url.clone()) {
-                    continue;
-                }
-
-                let content = result
-                    .raw_content
-                    .as_deref()
-                    .filter(|content| !content.trim().is_empty())
-                    .unwrap_or(&result.content)
-                    .trim()
-                    .to_owned();
-                if content.is_empty() {
-                    known_urls.remove(&canonical_url);
-                    continue;
-                }
-
-                let id = SourceId::new();
-                let content_hash = hex::encode(Sha256::digest(content.as_bytes()));
-                if !known_hashes.insert(content_hash.clone()) {
-                    continue;
-                }
-                let publisher = publisher(&result.url);
-                let title = if result.title.trim().is_empty() {
-                    result.url.clone()
+            let call_limits = CollectionLimits {
+                max_queries: limits.max_queries.saturating_sub(collected.queries.len()),
+                max_sources: limits.max_sources.saturating_sub(collected.sources.len()),
+                max_credits: if limits.max_credits == u64::MAX {
+                    u64::MAX
                 } else {
-                    result.title.trim().to_owned()
-                };
-                let content_path = format!("notes/{id}.md");
-
-                collected.notes.push(NoteFile {
-                    path: content_path.clone(),
-                    content: content.clone(),
-                });
-                collected.sources.push(SourceRecord {
-                    id,
-                    subquestion_id: subquestion.id,
-                    url: result.url,
-                    canonical_url,
-                    title,
-                    publisher: publisher.clone(),
-                    published_date: result.published_date,
-                    retrieved_at: Utc::now(),
-                    source_type: subquestion.source_class,
-                    content_hash,
-                    quality_rationale: format!(
-                        "{} source selected for: {}",
-                        subquestion.source_class.as_str(),
-                        subquestion.question
-                    ),
-                    independence_group: publisher,
-                    content_path,
-                    excerpt: excerpt(&content),
-                });
-            }
+                    limits.max_credits.saturating_sub(credits_used)
+                },
+            };
+            let request = self.search_request(subquestion, seed);
+            let mut one = self
+                .collect_query(subquestion, request, call_limits, known_urls, known_hashes)
+                .await?;
+            credits_used = credits_used.saturating_add(
+                one.queries
+                    .iter()
+                    .filter_map(|query| query.credits)
+                    .sum::<u64>(),
+            );
+            collected.queries.append(&mut one.queries);
+            collected.sources.append(&mut one.sources);
+            collected.notes.append(&mut one.notes);
         }
 
         Ok(collected)
+    }
+
+    /// Execute one search and accept its results. The agent loop calls this for
+    /// each model-chosen query; `collect` calls it for each static seed.
+    pub async fn collect_query(
+        &self,
+        subquestion: &Subquestion,
+        request: SearchRequest,
+        limits: CollectionLimits,
+        known_urls: &mut HashSet<String>,
+        known_hashes: &mut HashSet<String>,
+    ) -> Result<CollectedSubquestion, PipelineError> {
+        let mut collected = CollectedSubquestion::default();
+        if limits.max_queries == 0 || limits.max_sources == 0 || limits.max_credits == 0 {
+            return Ok(collected);
+        }
+
+        let text = request.query.clone();
+        let response = self.provider.search(request).await?;
+        collected.queries.push(QueryRecord {
+            id: QueryId::new(),
+            subquestion_id: subquestion.id,
+            provider: response.provider.clone(),
+            text,
+            at: Utc::now(),
+            status: "ok".to_owned(),
+            result_count: response.data.results.len(),
+            latency_ms: response.latency_ms,
+            credits: response.credits,
+            raw_hash: response.raw_hash.clone(),
+            cache_hit: response.cache_hit,
+        });
+
+        for result in response.data.results {
+            if collected.sources.len() >= limits.max_sources {
+                break;
+            }
+            let content = result
+                .raw_content
+                .as_deref()
+                .filter(|content| !content.trim().is_empty())
+                .unwrap_or(&result.content);
+            self.accept_source(
+                subquestion,
+                &result.url,
+                &result.title,
+                content,
+                result.published_date,
+                known_urls,
+                known_hashes,
+                &mut collected,
+            );
+        }
+
+        Ok(collected)
+    }
+
+    /// Extract one or more URLs and accept the returned content. This is the
+    /// page-reading action available to the agent loop.
+    pub async fn collect_extract(
+        &self,
+        subquestion: &Subquestion,
+        urls: Vec<String>,
+        query: Option<String>,
+        limits: CollectionLimits,
+        known_urls: &mut HashSet<String>,
+        known_hashes: &mut HashSet<String>,
+    ) -> Result<CollectedSubquestion, PipelineError> {
+        let mut collected = CollectedSubquestion::default();
+        if urls.is_empty() {
+            return Ok(collected);
+        }
+        if limits.max_queries == 0 || limits.max_sources == 0 || limits.max_credits == 0 {
+            return Ok(collected);
+        }
+
+        let text = format!("extract: {}", urls.join(", "));
+        let mut request = ExtractRequest::new(urls);
+        request.query = query;
+        request.format = ExtractFormat::Markdown;
+        request.extract_depth = match self.depth {
+            SearchDepth::Advanced => ExtractDepth::Advanced,
+            _ => ExtractDepth::Basic,
+        };
+
+        let response = self.provider.extract(request).await?;
+        let status = if response.data.failed_results.is_empty() {
+            "ok"
+        } else {
+            "partial"
+        };
+        collected.queries.push(QueryRecord {
+            id: QueryId::new(),
+            subquestion_id: subquestion.id,
+            provider: response.provider.clone(),
+            text,
+            at: Utc::now(),
+            status: status.to_owned(),
+            result_count: response.data.results.len(),
+            latency_ms: response.latency_ms,
+            credits: response.credits,
+            raw_hash: response.raw_hash.clone(),
+            cache_hit: response.cache_hit,
+        });
+
+        for result in response.data.results {
+            if collected.sources.len() >= limits.max_sources {
+                break;
+            }
+            let title = title_from_url(&result.url);
+            self.accept_source(
+                subquestion,
+                &result.url,
+                &title,
+                &result.raw_content,
+                None,
+                known_urls,
+                known_hashes,
+                &mut collected,
+            );
+        }
+
+        Ok(collected)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn accept_source(
+        &self,
+        subquestion: &Subquestion,
+        url: &str,
+        title: &str,
+        content: &str,
+        published_date: Option<String>,
+        known_urls: &mut HashSet<String>,
+        known_hashes: &mut HashSet<String>,
+        collected: &mut CollectedSubquestion,
+    ) {
+        let Some(canonical_url) = canonicalize_url(url) else {
+            return;
+        };
+        if !known_urls.insert(canonical_url.clone()) {
+            return;
+        }
+
+        let content = content.trim();
+        if content.is_empty() {
+            known_urls.remove(&canonical_url);
+            return;
+        }
+
+        let id = SourceId::new();
+        let content_hash = hex::encode(Sha256::digest(content.as_bytes()));
+        if !known_hashes.insert(content_hash.clone()) {
+            return;
+        }
+        let publisher = publisher(url);
+        let title = if title.trim().is_empty() {
+            url.to_owned()
+        } else {
+            title.trim().to_owned()
+        };
+        let content_path = format!("notes/{id}.md");
+
+        collected.notes.push(NoteFile {
+            path: content_path.clone(),
+            content: content.to_owned(),
+        });
+        collected.sources.push(SourceRecord {
+            id,
+            subquestion_id: subquestion.id,
+            url: url.to_owned(),
+            canonical_url,
+            title,
+            publisher: publisher.clone(),
+            published_date,
+            retrieved_at: Utc::now(),
+            source_type: subquestion.source_class,
+            content_hash,
+            quality_rationale: format!(
+                "{} source selected for: {}",
+                subquestion.source_class.as_str(),
+                subquestion.question
+            ),
+            independence_group: publisher,
+            content_path,
+            excerpt: excerpt(content),
+        });
     }
 
     fn search_request(&self, subquestion: &Subquestion, seed: &str) -> SearchRequest {
@@ -193,6 +322,20 @@ fn publisher(raw_url: &str) -> String {
         .and_then(|url| url.host_str().map(ToOwned::to_owned))
         .map(|host| host.strip_prefix("www.").unwrap_or(&host).to_owned())
         .unwrap_or_else(|| "unknown".to_owned())
+}
+
+fn title_from_url(raw_url: &str) -> String {
+    Url::parse(raw_url)
+        .ok()
+        .and_then(|url| {
+            url.path_segments()
+                .and_then(|mut segments| segments.next_back())
+                .filter(|segment| !segment.is_empty())
+                .map(|segment| segment.replace(['-', '_'], " "))
+        })
+        .map(|title| title.trim().to_owned())
+        .filter(|title| !title.is_empty())
+        .unwrap_or_else(|| raw_url.to_owned())
 }
 
 fn excerpt(content: &str) -> String {

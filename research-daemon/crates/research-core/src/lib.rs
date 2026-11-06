@@ -9,7 +9,8 @@ pub mod job;
 pub mod text;
 
 pub use config::{
-    BudgetConfig, Config, ConfigError, JobsConfig, ProviderConfig, StoreConfig, TavilyConfig,
+    BudgetConfig, Config, ConfigError, JobsConfig, LlmConfig, ProviderConfig, StoreConfig,
+    TavilyConfig,
 };
 pub use domain::{
     ExtractDepth, ExtractFailure, ExtractFormat, ExtractRequest, ExtractResponse, ExtractResult,
@@ -21,7 +22,8 @@ pub use evidence::{
     SourceRecord, Subquestion, SubquestionCoverage, SupportStatus, Synthesis,
 };
 pub use job::{
-    ClaimId, Depth, Job, JobBudget, JobEvent, JobId, JobStatus, ParseJobStatusError, PassageId,
-    PlanId, QueryId, RequestError, ResearchRequest, ReviewPolicy, SourceId, SubquestionId,
+    ClaimId, Depth, Engine, Job, JobBudget, JobEvent, JobId, JobStatus, ParseJobStatusError,
+    PassageId, PlanId, QueryId, RequestError, ResearchRequest, ReviewPolicy, SourceId,
+    SubquestionId,
 };
 pub use text::slugify;

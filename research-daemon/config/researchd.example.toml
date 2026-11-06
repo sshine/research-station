@@ -12,6 +12,24 @@ cache_ttl_seconds = 21600
 # searches upward from the working directory and honours SECRETSPEC_FILE.
 # secretspec_file = "/path/to/research-station/secretspec.toml"
 
+# OpenAI-compatible model provider. The key itself is never stored here.
+[llm]
+provider = "opencode-go"
+base_url = "https://opencode.ai/inference/go/openai/v1"
+model = "deepseek-v4.1-flash"
+api_key_env = "OPENCODE_GO_API_KEY"
+fallback_api_key_envs = ["OPENCODE_API_KEY"]
+# Stable routing/caching identity sent as x-opencode-session. Omit to generate
+# one per provider instance; the agent will use the job ID.
+# session_id = "my-research-station"
+# Optional explicit manifest. Falls back to provider.tavily.secretspec_file and
+# then SECRETSPEC_FILE.
+# secretspec_file = "/path/to/research-station/secretspec.toml"
+timeout_seconds = 120
+max_retries = 3
+temperature = 0.2
+max_output_tokens = 4096
+
 [store]
 # Jobs, plans, evidence indexes, usage, and cache metadata share one database.
 # Omit to use $XDG_CACHE_HOME/research-station/cache.sqlite.

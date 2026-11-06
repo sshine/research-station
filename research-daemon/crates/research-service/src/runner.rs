@@ -19,6 +19,8 @@ pub struct RunOutcome {
     pub sources: usize,
     pub claims: usize,
     pub awaiting_review: bool,
+    pub stop_reason: Option<String>,
+    pub rounds: u32,
 }
 
 /// Executes one claimed job through planning, collection, synthesis, and audit.
@@ -65,6 +67,8 @@ impl<'a, P: SearchProvider> Runner<'a, P> {
                 sources: 0,
                 claims: 0,
                 awaiting_review: true,
+                stop_reason: Some("awaiting-review".to_owned()),
+                rounds: 0,
             });
         }
 
@@ -165,6 +169,12 @@ impl<'a, P: SearchProvider> Runner<'a, P> {
             provider: self.provider.id().to_owned(),
             planner: "rule-based-v1".to_owned(),
             synthesizer: "extractive-v1".to_owned(),
+            engine: "deterministic".to_owned(),
+            llm_provider: None,
+            llm_model: None,
+            prompt_version: None,
+            agent_rounds: 0,
+            stop_reason: None,
             status: if audit.passed {
                 "completed".to_owned()
             } else {
@@ -178,6 +188,8 @@ impl<'a, P: SearchProvider> Runner<'a, P> {
                 sources: sources.len(),
                 claims: synthesis.claims.len(),
                 credits,
+                llm_tokens: 0,
+                llm_cost_usd: None,
             },
             audit: audit.clone(),
         };
@@ -191,6 +203,8 @@ impl<'a, P: SearchProvider> Runner<'a, P> {
             sources: sources.len(),
             claims: synthesis.claims.len(),
             awaiting_review: false,
+            stop_reason: Some("deterministic".to_owned()),
+            rounds: 0,
         })
     }
 

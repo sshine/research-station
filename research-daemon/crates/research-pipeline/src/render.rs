@@ -116,10 +116,16 @@ pub fn render_report(
 
         for claim in claims {
             let _ = writeln!(out, "> {}\n", claim.text.replace('\n', " "));
-            let citations = claim
-                .evidence
-                .iter()
-                .filter_map(|evidence| positions.get(&evidence.source_id))
+            let mut cited = Vec::new();
+            for evidence in &claim.evidence {
+                if let Some(position) = positions.get(&evidence.source_id) {
+                    if !cited.contains(position) {
+                        cited.push(*position);
+                    }
+                }
+            }
+            let citations = cited
+                .into_iter()
                 .map(|position| format!("[S{position}]"))
                 .collect::<Vec<_>>()
                 .join(" ");

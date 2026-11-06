@@ -4,8 +4,8 @@ use std::time::Duration;
 use anyhow::Context;
 use clap::Parser;
 use research_core::Config;
-use research_service::{Worker, WorkerOptions, build_provider};
-use research_store::JobStore;
+use research_service::{Worker, WorkerOptions, build_llm_provider, build_provider};
+use research_store::{AgentStore, JobStore};
 use tracing_subscriber::EnvFilter;
 
 #[derive(Debug, Parser)]
@@ -23,6 +23,10 @@ struct Cli {
     /// Use the deterministic fake provider instead of Tavily.
     #[arg(long)]
     fake: bool,
+
+    /// Use the deterministic fake model instead of OpenCode Go.
+    #[arg(long)]
+    fake_llm: bool,
 
     /// Drain the current queue once, then exit.
     #[arg(long)]
@@ -61,7 +65,11 @@ async fn main() -> anyhow::Result<()> {
     let provider = build_provider(&config, cli.fake)
         .await
         .context("creating provider")?;
-    let worker = Worker::new(store, provider, options);
+    let llm = build_llm_provider(&config, cli.fake_llm).context("creating model provider")?;
+    let transcripts = AgentStore::open(config.database_path())
+        .await
+        .context("opening agent transcript store")?;
+    let worker = Worker::with_agent(store, provider, llm, transcripts, options);
     worker.reap_expired().await?;
 
     if cli.once {

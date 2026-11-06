@@ -10,6 +10,7 @@ use serde::{Deserialize, Serialize};
 #[serde(default)]
 pub struct Config {
     pub provider: ProviderConfig,
+    pub llm: LlmConfig,
     pub store: StoreConfig,
     pub budget: BudgetConfig,
     pub jobs: JobsConfig,
@@ -139,6 +140,62 @@ impl Default for TavilyConfig {
     }
 }
 
+/// OpenAI-compatible model provider settings.
+///
+/// The API key itself is never stored here. `api_key_env` names the primary
+/// environment variable, and `fallback_api_key_envs` names alternatives such as
+/// the older OpenCode variable. SecretSpec is consulted when none are set.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
+pub struct LlmConfig {
+    pub provider: String,
+    pub base_url: String,
+    pub model: String,
+    pub api_key_env: String,
+    pub fallback_api_key_envs: Vec<String>,
+    /// Stable session ID sent as `x-opencode-session`. Generated per provider
+    /// instance when omitted; the agent should set it to the job ID.
+    pub session_id: Option<String>,
+    /// Optional path to `secretspec.toml`. Falls back to the Tavily manifest and
+    /// then to `SECRETSPEC_FILE`.
+    pub secretspec_file: Option<PathBuf>,
+    pub timeout_seconds: u64,
+    pub max_retries: u32,
+    pub temperature: f64,
+    pub max_output_tokens: u32,
+}
+
+impl LlmConfig {
+    /// Primary key variable followed by fallbacks, in resolution order.
+    pub fn api_key_names(&self) -> Vec<&str> {
+        let mut names = Vec::with_capacity(1 + self.fallback_api_key_envs.len());
+        for name in std::iter::once(&self.api_key_env).chain(&self.fallback_api_key_envs) {
+            if !name.trim().is_empty() && !names.contains(&name.as_str()) {
+                names.push(name.as_str());
+            }
+        }
+        names
+    }
+}
+
+impl Default for LlmConfig {
+    fn default() -> Self {
+        Self {
+            provider: "opencode-go".to_owned(),
+            base_url: "https://opencode.ai/inference/go/openai/v1".to_owned(),
+            model: "deepseek-v4.1-flash".to_owned(),
+            api_key_env: "OPENCODE_GO_API_KEY".to_owned(),
+            fallback_api_key_envs: vec!["OPENCODE_API_KEY".to_owned()],
+            session_id: None,
+            secretspec_file: None,
+            timeout_seconds: 120,
+            max_retries: 3,
+            temperature: 0.2,
+            max_output_tokens: 4096,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct StoreConfig {
@@ -215,10 +272,32 @@ mod tests {
         let config = Config::default();
         assert_eq!(config.provider.tavily.base_url, "https://api.tavily.com");
         assert_eq!(config.provider.tavily.requests_per_minute, 60);
+        assert_eq!(config.llm.provider, "opencode-go");
+        assert_eq!(
+            config.llm.base_url,
+            "https://opencode.ai/inference/go/openai/v1"
+        );
+        assert_eq!(config.llm.model, "deepseek-v4.1-flash");
+        assert_eq!(config.llm.api_key_env, "OPENCODE_GO_API_KEY");
+        assert_eq!(
+            config.llm.api_key_names(),
+            vec!["OPENCODE_GO_API_KEY", "OPENCODE_API_KEY"]
+        );
         assert!(
             config
                 .cache_path()
                 .ends_with("research-station/cache.sqlite")
         );
+    }
+
+    #[test]
+    fn llm_key_names_drop_duplicates_and_empties() {
+        let config = LlmConfig {
+            api_key_env: "PRIMARY".to_owned(),
+            fallback_api_key_envs: vec!["PRIMARY".to_owned(), String::new(), "FALLBACK".to_owned()],
+            ..LlmConfig::default()
+        };
+
+        assert_eq!(config.api_key_names(), vec!["PRIMARY", "FALLBACK"]);
     }
 }

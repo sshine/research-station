@@ -68,6 +68,8 @@ research-station/
 │       ├── research-core/         # domain types, config, errors; no I/O
 │       ├── research-store/        # SQLite cache, blob store, later job store
 │       ├── research-provider/     # SearchProvider trait, Tavily, limiter, budget
+│       ├── research-llm/          # OpenAI-compatible model client, fake, usage
+│       ├── research-agent/        # budgeted model-driven plan/search/synthesis loop
 │       ├── research-pipeline/     # later: plan, collect, evidence, synthesis, audit
 │       ├── research-service/      # later: jobs, leases, workers
 │       ├── research-api/          # later: axum surface
@@ -317,16 +319,27 @@ Implemented:
 - `research-cli`: `research run`, `research serve`, and `research job
   enqueue|list|show|events|cancel|resume|approve|wait|report`.
 - `research-daemon`: the `researchd` worker binary.
+- `research-llm`: an OpenAI-compatible model client (OpenCode Go by default)
+  with retries, token and cost usage, a deterministic fake, and a
+  `research doctor` configuration check.
+- `research-agent`: the default budgeted agent loop. The model chooses
+  `search`, `extract`, `read_source`, or `finish` actions; the daemon executes
+  them through the provider gateway, synthesizes from the evidence ledger, and
+  audits exact quotes. Full prompts, responses, actions, and tool results are
+  stored in the SQLite `agent_runs` and `agent_events` tables and exposed by
+  `research job transcript`.
+- `Engine::Agent` is the default for new jobs; `Engine::Deterministic` keeps
+  the rule-based pipeline available as a fallback.
 
 Remaining for Phase 2: the `/v1` HTTP API (jobs, plans, events, evidence,
 report) and the MCP adapter.
 
 ### Phase 2 verification
 
-- `just check`: formatting, clippy with `-D warnings`, and 63 tests pass,
-  including an end-to-end fake-provider run, manual plan review, and a
+- `just check`: formatting, clippy with `-D warnings`, and 87 tests pass,
+  including deterministic and agent end-to-end runs, manual plan review, a
   kill/restart resume test that asserts completed subquestions are not
-  re-queried.
+  re-queried, transcript storage, and the model-client and credential tests.
 - `research run "..." --fake` produces a complete bundle whose report has
   citations and whose audit passes.
 - `research serve --once --fake` and `researchd --once --fake` process queued

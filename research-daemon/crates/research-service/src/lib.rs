@@ -5,7 +5,7 @@ pub mod error;
 pub mod runner;
 pub mod worker;
 
-pub use credentials::resolve_api_key;
+pub use credentials::{resolve_api_key, resolve_llm_api_key};
 pub use error::ServiceError;
 pub use research_pipeline::{Bundle, RunMetadata};
 pub use runner::{RunOutcome, Runner};
@@ -14,6 +14,7 @@ pub use worker::{Worker, WorkerOptions};
 use std::sync::Arc;
 
 use research_core::{Config, Job, JobId};
+use research_llm::{AnyLlm, FakeLlm, OpenAiCompatibleConfig, OpenAiCompatibleProvider};
 use research_provider::{AnyProvider, Budget, FakeProvider, TavilyProvider};
 use research_store::{BlobStore, JobStore, SqliteCache};
 
@@ -43,6 +44,21 @@ pub async fn build_provider(config: &Config, fake: bool) -> Result<AnyProvider, 
     } else {
         Ok(AnyProvider::Tavily(build_tavily_provider(config).await?))
     }
+}
+
+/// Build the configured model provider, or the deterministic fake.
+///
+/// The real provider resolves its key from the environment first and then from
+/// SecretSpec, matching the Tavily credential path.
+pub fn build_llm_provider(config: &Config, fake: bool) -> Result<AnyLlm, ServiceError> {
+    if fake {
+        return Ok(AnyLlm::Fake(FakeLlm::agent()));
+    }
+
+    let api_key = resolve_llm_api_key(config)?;
+    let provider =
+        OpenAiCompatibleProvider::new(OpenAiCompatibleConfig::from(&config.llm), api_key)?;
+    Ok(AnyLlm::OpenAi(provider))
 }
 
 /// Record bundle approval, then requeue a plan awaiting review.

@@ -4,6 +4,8 @@ members = [
     "crates/research-core",
     "crates/research-store",
     "crates/research-provider",
+    "crates/research-llm",
+    "crates/research-agent",
     "crates/research-pipeline",
     "crates/research-service",
     "crates/research-daemon",

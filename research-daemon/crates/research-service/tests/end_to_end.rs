@@ -4,8 +4,8 @@ use std::time::Duration;
 
 use async_trait::async_trait;
 use research_core::{
-    Depth, ExtractRequest, ExtractResponse, JobId, JobStatus, ResearchRequest, ReviewPolicy,
-    SearchRequest, SearchResponse,
+    Depth, Engine, ExtractRequest, ExtractResponse, JobId, JobStatus, ResearchRequest,
+    ReviewPolicy, SearchRequest, SearchResponse,
 };
 use research_pipeline::{Bundle, RunMetadata};
 use research_provider::{FakeProvider, ProviderError, ProviderResponse, SearchProvider};
@@ -23,8 +23,57 @@ fn worker_options() -> WorkerOptions {
 
 fn request(question: &str, depth: Depth) -> ResearchRequest {
     let mut request = ResearchRequest::new(question);
+    request.engine = Engine::Deterministic;
     request.depth = depth;
     request
+}
+
+#[tokio::test]
+async fn agent_run_produces_a_transcript_and_bundle() {
+    let dir = tempfile::tempdir().unwrap();
+    let store = JobStore::open(dir.path().join("jobs.sqlite"))
+        .await
+        .unwrap();
+    let transcripts = research_store::AgentStore::open(dir.path().join("jobs.sqlite"))
+        .await
+        .unwrap();
+    let bundle_dir = dir.path().join("research/2026-11-04-agent-run");
+    let mut request = request("How do Tavily and Kagi compare?", Depth::Quick);
+    request.engine = Engine::Agent;
+    let job = store.enqueue(request, &bundle_dir, None).await.unwrap().job;
+
+    let llm =
+        research_service::build_llm_provider(&research_core::Config::default(), true).unwrap();
+    let worker = Worker::with_agent(
+        store.clone(),
+        FakeProvider,
+        llm,
+        transcripts.clone(),
+        worker_options(),
+    );
+    assert_eq!(worker.run_until_idle().await.unwrap(), 1);
+
+    let job = store.require(job.id).await.unwrap();
+    assert_eq!(job.status, JobStatus::Completed);
+
+    let metadata: RunMetadata =
+        serde_json::from_slice(&std::fs::read(bundle_dir.join("run.json")).unwrap()).unwrap();
+    assert_eq!(metadata.engine, "agent-v1");
+    assert_eq!(metadata.planner, "agent-v1");
+    assert!(metadata.usage.llm_tokens > 0);
+    assert!(metadata.agent_rounds > 0);
+    assert_eq!(metadata.stop_reason.as_deref(), Some("satisfied"));
+
+    let events = transcripts.events(job.id).await.unwrap();
+    assert!(events.iter().any(|event| event.kind == "plan_response"));
+    assert!(events.iter().any(|event| event.kind == "action_request"));
+    assert!(events.iter().any(|event| event.kind == "tool_result"));
+    assert!(
+        events
+            .iter()
+            .any(|event| event.kind == "synthesis_response")
+    );
+    assert!(events.iter().any(|event| event.kind == "run_end"));
 }
 
 #[tokio::test]

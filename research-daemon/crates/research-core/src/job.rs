@@ -99,6 +99,26 @@ pub enum ReviewPolicy {
     Manual,
 }
 
+/// Which research engine runs a job.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "kebab-case")]
+pub enum Engine {
+    /// The iterative, model-driven agent loop.
+    #[default]
+    Agent,
+    /// The deterministic planner, collector, and extractive synthesizer.
+    Deterministic,
+}
+
+impl Engine {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Agent => "agent",
+            Self::Deterministic => "deterministic",
+        }
+    }
+}
+
 /// Per-job resource limits. Reserved before work starts, never after.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
@@ -108,6 +128,8 @@ pub struct JobBudget {
     pub max_llm_tokens: u64,
     pub max_credits: u64,
     pub max_wall_seconds: u64,
+    /// Maximum model action turns across the whole job.
+    pub max_agent_rounds: u32,
 }
 
 impl JobBudget {
@@ -131,6 +153,9 @@ impl JobBudget {
         if self.max_wall_seconds == 0 {
             return Err(RequestError::ZeroBudget("max_wall_seconds"));
         }
+        if self.max_agent_rounds == 0 {
+            return Err(RequestError::ZeroBudget("max_agent_rounds"));
+        }
         Ok(())
     }
 
@@ -147,6 +172,7 @@ impl Default for JobBudget {
             max_llm_tokens: 200_000,
             max_credits: 100,
             max_wall_seconds: 900,
+            max_agent_rounds: 24,
         }
     }
 }
@@ -155,6 +181,8 @@ impl Default for JobBudget {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ResearchRequest {
     pub question: String,
+    #[serde(default)]
+    pub engine: Engine,
     #[serde(default)]
     pub depth: Depth,
     #[serde(default)]
@@ -175,6 +203,7 @@ impl ResearchRequest {
     pub fn new(question: impl Into<String>) -> Self {
         Self {
             question: question.into(),
+            engine: Engine::default(),
             depth: Depth::default(),
             include_domains: Vec::new(),
             exclude_domains: Vec::new(),
@@ -444,5 +473,12 @@ mod tests {
         assert_eq!(JobBudget::for_depth(Depth::Quick).max_queries, 12);
         assert_eq!(JobBudget::for_depth(Depth::Thorough).max_queries, 40);
         assert_eq!(JobBudget::for_depth(Depth::Exhaustive).max_queries, 100);
+    }
+
+    #[test]
+    fn agent_is_the_default_engine() {
+        assert_eq!(ResearchRequest::new("question").engine, Engine::Agent);
+        assert_eq!(Engine::default().as_str(), "agent");
+        assert_eq!(JobBudget::default().max_agent_rounds, 24);
     }
 }
