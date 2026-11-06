@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cleaning the IKEA STOENSE rug without professional equipment</title>
+    <meta name="description" content="A conservative, source-based protocol for spot-cleaning and deep-cleaning an IKEA STOENSE 130 cm polypropylene rug with a synthetic rubber backing." />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --paper: #f6f3ea;
+        --paper-2: #efe9db;
+        --card: #fffdf7;
+        --ink: #18211f;
+        --muted: #5d6b66;
+        --line: #d8d0bf;
+        --line-strong: #bdb29c;
+        --accent: #0a6b5d;
+        --accent-2: #b45309;
+        --good: #0f766e;
+        --warn: #b45309;
+        --bad: #b42318;
+        --shadow: 0 18px 50px rgba(24, 33, 31, 0.09);
+        --radius: 18px;
+        --max: 960px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --paper: #0e1513;
+          --paper-2: #121c19;
+          --card: #17211e;
+          --ink: #e9f0ea;
+          --muted: #a1b1aa;
+          --line: #2a3a35;
+          --line-strong: #3c5049;
+          --accent: #61d5be;
+          --accent-2: #f0a35e;
+          --good: #61d5be;
+          --warn: #f0a35e;
+          --bad: #ff8a80;
+          --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+        }
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        background:
+          radial-gradient(1100px 520px at 12% -8%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%),
+          radial-gradient(900px 420px at 100% 0%, color-mix(in srgb, var(--accent-2) 12%, transparent), transparent 65%),
+          var(--paper);
+        color: var(--ink);
+        font: 16px/1.62 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      a { color: var(--accent); text-underline-offset: 0.18em; }
+      a:hover { text-decoration-thickness: 0.12em; }
+      .skip { position: absolute; left: -999px; top: 0; background: var(--card); color: var(--ink); padding: 0.7rem 1rem; border: 1px solid var(--line); border-radius: 0 0 10px 0; z-index: 100; }
+      .skip:focus { left: 0; }
+      .wrap { width: min(calc(100% - 2.4rem), var(--max)); margin-inline: auto; }
+      header.hero { border-bottom: 1px solid var(--line); padding: clamp(2.6rem, 6vw, 5.4rem) 0 clamp(2rem, 4vw, 3.2rem); }
+      .eyebrow { margin: 0 0 0.9rem; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.72rem; font-weight: 800; color: var(--accent); }
+      h1 { margin: 0; max-width: 20ch; font-size: clamp(2.1rem, 5.2vw, 4.1rem); line-height: 1.0; letter-spacing: -0.045em; text-wrap: balance; }
+      h1 em { font-style: normal; color: var(--accent); }
+      .deck { max-width: 68ch; margin: 1.2rem 0 0; color: var(--muted); font-size: clamp(1rem, 1.4vw, 1.16rem); text-wrap: pretty; }
+      .hero-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+      .pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.32rem 0.68rem; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--card) 80%, transparent); color: var(--muted); font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+      .pill::before { content: ""; width: 0.42rem; height: 0.42rem; border-radius: 50%; background: var(--accent); }
+      main { padding: 2.2rem 0 4rem; }
+      .toc { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.25rem; box-shadow: var(--shadow); margin: 0 0 2rem; }
+      .toc h2 { margin: 0 0 0.6rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); border: 0; padding: 0; }
+      .toc ol { margin: 0; padding-left: 1.2rem; columns: 2; column-gap: 2rem; font-size: 0.9rem; }
+      .toc li { margin: 0.18rem 0; break-inside: avoid; }
+      .snapshot { margin: 0 0 1.6rem; padding: 0.9rem 1.1rem; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent); color: var(--muted); font-size: 0.92rem; }
+      h2 { margin: 2.6rem 0 0.8rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: clamp(1.45rem, 2.6vw, 2.0rem); line-height: 1.12; letter-spacing: -0.03em; text-wrap: balance; }
+      h3 { margin: 1.6rem 0 0.45rem; font-size: 1.06rem; line-height: 1.28; letter-spacing: -0.01em; }
+      p { margin: 0.7rem 0; }
+      ul, ol { margin: 0.7rem 0; padding-left: 1.35rem; }
+      li { margin: 0.35rem 0; }
+      blockquote { margin: 1.2rem 0; padding: 0.2rem 1.2rem; border-left: 3px solid var(--accent-2); background: color-mix(in srgb, var(--accent-2) 7%, transparent); color: var(--ink); }
+      blockquote p { margin: 0.55rem 0; }
+      code { font-size: 0.9em; background: color-mix(in srgb, var(--ink) 8%, transparent); padding: 0.08rem 0.3rem; border-radius: 4px; }
+      pre { overflow-x: auto; padding: 1rem; border-radius: 12px; background: var(--paper-2); border: 1px solid var(--line); }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow); margin: 1.2rem 0; }
+      table { width: 100%; border-collapse: collapse; min-width: 620px; font-size: 0.88rem; }
+      caption { text-align: left; padding: 1rem 1.1rem 0.7rem; color: var(--muted); font-size: 0.78rem; }
+      th, td { text-align: left; vertical-align: top; padding: 0.75rem 1rem; border-top: 1px solid var(--line); }
+      thead th { border-top: 0; background: color-mix(in srgb, var(--paper-2) 78%, transparent); color: var(--muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.11em; white-space: nowrap; }
+      tbody tr:hover { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+      .cite { font-variant-numeric: tabular-nums; font-weight: 700; text-decoration: none; padding: 0 0.06em; }
+      .cite:hover { text-decoration: underline; }
+      .references { margin-top: 3rem; }
+      .references h2 { border-top: 2px solid var(--accent); }
+      .reference-list { list-style: none; margin: 0; padding: 0; counter-reset: refs; }
+      .reference-list li { display: grid; grid-template-columns: 3.2rem 1fr; gap: 0.4rem; padding: 0.7rem 0; border-top: 1px solid var(--line); scroll-margin-top: 1rem; }
+      .reference-list li:target { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+      .ref-n { font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+      .ref-publisher { font-weight: 700; }
+      .ref-accessed { color: var(--muted); white-space: nowrap; }
+      cite { font-style: italic; }
+      footer { border-top: 1px solid var(--line); padding: 1.4rem 0 2.4rem; color: var(--muted); font-size: 0.82rem; }
+      footer a { color: var(--accent); }
+      @media (max-width: 720px) {
+        .toc ol { columns: 1; }
+        .reference-list li { grid-template-columns: 2.6rem 1fr; }
+      }
+      @media print {
+        body { background: #fff; color: #111; }
+        header.hero { padding-top: 0; }
+        .toc { break-inside: avoid; box-shadow: none; }
+        .table-wrap, .toc { box-shadow: none; }
+        a { color: inherit; text-decoration: underline; }
+        .reference-list li { break-inside: avoid; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="hero">
+      <div class="wrap">
+        <p class="eyebrow">Research snapshot · 5 November 2026</p>
+        <h1>Cleaning the IKEA <em>STOENSE rug</em> without professional equipment</h1>
+        <p class="deck">A conservative, source-based protocol for spot-cleaning and deep-cleaning an IKEA STOENSE 130 cm polypropylene rug with a synthetic rubber backing — without a professional truck mount or a rug-washing plant.</p>
+        <div class="hero-meta">
+          <span class="pill">Denmark</span>
+          <span class="pill">Prices in DKK incl. VAT</span>
+          <span class="pill">Low-moisture first</span>
+        </div>
+      </div>
+    </header>
+    <main id="main" class="wrap">
+      <nav class="toc" aria-labelledby="toc-title">
+        <h2 id="toc-title">Contents</h2>
+        <ol><li><a href="#bottom-line">Bottom line</a></li>
+<li><a href="#what-ikeas-instructions-actually-mean">1. What IKEA’s instructions actually mean</a></li>
+<li><a href="#why-the-backing-not-the-polypropylene-is-the-limiting-part">2. Why the backing, not the polypropylene, is the limiting part</a></li>
+<li><a href="#what-professional-carpet-cleaning-actually-is">3. What “professional carpet cleaning” actually is</a></li>
+<li><a href="#the-private-person-protocol">4. The private-person protocol</a></li>
+<li><a href="#what-it-costs-in-denmark-for-this-rug">5. What it costs in Denmark for this rug</a></li>
+<li><a href="#when-to-hire-and-what-to-ask">6. When to hire, and what to ask</a></li>
+<li><a href="#what-not-to-do">7. What not to do</a></li>
+<li><a href="#confidence-disagreements-and-uncertainty">8. Confidence, disagreements, and uncertainty</a></li></ol>
+      </nav>
+      <div class="report-body">
+        <p><em>Research snapshot: 5 November 2026. Prices are DKK including VAT and change by store and date. This is a practical synthesis of the manufacturer’s instructions, material data, the professional carpet-cleaning standard, and Danish rental/service prices — not a laboratory test of this particular rug.</em></p>
+<h2 id="bottom-line">Bottom line</h2>
+<ol>
+<li><strong>“Kan ikke vaskes” / “Do not wash” means do not machine-wash or fully immerse the rug.</strong> IKEA’s own care FAQ renders the instruction as <strong>“Do not machine wash”</strong>, and the same product page tells you to clean spots with a <strong>damp cloth and a mild detergent</strong>. Water is not forbidden; excess water and slow drying are. IKEA DK <a class="cite" href="#ref-1">[1]</a> · IKEA care FAQ <a class="cite" href="#ref-2">[2]</a></li>
+<li><strong>“Professionel tæpperens” is water-based carpet cleaning, not dry cleaning.</strong> IKEA separately says <strong>“Tåler ikke kemisk rens” / “Do not dry clean.”</strong> For this rubber-backed construction, the sensible professional reference is the carpet-cleaning trade (typically hot-water extraction or a low-moisture method), not a dry-cleaning shop and not a rug-washing plant that fully immerses the rug. That is an inference: IKEA does not define “professional,” but it does say “do not wash” and separately allows professional carpet cleaning. IKEA DK <a class="cite" href="#ref-1">[1]</a></li>
+<li><strong>You can reproduce most of the professional process at home</strong> with a wet/dry shop vacuum, a clean sprayer, a soft brush, white towels, and a fan. A rented carpet extractor is closer to professional hot-water extraction. The “professional” part is the sequence and the discipline — pre-vacuum, controlled chemistry, dwell, gentle agitation, thorough extraction, rinsing, and fast drying — not a secret chemical.</li>
+<li><strong>For this 130 cm rug (1.33 m²), hiring a professional may cost about the same as renting a machine.</strong> Professional cleaning is roughly <strong>250–725 DKK</strong> depending on the provider; a 4-hour/day rental plus cleaning fluid is roughly <strong>316–415 DKK</strong>, plus travel, deposit, and your time. If you already own a wet/dry vacuum, DIY is much cheaper. Tæpperenseriet <a class="cite" href="#ref-3">[3]</a> · Rene Tæpper <a class="cite" href="#ref-4">[4]</a> · MegaRens <a class="cite" href="#ref-5">[5]</a> · Silvan <a class="cite" href="#ref-6">[6]</a></li>
+<li><strong>The main risks are over-wetting the rubber backing, heat, oil-based solvents, detergent residue, and slow drying.</strong> If the backing is cracked, peeling, sticky, or the rug has a persistent odour, do not wet-clean it yourself; spot-clean only or get it assessed.</li>
+</ol>
+<h2 id="what-ikeas-instructions-actually-mean">1. What IKEA’s instructions actually mean</h2>
+<p>The STOENSE 704.268.01 label says:</p>
+<blockquote>
+<p><strong>Material:</strong> Slitageside: 100 % polypropylen. Bagsidebelægning: 100 % Syntetisk gummi.</p>
+<p><strong>Vedligeholdelse:</strong> Kan ikke vaskes. Tåler ikke klorblegning. Må ikke tørres i tørretumbler. Må ikke stryges. Tåler ikke kemisk rens. Støvsug tæppet og vend det ofte. Tørre pletter fjernes straks ved at skrabe forsigtigt mod midten af pletten. Gnid ikke på våde pletter. Sug væsken op med køkkenrulle, fugt med en klud og et mildt rengøringsmiddel. <strong>Professionel tæpperens efter behov.</strong> Brug altid det almindelige støvsugerhoved til gulve, når du støvsuger tæppet, aldrig den roterende børste.</p>
+</blockquote>
+<p>IKEA DK product page <a class="cite" href="#ref-1">[1]</a></p>
+<p>The English version uses the same structure: “Do not wash”, “Do not dry clean”, “Professional carpet cleaning when needed.” IKEA US <a class="cite" href="#ref-7">[7]</a></p>
+<p>Three separate instructions are being conflated in the question:</p>
+<ul>
+<li><strong>“Kan ikke vaskes” / “Do not wash”</strong> — no machine washing or full immersion. IKEA’s own care FAQ says <strong>“Do not machine wash”</strong>, not “never get it wet.” (The FAQ is a market-specific IKEA page, but it is the clearest official gloss on the wording.) IKEA care FAQ <a class="cite" href="#ref-2">[2]</a></li>
+<li><strong>“Tåler ikke kemisk rens” / “Do not dry clean”</strong> — no solvent dry cleaning. This is a separate prohibition, and it is why “professional” cannot mean “take it to the dry cleaner.”</li>
+<li><strong>“Professionel tæpperens efter behov”</strong> — an allowed escalation to the carpet-cleaning trade when vacuuming and spot cleaning are not enough.</li>
+</ul>
+<p>So there is no contradiction. The label forbids the two methods that would soak or solvent-treat the whole rug, while explicitly allowing controlled damp cleaning of spots and professional water-based carpet cleaning when needed. IKEA’s general rug guide (written around Persian rugs) makes the same distinction: wash only when vacuuming cannot remove the dirt, and use a professional when special equipment is needed. IKEA Canada rug guide <a class="cite" href="#ref-8">[8]</a></p>
+<p>The missing piece is that IKEA does not define <strong>which</strong> professional method or <strong>which</strong> synthetic rubber. The rest of this report fills that gap conservatively.</p>
+<h2 id="why-the-backing-not-the-polypropylene-is-the-limiting-part">2. Why the backing, not the polypropylene, is the limiting part</h2>
+<h3 id="the-face-fibre-is-water-friendly-but-oil-loving-and-heat-sensitive">The face fibre is water-friendly but oil-loving and heat-sensitive</h3>
+<p>Polypropylene (also called olefin) is hydrophobic: it absorbs very little water, so most water-based spills sit on the surface and blot up easily. It is also solution-dyed, so the colour is unusually stable. Ochoco <a class="cite" href="#ref-9">[9]</a> · Masterful Carpet Cleaning <a class="cite" href="#ref-10">[10]</a></p>
+<p>Its weaknesses are equally important:</p>
+<ul>
+<li><strong>It is oleophilic.</strong> It attracts and holds oils, so greasy soils are the hard case. Cleaning Systems: “Polypropylene is oleophilic. That means that it has a strong natural affinity for oils. It attracts oily soils.” Cleaning Systems <a class="cite" href="#ref-11">[11]</a> Bane-Clene makes the same point. Bane-Clene <a class="cite" href="#ref-12">[12]</a></li>
+<li><strong>It softens with heat.</strong> INEOS gives a melting point of <strong>160–165 °C</strong> and a Vicat softening temperature of <strong>152 °C</strong> for polypropylene; fibre-grade PP has a softening point around <strong>150 °C</strong>. INEOS datasheet <a class="cite" href="#ref-13">[13]</a> · Swicofil <a class="cite" href="#ref-14">[14]</a> Those temperatures are far above normal cleaning, but they explain why an iron, a hot hairdryer held close, a steam mop, or friction heat from a rotary brush can permanently distort the pile. Sutherlandshire: high-temperature steam “can partially melt and distort polypropylene pile, causing permanent matting or texture change.” Sutherlandshire <a class="cite" href="#ref-15">[15]</a></li>
+<li><strong>It has poor crush recovery.</strong> Heavy furniture and traffic can flatten it, and some flattening is permanent. Cleaning Systems <a class="cite" href="#ref-11">[11]</a></li>
+<li><strong>Oil-based solvents can make things worse.</strong> They may lift the stain but leave a new oil residue that is equally hard to remove. Sutherlandshire <a class="cite" href="#ref-15">[15]</a></li>
+</ul>
+<h3 id="the-synthetic-rubber-backing-is-the-real-reason-for-do-not-wash">The synthetic rubber backing is the real reason for “do not wash”</h3>
+<p>IKEA says only “100 % Syntetisk gummi”; it does not name the polymer. The common carpet backing materials are styrene-butadiene rubber (SBR) latex, carboxylated SBR, or thermoplastic rubber blends. The general behaviour of latex/SBR-backed carpet is well documented:</p>
+<ul>
+<li>Latex adhesive <strong>loses strength when wet</strong> and regains most of its strength when dry. C&amp;R: “a carpet’s latex adhesive loses its strength when wet, but its strength returns once dried.” C&amp;R Magazine <a class="cite" href="#ref-16">[16]</a></li>
+<li>Fillers in the adhesive “do not respond well to excessive water and tend to soften when saturated.” The same article lists “overly aggressive extraction”, “excessive folding or stretching”, and “excessive heat” as causes of delamination. C&amp;R Magazine <a class="cite" href="#ref-16">[16]</a></li>
+<li>NC State Extension: “Moisture can weaken the latex backing and walking on the carpet can cause the backing to separate.” NC State Extension <a class="cite" href="#ref-17">[17]</a></li>
+<li>A rubber-backed rug is non-breathable and can trap moisture between the rug and the floor, causing dampness and discoloration. RugPadUSA <a class="cite" href="#ref-18">[18]</a></li>
+</ul>
+<p>This is why the face fibre’s water tolerance is not the whole answer. Polypropylene can tolerate water; the <strong>backed construction</strong> may not tolerate <strong>prolonged</strong> water, heat, or aggressive extraction. The manufacturer’s “do not wash” is a construction-specific instruction, and it outranks the generic “polypropylene can be hosed down” advice.</p>
+<h3 id="the-disagreement-you-will-find-online">The disagreement you will find online</h3>
+<p>Many polypropylene guides say the rug can be fully saturated or hosed down. For example, Rug Branch says “Polypropylene handles getting fully saturated without any fibre damage” and gives a hose-down method. Rug Branch <a class="cite" href="#ref-19">[19]</a> That statement is about the <strong>yarn</strong>. It does not account for a rubber backing. For this rug, do not hose it down, do not soak it, and do not machine-wash it. A professional cleaner who says “polypropylene is waterproof” may be right about the fibre and wrong about the rug.</p>
+<h2 id="what-professional-carpet-cleaning-actually-is">3. What “professional carpet cleaning” actually is</h2>
+<p>Professional carpet cleaning is a <strong>process standard</strong>, not a brand or a single machine. The relevant standard is <strong>ANSI/IICRC S100, Standard for Professional Cleaning of Textile Floor Coverings</strong>. It defines the procedures, methods, chemistry, fibre/construction evaluation, equipment, safety, inspections, spot removal, and area-rug cleaning. IICRC S100 <a class="cite" href="#ref-20">[20]</a></p>
+<p>The <strong>Carpet and Rug Institute (CRI)</strong> publishes a maintenance standard with the same logic: an extractor uses “pressure, water/cleaning solution, and suction” to remove deep soil; deep cleaning must extract with a certified system and allow drying with ventilation; “cleaning is not complete until carpet is dry and ready to be trafficked.” CRI 204 <a class="cite" href="#ref-21">[21]</a></p>
+<p>The IICRC recognises five broad methods:</p>
+<ol>
+<li><strong>Hot-water extraction (HWE)</strong> — often called “steam cleaning”, but usually hot water, not steam. Heated water/detergent is injected under pressure and immediately vacuumed back with the soil. This is the restorative deep-clean baseline.</li>
+<li><strong>Dry compound</strong> — an absorbent carrier is worked into the pile and vacuumed out. Very low moisture.</li>
+<li><strong>Encapsulation</strong> — a detergent surrounds soil and crystallises as it dries; the crystals are vacuumed away. Low moisture, interim maintenance.</li>
+<li><strong>Bonnet / absorbent pad</strong> — a pad absorbs soil with minimal moisture; often interim, and it can leave residue if not rinsed.</li>
+<li><strong>Carpet shampooing</strong> — a foam/shampoo method followed by extraction.</li>
+</ol>
+<p>National Carpet Cleaning Authority <a class="cite" href="#ref-22">[22]</a> · CMM <a class="cite" href="#ref-23">[23]</a></p>
+<p>For this rug, the relevant professional method is <strong>HWE at moderate temperature with strong moisture recovery</strong>, or a <strong>low-moisture encapsulation/compound</strong> method if the backing is fragile. Full immersion rug washing is a different trade — rug washing plants — and is the method most likely to conflict with IKEA’s “do not wash.” That last point is my inference: IKEA separates “do not dry clean” from “professional carpet cleaning” but does not define the latter. It is consistent with the carpet-cleaning standard and with the fact that the rug has a rubber backing. Rug-washing plants themselves often describe full immersion as the preferred method for rugs generally; see, for example, Brio Carpet Care <a class="cite" href="#ref-24">[24]</a>. That is not the right default for this construction. Ochoco, a specialist rug retailer, puts it well: many professional rug cleaners use <strong>low-moisture hot water extraction</strong> on polypropylene, but “repeated saturation can weaken the adhesive” on a latex backing, and you should ask for low-moisture HWE “rather than excessive heat.” Ochoco <a class="cite" href="#ref-9">[9]</a></p>
+<h3 id="the-professional-sequence">The professional sequence</h3>
+<p>A typical HWE job looks like this (synthesised from Voda’s 11-step description, the CRI/IICRC process, and Kärcher’s extraction guide):</p>
+<ol>
+<li><strong>Pre-inspection</strong> — fibre, backing, construction, soil type, stains, damage, colourfastness, previous treatments.</li>
+<li><strong>Protect the surroundings</strong> — move furniture, protect edges.</li>
+<li><strong>Pre-vacuum</strong> — remove dry particulate soil. This is the most important step; wetting dry soil makes mud.</li>
+<li><strong>Spot and stain treatment</strong> — appropriate chemistry for the specific spot.</li>
+<li><strong>Pre-spray</strong> — diluted detergent; dwell 5–15 minutes.</li>
+<li><strong>Agitation</strong> — soft brush, CRB, or pad machine.</li>
+<li><strong>Extraction</strong> — inject water/solution and immediately vacuum it back, overlapping passes, then dry passes.</li>
+<li><strong>Rinse</strong> — clean-water or acid/neutralising rinse to remove detergent residue.</li>
+<li><strong>Dry</strong> — air movers, dehumidifier, ventilation; dry the pile and the backing.</li>
+<li><strong>Post-inspection</strong> — check for wicking, streaks, damage, dryness; groom and vacuum.</li>
+</ol>
+<p>Voda <a class="cite" href="#ref-25">[25]</a> · Kärcher <a class="cite" href="#ref-26">[26]</a> · CRI 204 <a class="cite" href="#ref-21">[21]</a></p>
+<h3 id="what-a-professional-adds-that-you-cannot-fully-reproduce">What a professional adds that you cannot fully reproduce</h3>
+<ul>
+<li><strong>Diagnosis</strong> — fibre/backing identification and method selection.</li>
+<li><strong>Chemistry control</strong> — correct detergent, dilution, pH, dwell, and rinse.</li>
+<li><strong>Pressure and recovery</strong> — truck-mount or high-lift portable extraction recovers far more water than a household vacuum.</li>
+<li><strong>Drying control</strong> — air movers/dehumidifiers and a defined dry-time target.</li>
+<li><strong>Liability and insurance</strong> — the cleaner carries the risk if something goes wrong.</li>
+</ul>
+<p>For a 1.33 m² low-pile PP rug, the first two can be approximated with care; the third can be approximated with a rented extractor or a wet/dry shop vac; the fourth is a fan and patience; the fifth is the real reason to hire someone.</p>
+<h3 id="steam-is-a-confusing-word">“Steam” is a confusing word</h3>
+<p>Consumer guides say “steam clean”; professional guides say “hot water extraction”. They are not the same. True steam is vapour above 100 °C and can distort PP. HWE uses heated water (often 50–70 °C in practice; truck mounts can be hotter) injected and immediately extracted. Sutherlandshire: “Use hot water extraction (not steam) for professional cleaning of polypropylene. Ask the cleaner to set equipment temperatures appropriately.” Sutherlandshire <a class="cite" href="#ref-15">[15]</a> Do not use a steam mop, wallpaper steamer, or kettle steam on this rug.</p>
+<h2 id="the-private-person-protocol">4. The private-person protocol</h2>
+<h3 id="decision-tree">Decision tree</h3>
+<ul>
+<li><strong>One or two spots, no overall dinginess</strong> → spot clean (Tier 1).</li>
+<li><strong>Overall grey/dull, oily traffic area, or faint odour</strong> → deep clean (Tier 2 or 3).</li>
+<li><strong>Backing cracked, peeling, sticky, or rug wrinkled</strong> → do not wet-clean; spot clean only, or replace.</li>
+<li><strong>Pet urine/odour that has reached the backing, or large/old stains</strong> → professional assessment; a surface clean may not reach the source.</li>
+<li><strong>You want a guarantee or cannot risk the rug</strong> → hire a professional (Tier 4).</li>
+</ul>
+<h3 id="tier-1-spot-cleaning-no-special-equipment">Tier 1 — Spot cleaning (no special equipment)</h3>
+<p>Tools: white paper towels or clean white cloths, a spray bottle, a soft brush or sponge, lukewarm water, a mild clear detergent or a carpet spotter, a fan.</p>
+<ol>
+<li><strong>Remove dry matter first.</strong> Scrape dried residue gently toward the centre with a plastic card or the back of a spoon; vacuum. IKEA: “Tørre pletter fjernes straks ved at skrabe forsigtigt mod midten af pletten.”</li>
+<li><strong>Blot, do not rub.</strong> Absorb as much liquid as possible with paper towels, working from the outside in. IKEA: “Gnid ikke på våde pletter.”</li>
+<li><strong>Test.</strong> Apply the solution to a hidden edge or the back; wait 5 minutes; blot with a white cloth. Check for colour transfer, backing softening, or pile change.</li>
+<li><strong>Apply foam, not a flood.</strong> Mix a small amount of mild detergent with lukewarm water and whip it to foam, or use a carpet spotter per label. Apply the foam to a cloth and dab it onto the spot. Bolius recommends thick foam because it lifts soil and prevents it from sinking into the backing: “En tyk skum opsamler nemlig smudsen, og forhindrer i højere grad, at det synker ned i tæppet.” Bolius <a class="cite" href="#ref-27">[27]</a></li>
+<li><strong>Dwell 1–5 minutes.</strong> Do not let the solution dry on the rug.</li>
+<li><strong>Agitate gently.</strong> Use a soft brush or sponge in the pile direction; do not scrub hard.</li>
+<li><strong>Rinse.</strong> Blot with a clean cloth dampened with plain lukewarm water. Repeat until no soap residue remains. Residue attracts new dirt. Milliken: “Over application of detergent can lead to a detergent residue being left on the fibres, which will attract rapid resoiling.” Milliken <a class="cite" href="#ref-28">[28]</a></li>
+<li><strong>Dry.</strong> Blot with dry white towels; weight them for 10 minutes; air-dry with a fan. Do not walk on the spot until dry.</li>
+<li><strong>For grease/oil:</strong> use a drop of clear dish soap directly on the spot, work gently, blot, rinse. PP is oleophilic; avoid oil-based solvents (WD-40, lighter fluid, eucalyptus oil). Sutherlandshire <a class="cite" href="#ref-15">[15]</a></li>
+<li><strong>For pet urine:</strong> blot, then an enzymatic cleaner per label; do not saturate; rinse and dry. If the odour returns, the backing/pad may be contaminated; consider a pro.</li>
+</ol>
+<h3 id="tier-2-whole-rug-deep-clean-with-a-wetdry-shop-vacuum">Tier 2 — Whole-rug deep clean with a wet/dry shop vacuum</h3>
+<p>This is the “no rental” version. It is suitable for a 1.33 m² rug if you already own a wet/dry vacuum. If you do not own one, a rented extractor (Tier 3) is usually better than buying a shop vac for one rug.</p>
+<p>Tools: wet/dry shop vacuum with a wide nozzle or upholstery nozzle, clean garden sprayer or spray bottle, soft brush, white towels, shower squeegee, fan(s), dehumidifier (optional), pH-neutral/low-foam carpet cleaner or a small amount of clear dish soap.</p>
+<p><strong>Safety:</strong> use a vacuum rated for liquids, with the correct wet filter; never use an ordinary dry vacuum. Keep cords and outlets away from the wet area, wear gloves, and ventilate. Do not mix cleaning chemicals.</p>
+<ol>
+<li><strong>Prepare the room.</strong> Remove furniture and the anti-slip underlay. Vacuum the floor. Work in a dry, well-ventilated room; avoid humid days.</li>
+<li><strong>Pre-vacuum both sides.</strong> Use the standard floorhead, never the rotating brush (IKEA). Slow overlapping passes; vacuum the back too, because grit collects there.</li>
+<li><strong>Pre-treat spots</strong> using Tier 1.</li>
+<li><strong>Pre-spray lightly.</strong> Fill a clean sprayer with lukewarm water and carpet cleaner at the label’s minimum dose, or a few drops of clear dish soap per litre. Mist a 1 m² section from 20–30 cm away; the pile should be evenly damp, not saturated.</li>
+<li><strong>Dwell 5–10 minutes.</strong> Do not let it dry. Milliken recommends about ten minutes for a pre-spray; more than that and it begins to dry out. Milliken <a class="cite" href="#ref-28">[28]</a></li>
+<li><strong>Agitate.</strong> Work a soft brush through the pile in overlapping strokes. Do not use a stiff deck brush or a rotary machine.</li>
+<li><strong>Extract.</strong> With the wet/dry vac, use slow overlapping passes; then 2–3 dry-only passes. A shower squeegee can help push water toward the nozzle. SoCal Steam: “Wet/dry vac: press firmly and move slowly; repeat until minimal moisture is recovered”; “1 wet pass followed by 2–3 dry-only passes.” SoCal Steam <a class="cite" href="#ref-29">[29]</a></li>
+<li><strong>Rinse.</strong> Mist plain lukewarm water lightly over the section; extract again. Repeat until the recovered water is clear and no suds appear.</li>
+<li><strong>Dry flat, elevated, with airflow on both sides.</strong> Blot with towels first. Lay the rug on a clean tarp or two sawhorses/drying racks; run a fan across it and, if available, a dehumidifier. Flip after 4–6 hours. Target <strong>6–12 hours</strong>, and do not put it back until the backing is dry.</li>
+<li><strong>Finish.</strong> When bone dry, vacuum both sides and brush the pile in one direction.</li>
+</ol>
+<h3 id="tier-3-whole-rug-deep-clean-with-a-rented-extractor">Tier 3 — Whole-rug deep clean with a rented extractor</h3>
+<p>This is the closest DIY equivalent to professional HWE.</p>
+<ul>
+<li>Danish rental: Silvan “Tæpperenser, inkl. mundstykke”, 10 L clean / 9 L dirty tank, <strong>239.95 DKK for 4 hours</strong> or <strong>274.95 DKK for a day</strong>; cleaning fluid sold separately (75.95 DKK for 0.5 L, 139.95 DKK for 1 L). Bauhaus/XL Byg around <strong>219 DKK for 4 hours</strong>; deposit often <strong>520 DKK</strong> (refundable). Silvan <a class="cite" href="#ref-6">[6]</a> · Rentay <a class="cite" href="#ref-30">[30]</a></li>
+<li>Use the <strong>hand/upholstery tool</strong>, not a rotating floor brush. Keep the solution flow low.</li>
+<li>Fill with <strong>lukewarm</strong> water and carpet cleaner at the minimum dose. Do not use the hot/steam setting if the machine has one. Ochoco: ask for “low-moisture hot water extraction … rather than excessive heat.” Ochoco <a class="cite" href="#ref-9">[9]</a></li>
+<li>Pre-vacuum, pre-spray, dwell, agitate, extract, rinse, dry as in Tier 2.</li>
+<li>Make 1 wet pass and 2–3 dry passes per section; overlap; do not go over the same spot repeatedly “until it looks clean”. Over-wetting is the main failure mode.</li>
+<li>Empty and rinse the recovery tank; clean the nozzle; dry the machine before returning it.</li>
+</ul>
+<h3 id="tier-4-hire-a-professional">Tier 4 — Hire a professional</h3>
+<p>For this rug, this is often the rational choice because the rug is small (1.33 m²). Ask for <strong>in-home low-moisture extraction</strong> or a <strong>synthetic-rug specialist</strong> with controlled drying. Avoid a full-immersion rug wash unless the provider can explain how it protects the rubber backing.</p>
+<h2 id="what-it-costs-in-denmark-for-this-rug">5. What it costs in Denmark for this rug</h2>
+<p>The rug is 130 cm in diameter, so the area is π × 0.65² = <strong>1.33 m²</strong>.</p>
+<div class="table-wrap"><table><caption>Indicative Danish prices for cleaning a 1.33 m² rug, 5 November 2026.</caption>
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Option</th>
+<th style="text-align: right;">Indicative price</th>
+<th scope="col">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Silvan rental, 4 hours</td>
+<td style="text-align: right;"><strong>239.95 DKK</strong></td>
+<td>10 L / 9 L machine; cleaning fluid extra</td>
+</tr>
+<tr>
+<td>Silvan rental, 1 day</td>
+<td style="text-align: right;"><strong>274.95 DKK</strong></td>
+<td>Same machine</td>
+</tr>
+<tr>
+<td>Bauhaus / XL Byg rental, 4 hours</td>
+<td style="text-align: right;"><strong>from 219.20 DKK</strong></td>
+<td>520 DKK refundable deposit; pickup only</td>
+</tr>
+<tr>
+<td>Cleaning fluid</td>
+<td style="text-align: right;"><strong>75.95 DKK / 0.5 L</strong> or <strong>139.95 DKK / 1 L</strong></td>
+<td>Silvan</td>
+</tr>
+<tr>
+<td>Tæpperenseriet</td>
+<td style="text-align: right;"><strong>220 DKK/m²</strong> → ~292 DKK + 200 DKK pickup = <strong>~492 DKK</strong></td>
+<td>Minimum price = m² price</td>
+</tr>
+<tr>
+<td>Rene Tæpper</td>
+<td style="text-align: right;"><strong>from 195 DKK/m²</strong> → ~259 DKK + pickup</td>
+<td>Loose rugs</td>
+</tr>
+<tr>
+<td>MegaRens</td>
+<td style="text-align: right;"><strong>725 DKK minimum per visit</strong></td>
+<td>In-home; travel surcharge possible</td>
+</tr>
+<tr>
+<td>Comborens</td>
+<td style="text-align: right;"><strong>99 DKK/m²</strong> → ~132 DKK</td>
+<td>Verify minimum</td>
+</tr>
+<tr>
+<td>Renseri København</td>
+<td style="text-align: right;"><strong>285 DKK/m²</strong> → ~379 DKK</td>
+<td>Machine-made rugs</td>
+</tr>
+</tbody>
+</table></div>
+<p>Sources: Silvan <a class="cite" href="#ref-6">[6]</a> · Rentay <a class="cite" href="#ref-30">[30]</a> · Tæpperenseriet <a class="cite" href="#ref-3">[3]</a> · Rene Tæpper <a class="cite" href="#ref-4">[4]</a> · MegaRens <a class="cite" href="#ref-5">[5]</a> · Comborens <a class="cite" href="#ref-31">[31]</a> · Renseri København <a class="cite" href="#ref-32">[32]</a></p>
+<p><strong>Interpretation.</strong> Renting a machine is not clearly cheaper than hiring a professional for this small rug once you add the cleaning fluid, travel, deposit, and your time. A professional clean is roughly <strong>250–725 DKK</strong>; a rental is roughly <strong>316–415 DKK</strong> plus time. If you already own a wet/dry vacuum, DIY is much cheaper: a bottle of carpet cleaner is ~50–140 DKK, and you may already have suitable mild detergent. If you have several rugs or expect to clean annually, a rental or a small extractor makes more sense. If you value the guarantee and the drying control, hire someone.</p>
+<h2 id="when-to-hire-and-what-to-ask">6. When to hire, and what to ask</h2>
+<p>Hire a professional if:</p>
+<ul>
+<li>the whole rug is dingy, grey, or oily, not just a few spots;</li>
+<li>there is a persistent odour or pet contamination that may have reached the backing;</li>
+<li>a stain remains after two careful spot-cleaning attempts;</li>
+<li>the backing is cracked, peeling, sticky, or the rug is wrinkled/delaminated;</li>
+<li>you want a written guarantee or are worried about damaging the rug.</li>
+</ul>
+<p>Ask:</p>
+<ol>
+<li>What method will you use — low-moisture HWE, encapsulation, dry compound, or full immersion?</li>
+<li>What water temperature and pressure?</li>
+<li>What chemistry and pH, and how will you rinse it out?</li>
+<li>How will you protect the synthetic rubber backing from excess water and heat?</li>
+<li>How will you dry it, and what is the target dry time?</li>
+<li>Will you test colourfastness and the backing before starting?</li>
+<li>Are you insured for damage to the rug and the floor?</li>
+</ol>
+<p>If the answer is “we wash it in a plant / immerse it”, that is a <strong>rug washing</strong> service. On the conservative reading, it is not the low-moisture carpet cleaning IKEA’s instruction points to for this rubber-backed construction. Ask how they handle rubber-backed rugs; if they cannot answer, choose another provider.</p>
+<h2 id="what-not-to-do">7. What not to do</h2>
+<div class="table-wrap"><table><caption>Practices to avoid on a rubber-backed polypropylene rug.</caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Don’t</th>
+<th scope="col">Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Machine wash / soak / full immersion</td>
+<td>IKEA: “Kan ikke vaskes”; rubber backing weakens when wet</td>
+</tr>
+<tr>
+<td>Dry clean / solvent spot-clean</td>
+<td>IKEA: “Tåler ikke kemisk rens”; solvent can attack backing/adhesive</td>
+</tr>
+<tr>
+<td>Steam mop / high-heat steam</td>
+<td>Can melt/distort PP and stress the backing</td>
+</tr>
+<tr>
+<td>Tumble dry / iron / hot hairdryer</td>
+<td>Heat damage to PP and rubber</td>
+</tr>
+<tr>
+<td>Chlorine bleach</td>
+<td>IKEA: “Tåler ikke klorblegning”</td>
+</tr>
+<tr>
+<td>Rotating brush vacuum</td>
+<td>IKEA: use the standard floorhead; brush can fuzz/distort pile</td>
+</tr>
+<tr>
+<td>Hard scrubbing / stiff brush</td>
+<td>Distorts pile, drives soil deeper</td>
+</tr>
+<tr>
+<td>Oil-based solvent (WD-40, citrus, eucalyptus)</td>
+<td>PP is oleophilic; leaves oil residue</td>
+</tr>
+<tr>
+<td>Over-wetting / leaving wet</td>
+<td>Delamination, mould, odour, floor damage, wicking</td>
+</tr>
+<tr>
+<td>Putting back before dry</td>
+<td>Trapped moisture under rubber backing</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="confidence-disagreements-and-uncertainty">8. Confidence, disagreements, and uncertainty</h2>
+<p><strong>High confidence</strong></p>
+<ul>
+<li>“Do not wash” means no machine washing / full immersion; IKEA’s own FAQ says “Do not machine wash”, and the product page explicitly allows damp spot cleaning.</li>
+<li>“Do not dry clean” is separate; “professional carpet cleaning” is water-based, not solvent dry cleaning.</li>
+<li>The professional process is pre-vacuum → spot treat → pre-spray → dwell → agitate → extract → rinse → dry; this is consistent across IICRC/CRI, equipment manufacturers, and trade guides.</li>
+<li>Heat, over-wetting, detergent residue, and oil-based solvents are the main avoidable failure modes.</li>
+</ul>
+<p><strong>Medium confidence</strong></p>
+<ul>
+<li>The exact backing polymer is undisclosed. The water/heat sensitivity evidence is about latex/SBR-backed carpet generally, not this specific rug. The safe assumption is conservative: no soaking, no heat, fast drying.</li>
+<li>The exact safe water temperature for this backing is not published. “Lukewarm” and “low-moisture” are prudent; “hot” and “steam” are not.</li>
+<li>Prices are a 5 November 2026 snapshot and vary by store, distance, minimum charge, and whether pickup/delivery is included.</li>
+</ul>
+<p><strong>Genuine disagreements in the sources</strong></p>
+<ul>
+<li>Generic PP guides say “hose it down” / “fully saturate”; IKEA says “do not wash.” The disagreement is resolved by distinguishing the face fibre from the backed construction.</li>
+<li>Some sources say “steam cleaning is fine” for PP; others say “never steam.” The disagreement is mostly terminology: true steam is risky; moderate-temperature hot-water extraction is the professional method.</li>
+<li>Some sources recommend dish soap; trade sources warn about residue. Dish soap is acceptable for a spot clean if used sparingly and rinsed; for a whole rug, use a low-residue carpet cleaner.</li>
+<li>Rug-washing plants recommend full immersion for area rugs; that is appropriate for many wool rugs but conflicts with this rug’s “do not wash” label. Prefer in-home low-moisture extraction.</li>
+</ul>
+<p><strong>What would change the answer</strong></p>
+<ul>
+<li>A statement from IKEA naming the backing polymer and its moisture/heat limits.</li>
+<li>A care sheet that explicitly says “professional hot-water extraction only” or “do not use a wet extractor.”</li>
+<li>A laboratory test of this rug’s backing after wet cleaning.</li>
+<li>A local professional who can show a documented method for rubber-backed PP rugs.</li>
+</ul>
+<p>Until then, the conservative reading is the right one: <strong>spot-clean with minimal moisture, deep-clean only when necessary, use a low-moisture extraction method, and dry fast.</strong> For a 1.33 m² rug, compare the professional quote with the rental cost before deciding to do it yourself.</p>
+
+        <section id="references" class="references" aria-labelledby="references-title">
+          <h2 id="references-title">References</h2>
+          <p class="snapshot">Numbered in order of first citation. All URLs accessed 5 November 2026. Full source ledger: <a href="sources.jsonl">sources.jsonl</a>.</p>
+          <ul class="reference-list">
+            <li id="ref-1"><span class="ref-n">[1]</span> <span class="ref-body"><span class="ref-publisher">IKEA Denmark.</span> <cite>STOENSE Tæppe, kort luv, råhvid, 130 cm (704.268.01)</cite>. <a href="https://www.ikea.com/dk/da/p/stoense-taeppe-kort-luv-rahvid-70426801/" target="_blank" rel="noopener noreferrer">https://www.ikea.com/dk/da/p/stoense-taeppe-kort-luv-rahvid-70426801/</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-2"><span class="ref-n">[2]</span> <span class="ref-body"><span class="ref-publisher">IKEA India.</span> <cite>What steps does IKEA recommend for care and maintenance of their rugs?</cite>. <a href="https://www.ikea.com/in/en/customer-service/knowledge/articles/df48g043-0030-4134-850d-edb8e6f40c17.html" target="_blank" rel="noopener noreferrer">https://www.ikea.com/in/en/customer-service/knowledge/articles/df48g043-0030-4134-850d-edb8e6f40c17.html</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-3"><span class="ref-n">[3]</span> <span class="ref-body"><span class="ref-publisher">Møbel- og Tæpperenseriet (Tæpperenseriet).</span> <cite>Priser — Møbel- og Tæpperenseriet</cite>. <a href="https://xn--tpperens-kbh-6cb.dk/priser" target="_blank" rel="noopener noreferrer">https://xn--tpperens-kbh-6cb.dk/priser</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-4"><span class="ref-n">[4]</span> <span class="ref-body"><span class="ref-publisher">Rene Tæpper.</span> <cite>Tæpperens i København — Rene Tæpper</cite>. <a href="https://renetaepper.dk/taepperens-koebenhavn" target="_blank" rel="noopener noreferrer">https://renetaepper.dk/taepperens-koebenhavn</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-5"><span class="ref-n">[5]</span> <span class="ref-body"><span class="ref-publisher">MegaRens.</span> <cite>Tæpperens på Sjælland — MegaRens</cite>. <a href="https://megarens.dk/rensning-af-taepper" target="_blank" rel="noopener noreferrer">https://megarens.dk/rensning-af-taepper</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-6"><span class="ref-n">[6]</span> <span class="ref-body"><span class="ref-publisher">Silvan.</span> <cite>Tæpperenser, inkl. mundstykke, 4 timer</cite>. <a href="https://www.silvan.dk/produkt/taepperenser-inkl-mundstykke-4-timer-8820-9851367" target="_blank" rel="noopener noreferrer">https://www.silvan.dk/produkt/taepperenser-inkl-mundstykke-4-timer-8820-9851367</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-7"><span class="ref-n">[7]</span> <span class="ref-body"><span class="ref-publisher">IKEA US.</span> <cite>STOENSE rug, low pile, off-white, 4&#x27;3&quot; (704.268.01)</cite>. <a href="https://www.ikea.com/us/en/p/stoense-rug-low-pile-off-white-70426801" target="_blank" rel="noopener noreferrer">https://www.ikea.com/us/en/p/stoense-rug-low-pile-off-white-70426801</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-8"><span class="ref-n">[8]</span> <span class="ref-body"><span class="ref-publisher">IKEA Canada.</span> <cite>How to choose the right size of rug / How to take care of your rug</cite>. <a href="https://www.ikea.com/ca/en/files/pdf/eb/ea/ebeafd3a/rugs-home-furnishing-guide-fy23-l1-en.pdf" target="_blank" rel="noopener noreferrer">https://www.ikea.com/ca/en/files/pdf/eb/ea/ebeafd3a/rugs-home-furnishing-guide-fy23-l1-en.pdf</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-9"><span class="ref-n">[9]</span> <span class="ref-body"><span class="ref-publisher">Ochoco Rugs.</span> <cite>How to Clean Polypropylene Rugs</cite>. <a href="https://www.ochoco.com.au/blogs/polypropylene-rug-material-guides/how-to-clean-polypropylene-rugs" target="_blank" rel="noopener noreferrer">https://www.ochoco.com.au/blogs/polypropylene-rug-material-guides/how-to-clean-polypropylene-rugs</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-10"><span class="ref-n">[10]</span> <span class="ref-body"><span class="ref-publisher">Masterful Carpet Cleaning.</span> <cite>Olefin Carpet Cleaning</cite>. <a href="https://masterfulcarpetcleaning.com/olefin-carpet-cleaning" target="_blank" rel="noopener noreferrer">https://masterfulcarpetcleaning.com/olefin-carpet-cleaning</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-11"><span class="ref-n">[11]</span> <span class="ref-body"><span class="ref-publisher">Cleaning Systems Ltd.</span> <cite>Polypropylene Carpet — Cleaning Systems Ltd</cite>. <a href="https://cleaningsystems.co.nz/knowledge/test-knowledge-1-2-2-2-3" target="_blank" rel="noopener noreferrer">https://cleaningsystems.co.nz/knowledge/test-knowledge-1-2-2-2-3</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-12"><span class="ref-n">[12]</span> <span class="ref-body"><span class="ref-publisher">Bane-Clene.</span> <cite>Olefin Carpet Preconditioner / Prespray / Traffic Lane Spotter</cite>. <a href="https://www.baneclene.com/pages/olefinpreconditioner" target="_blank" rel="noopener noreferrer">https://www.baneclene.com/pages/olefinpreconditioner</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-13"><span class="ref-n">[13]</span> <span class="ref-body"><span class="ref-publisher">INEOS Olefins &amp; Polymers USA.</span> <cite>Typical Engineering Properties of Polypropylene</cite>. <a href="https://www.ineos.com/globalassets/ineos-group/businesses/ineos-olefins-and-polymers-usa/products/technical-information--patents/ineos-engineering-properties-of-pp.pdf" target="_blank" rel="noopener noreferrer">https://www.ineos.com/globalassets/ineos-group/businesses/ineos-olefins-and-polymers-usa/products/technical-information--patents/ineos-engineering-properties-of-pp.pdf</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-14"><span class="ref-n">[14]</span> <span class="ref-body"><span class="ref-publisher">Swicofil AG.</span> <cite>Polypropylene yarns — properties</cite>. <a href="https://old.swicofil.com/pp.html" target="_blank" rel="noopener noreferrer">https://old.swicofil.com/pp.html</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-15"><span class="ref-n">[15]</span> <span class="ref-body"><span class="ref-publisher">Sutherlandshire Cleaners.</span> <cite>Polypropylene Carpet Cleaning Guide: What Works and What Damages It</cite>. <a href="https://sutherlandshirecleaners.com/blog/polypropylene-carpet-cleaning-guide" target="_blank" rel="noopener noreferrer">https://sutherlandshirecleaners.com/blog/polypropylene-carpet-cleaning-guide</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-16"><span class="ref-n">[16]</span> <span class="ref-body"><span class="ref-publisher">C &amp; R Magazine.</span> <cite>Understanding the Construction of Carpet – Why It Matters</cite>. <a href="https://www.candrmagazine.com/understanding-the-construction-of-carpet-why-it-matters" target="_blank" rel="noopener noreferrer">https://www.candrmagazine.com/understanding-the-construction-of-carpet-why-it-matters</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-17"><span class="ref-n">[17]</span> <span class="ref-body"><span class="ref-publisher">NC State Extension.</span> <cite>Water-Damaged Carpets and Rugs</cite>. <a href="https://content.ces.ncsu.edu/water-damaged-carpets-and-rugs" target="_blank" rel="noopener noreferrer">https://content.ces.ncsu.edu/water-damaged-carpets-and-rugs</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-18"><span class="ref-n">[18]</span> <span class="ref-body"><span class="ref-publisher">RugPadUSA.</span> <cite>Are Rubber-Backed Rug Pads Right for Your Floors?</cite>. <a href="https://www.rugpadusa.com/articles/are-rubber-backed-rugs-right-for-your-floors" target="_blank" rel="noopener noreferrer">https://www.rugpadusa.com/articles/are-rubber-backed-rugs-right-for-your-floors</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-19"><span class="ref-n">[19]</span> <span class="ref-body"><span class="ref-publisher">Rug Branch.</span> <cite>How to Clean a Polypropylene Rug: The Complete Step-by-Step Guide</cite>. <a href="https://www.rugbranch.com/blogs/rugs/how-to-clean-polypropylene-rug" target="_blank" rel="noopener noreferrer">https://www.rugbranch.com/blogs/rugs/how-to-clean-polypropylene-rug</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-20"><span class="ref-n">[20]</span> <span class="ref-body"><span class="ref-publisher">IICRC.</span> <cite>ANSI/IICRC S100 Standard for Professional Cleaning of Textile Floor Coverings</cite>. <a href="https://iicrc.org/s100" target="_blank" rel="noopener noreferrer">https://iicrc.org/s100</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-21"><span class="ref-n">[21]</span> <span class="ref-body"><span class="ref-publisher">Carpet and Rug Institute.</span> <cite>CRI 204 Commercial Carpet Standard for Maintenance and Cleaning</cite>. <a href="https://carpet-rug.org/wp-content/uploads/2019/03/CRI-204-Commercial.pdf" target="_blank" rel="noopener noreferrer">https://carpet-rug.org/wp-content/uploads/2019/03/CRI-204-Commercial.pdf</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-22"><span class="ref-n">[22]</span> <span class="ref-body"><span class="ref-publisher">National Carpet Cleaning Authority.</span> <cite>Types of Carpet Cleaning Methods: Steam, Dry, Encapsulation, and More</cite>. <a href="https://nationalcarpetcleaningauthority.com/types-of-carpet-cleaning-methods.html" target="_blank" rel="noopener noreferrer">https://nationalcarpetcleaningauthority.com/types-of-carpet-cleaning-methods.html</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-23"><span class="ref-n">[23]</span> <span class="ref-body"><span class="ref-publisher">CMM / Cleanfax.</span> <cite>Scrub Up on Carpet Cleaning Methods, Tools, and Terms</cite>. <a href="https://cmmonline.com/articles/scrub-up-on-carpet-cleaning-methods" target="_blank" rel="noopener noreferrer">https://cmmonline.com/articles/scrub-up-on-carpet-cleaning-methods</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-24"><span class="ref-n">[24]</span> <span class="ref-body"><span class="ref-publisher">Brio Carpet Care.</span> <cite>How to clean a rug like a professional</cite>. <a href="https://www.briocarpetcare.co.uk/blog/how-to-clean-a-rug" target="_blank" rel="noopener noreferrer">https://www.briocarpetcare.co.uk/blog/how-to-clean-a-rug</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-25"><span class="ref-n">[25]</span> <span class="ref-body"><span class="ref-publisher">Voda Cleaning &amp; Restoration.</span> <cite>Carpet Cleaning Process — Voda Cleaning &amp; Restoration</cite>. <a href="https://myvoda.com/carpet-cleaning-process" target="_blank" rel="noopener noreferrer">https://myvoda.com/carpet-cleaning-process</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-26"><span class="ref-n">[26]</span> <span class="ref-body"><span class="ref-publisher">Kärcher.</span> <cite>Basic and hygienic carpet cleaning</cite>. <a href="https://www.karcher.com/int/professional/know-how/basic-carpet-cleaning.html" target="_blank" rel="noopener noreferrer">https://www.karcher.com/int/professional/know-how/basic-carpet-cleaning.html</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-27"><span class="ref-n">[27]</span> <span class="ref-body"><span class="ref-publisher">Bolius.</span> <cite>Kan du rense dine tæpper, striktrøjer og lammeskind i sne?</cite>. <a href="https://www.bolius.dk/kan-du-rense-dine-loese-taepper-i-sne-9943" target="_blank" rel="noopener noreferrer">https://www.bolius.dk/kan-du-rense-dine-loese-taepper-i-sne-9943</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-28"><span class="ref-n">[28]</span> <span class="ref-body"><span class="ref-publisher">Milliken.</span> <cite>Milliken Maintenance Guide</cite>. <a href="https://contenthub.milliken.com/api/public/content/4894c10e53d74f12ab2cdf1a6e2dbca1?v=ba662377" target="_blank" rel="noopener noreferrer">https://contenthub.milliken.com/api/public/content/4894c10e53d74f12ab2cdf1a6e2dbca1?v=ba662377</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-29"><span class="ref-n">[29]</span> <span class="ref-body"><span class="ref-publisher">SoCal Steam Carpet Cleaning.</span> <cite>DIY Deep Carpet Cleaning Solution: The Proven Homemade Formula</cite>. <a href="https://www.socalsteamclean.com/carpet-cleaning/diy-deep-carpet-cleaning-solution/" target="_blank" rel="noopener noreferrer">https://www.socalsteamclean.com/carpet-cleaning/diy-deep-carpet-cleaning-solution/</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-30"><span class="ref-n">[30]</span> <span class="ref-body"><span class="ref-publisher">Rentay (aggregator).</span> <cite>Lej Tæpperenser i København — Silvan</cite>. <a href="https://www.rentay.dk/p/taepperenser-688111e88a5d76c239c56198" target="_blank" rel="noopener noreferrer">https://www.rentay.dk/p/taepperenser-688111e88a5d76c239c56198</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-31"><span class="ref-n">[31]</span> <span class="ref-body"><span class="ref-publisher">Comborens.</span> <cite>Professionel tæpperens i København og på Sjælland</cite>. <a href="https://www.comborens.dk/taepperensning" target="_blank" rel="noopener noreferrer">https://www.comborens.dk/taepperensning</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-32"><span class="ref-n">[32]</span> <span class="ref-body"><span class="ref-publisher">Renseri København.</span> <cite>Priser</cite>. <a href="https://xn--renseri-kbenhavn-txb.dk/priser" target="_blank" rel="noopener noreferrer">https://xn--renseri-kbenhavn-txb.dk/priser</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+          </ul>
+        </section>
+      </div>
+    </main>
+    <footer>
+      <div class="wrap">
+        <strong>Research bundle:</strong> 2026-11-05-stoense-rug-cleaning.
+        Prices and availability were true on 5 November 2026 and will change.
+        <div class="bundle-links">
+          <a href="report.md">report.md</a>
+          <a href="audit.md">audit.md</a>
+          <a href="sources.jsonl">sources.jsonl</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

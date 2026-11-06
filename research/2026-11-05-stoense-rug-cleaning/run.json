@@ -1,0 +1,14 @@
+{
+  "job_id": null,
+  "question": "How can a private person clean an IKEA STOENSE 130 cm low-pile polypropylene rug with a synthetic rubber backing to a professional standard without highly specialised equipment?",
+  "depth": "thorough",
+  "status": "completed",
+  "provider": "tavily+builtin",
+  "created_at": "2026-11-05T19:00:00Z",
+  "completed_at": "2026-11-05T19:30:00Z",
+  "output_dir": "research/2026-11-05-stoense-rug-cleaning",
+  "query_count": 26,
+  "source_count": 40,
+  "tavily_credits": 1,
+  "notes": "Manual bundle; one Tavily search plus failed PDF/HTML extracts; built-in websearch/webfetch used for the rest. See audit.md."
+}

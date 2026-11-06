@@ -1,0 +1,86 @@
+{
+  "id": "2026-11-05-stoense-plan-v1",
+  "version": 1,
+  "raw_topic": "How can a private person clean an IKEA STOENSE 130 cm low-pile polypropylene rug with a synthetic rubber backing to a professional standard without highly specialised equipment?",
+  "sharpened_topic": "Interpret IKEA's 'do not wash' and 'professional carpet cleaning when needed' instructions for a STOENSE 70426801 rug, identify the professional process and its material constraints, and translate it into household/rental-equipment methods with Danish cost and safety notes.",
+  "subquestions": [
+    {
+      "id": "sq1-manufacturer",
+      "question": "What exactly do IKEA's care instructions mean, and is 'do not wash' compatible with 'professional carpet cleaning when needed'?",
+      "source_class": "primary",
+      "query_seeds": [
+        "IKEA STOENSE 70426801 care instructions",
+        "IKEA rug care do not machine wash professional carpet cleaning",
+        "IKEA kan ikke vaskes professionel tæpperens"
+      ],
+      "success_criterion": "The manufacturer's Danish and English care text is retrieved, plus an IKEA statement that distinguishes machine washing from professional cleaning."
+    },
+    {
+      "id": "sq2-material",
+      "question": "Which properties of polypropylene and synthetic rubber backing determine what can safely be done at home?",
+      "source_class": "reference",
+      "query_seeds": [
+        "polypropylene carpet fibre properties oleophilic heat melting point",
+        "synthetic rubber latex carpet backing water heat delamination",
+        "polypropylene carpet cleaning hot water extraction temperature"
+      ],
+      "success_criterion": "At least two independent material/industry sources establish the heat, water, oil, and residue constraints."
+    },
+    {
+      "id": "sq3-professional",
+      "question": "What does professional carpet cleaning consist of, and which methods are relevant to a low-pile polypropylene rug with a rubber backing?",
+      "source_class": "standard",
+      "query_seeds": [
+        "IICRC S100 professional carpet cleaning process",
+        "CRI 204 carpet maintenance cleaning extraction drying",
+        "professional carpet cleaning steps pre-vacuum pre-spray extract rinse"
+      ],
+      "success_criterion": "The standard process and the main methods (HWE, encapsulation, bonnet, dry compound) are described from a standards body, manufacturer, or trade source."
+    },
+    {
+      "id": "sq4-diy",
+      "question": "Which household or rented tools can reproduce the professional process, and what is the step-by-step protocol?",
+      "source_class": "secondary",
+      "query_seeds": [
+        "DIY carpet extraction wet dry shop vac spray bottle",
+        "rental carpet cleaner over-wetting drying",
+        "polypropylene rug spot clean dish soap rinse"
+      ],
+      "success_criterion": "A reproducible protocol is assembled with explicit dilution, dwell, agitation, extraction, rinsing, and drying steps, plus failure modes."
+    },
+    {
+      "id": "sq5-denmark",
+      "question": "What do rental machines and professional rug cleaning cost in Denmark for a 1.33 m² rug?",
+      "source_class": "commercial",
+      "query_seeds": [
+        "leje tæpperenser Silvan Bauhaus XL Byg pris",
+        "tæpperens pris pr m2 mindstepris København",
+        "professionel tæpperens løse tæpper pris"
+      ],
+      "success_criterion": "At least two rental prices and two professional prices are retrieved, with date and location caveats."
+    },
+    {
+      "id": "sq6-conflicts",
+      "question": "Where do sources disagree, and which claims are uncertain because the specific backing polymer is undisclosed?",
+      "source_class": "secondary",
+      "query_seeds": [
+        "polypropylene rug hose down wash rubber backing",
+        "steam clean polypropylene rug damage",
+        "rubber backed rug immersion cleaning"
+      ],
+      "success_criterion": "At least two genuine disagreements or uncertainties are documented and resolved in favour of the manufacturer's instructions."
+    }
+  ],
+  "constraints": {
+    "include_domains": [],
+    "exclude_domains": []
+  },
+  "budget": {
+    "max_queries": 24,
+    "max_sources": 40,
+    "max_llm_tokens": 150000,
+    "max_credits": 120,
+    "max_wall_seconds": 1200
+  },
+  "created_at": "2026-11-05T19:00:00Z"
+}
