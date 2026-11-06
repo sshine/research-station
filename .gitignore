@@ -1,6 +1,7 @@
 target/
 result
 result-*
+.disk-check
 .direnv/
 .envrc
 research-daemon/config/researchd.toml
