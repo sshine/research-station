@@ -90,3 +90,31 @@ additional primary sources retrieved on 2026-11-05.
 **Pass with caveats.** Every substantive claim in `report.md` has a linked source; the
 main uncertainty is commercial (price/stock) and integration-specific (Matter/Zigbee
 metering exposure), both stated in the report.
+
+## Report formats and references (2026-11-06)
+
+- `report.html` was revised to the same numbered-reference contract as the new
+  `report.html` in the STOENSE bundle. It is self-contained (inline CSS, no external
+  assets), responsive, dark-mode aware, and print-friendly.
+- Both `report.md` and `report.html` now use 35 numbered references in order of first
+  citation. Markdown uses `[n]` reference-style links with `[n]: <url>` definitions;
+  HTML uses `<a href="#ref-n">[n]</a>` anchors and `<li id="ref-n">` entries.
+- No separate "HTML prompt" file existed in the bundle or in the available session
+  database. The request was therefore interpreted as revising the Shelly HTML report
+  (and its Markdown twin) to the new reference format. This is recorded here rather than
+  silently assumed.
+- Reference metadata: the report cites 35 URLs. Only 4 of those overlap with the 29
+  entries in `sources.jsonl`; 31 are additional retailer search/listing pages,
+  manufacturer pages, or public reports cited in the report but never retained as ledger
+  entries. This is a real storage gap in the bundle, not a claim that the sources are
+  weak. Publisher and title were recovered from the report's link text or the page itself,
+  and `notes/references.md` records the full reference set and provenance. The reference
+  list labels search-result pages as such and does not treat them as authorities on
+  product behaviour.
+- The user's fallback instruction was to inspect session data when the bundle is
+  insufficient. Both available OpenCode databases were queried
+  (`~/.local/share/opencode/opencode.db` and `opencode-stable.db`); a case-insensitive
+  search of `part.data` for `helly` returned 0 rows. There was therefore no Shelly
+  session transcript to recover the missing ledger entries from. The references were
+  reconstructed from the report and the cited pages, and the gap is recorded rather than
+  hidden.

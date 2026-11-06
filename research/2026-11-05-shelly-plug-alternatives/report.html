@@ -4,10 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Smart plugs that do what the Shelly Plug S Gen3 did</title>
-    <meta
-      name="description"
-      content="A Danish buying guide to the discontinued Shelly Plug S Gen3, its official replacement, and local-first smart-plug alternatives with power monitoring."
-    />
+    <meta name="description" content="A Danish buying guide to the discontinued Shelly Plug S Gen3, its official replacement, and local-first smart-plug alternatives with power monitoring." />
     <style>
       :root {
         color-scheme: light dark;
@@ -20,15 +17,13 @@
         --line-strong: #bdb29c;
         --accent: #0a6b5d;
         --accent-2: #b45309;
-        --accent-3: #7c3aed;
         --good: #0f766e;
         --warn: #b45309;
         --bad: #b42318;
         --shadow: 0 18px 50px rgba(24, 33, 31, 0.09);
         --radius: 18px;
-        --max: 1120px;
+        --max: 960px;
       }
-
       @media (prefers-color-scheme: dark) {
         :root {
           --paper: #0e1513;
@@ -40,544 +35,93 @@
           --line-strong: #3c5049;
           --accent: #61d5be;
           --accent-2: #f0a35e;
-          --accent-3: #b79cff;
           --good: #61d5be;
           --warn: #f0a35e;
           --bad: #ff8a80;
           --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
         }
       }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
       body {
         margin: 0;
         background:
-          radial-gradient(
-            1100px 520px at 12% -8%,
-            color-mix(in srgb, var(--accent) 13%, transparent),
-            transparent 70%
-          ),
-          radial-gradient(
-            900px 420px at 100% 0%,
-            color-mix(in srgb, var(--accent-2) 12%, transparent),
-            transparent 65%
-          ),
+          radial-gradient(1100px 520px at 12% -8%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%),
+          radial-gradient(900px 420px at 100% 0%, color-mix(in srgb, var(--accent-2) 12%, transparent), transparent 65%),
           var(--paper);
         color: var(--ink);
-        font:
-          16px/1.62 ui-sans-serif,
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          Helvetica,
-          Arial,
-          sans-serif;
+        font: 16px/1.62 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
       }
-
-      a {
-        color: var(--accent);
-        text-underline-offset: 0.18em;
-      }
-      a:hover {
-        text-decoration-thickness: 0.12em;
-      }
-
-      .skip {
-        position: absolute;
-        left: -999px;
-        top: 0;
-        background: var(--card);
-        color: var(--ink);
-        padding: 0.7rem 1rem;
-        border: 1px solid var(--line);
-        border-radius: 0 0 10px 0;
-        z-index: 100;
-      }
-      .skip:focus {
-        left: 0;
-      }
-
-      .wrap {
-        width: min(calc(100% - 2.4rem), var(--max));
-        margin-inline: auto;
-      }
-
-      header.hero {
-        border-bottom: 1px solid var(--line);
-        padding: clamp(2.6rem, 6vw, 5.4rem) 0 clamp(2rem, 4vw, 3.2rem);
-      }
-
-      .eyebrow {
-        margin: 0 0 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.16em;
-        font-size: 0.72rem;
-        font-weight: 800;
-        color: var(--accent);
-      }
-
-      h1 {
-        margin: 0;
-        max-width: 15ch;
-        font-size: clamp(2.2rem, 5.7vw, 4.6rem);
-        line-height: 0.98;
-        letter-spacing: -0.045em;
-        text-wrap: balance;
-      }
-
-      h1 em {
-        font-style: normal;
-        color: var(--accent);
-      }
-
-      .deck {
-        max-width: 64ch;
-        margin: 1.2rem 0 0;
-        color: var(--muted);
-        font-size: clamp(1rem, 1.4vw, 1.16rem);
-        text-wrap: pretty;
-      }
-
-      .hero-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 1.5rem;
-      }
-
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        padding: 0.32rem 0.68rem;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: color-mix(in srgb, var(--card) 80%, transparent);
-        color: var(--muted);
-        font-size: 0.78rem;
-        font-weight: 600;
-        white-space: nowrap;
-      }
-
-      .pill::before {
-        content: "";
-        width: 0.42rem;
-        height: 0.42rem;
-        border-radius: 50%;
-        background: var(--accent);
-      }
-
-      main {
-        padding: 2.2rem 0 4rem;
-      }
-
-      section {
-        margin-top: clamp(2.2rem, 4vw, 3.6rem);
-      }
-
-      .section-head {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 1rem;
-        border-top: 1px solid var(--line);
-        padding-top: 1rem;
-        margin-bottom: 1.15rem;
-      }
-
-      h2 {
-        margin: 0;
-        font-size: clamp(1.45rem, 2.6vw, 2.05rem);
-        line-height: 1.1;
-        letter-spacing: -0.03em;
-        text-wrap: balance;
-      }
-
-      h3 {
-        margin: 0 0 0.45rem;
-        font-size: 1.02rem;
-        line-height: 1.25;
-        letter-spacing: -0.01em;
-      }
-
-      .section-note {
-        color: var(--muted);
-        font-size: 0.78rem;
-        text-align: right;
-        max-width: 34ch;
-      }
-
-      .verdict {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1rem;
-      }
-
-      .card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 1.25rem;
-        box-shadow: var(--shadow);
-      }
-
-      .card p {
-        margin: 0.45rem 0 0;
-        color: var(--muted);
-        font-size: 0.93rem;
-      }
-      .card p:last-child {
-        margin-bottom: 0;
-      }
-
-      .card .tag {
-        display: inline-block;
-        font-size: 0.68rem;
-        font-weight: 800;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--accent);
-        margin-bottom: 0.55rem;
-      }
-
-      .card strong {
-        font-size: 1.08rem;
-        letter-spacing: -0.01em;
-      }
-
-      .price {
-        display: inline-block;
-        margin-top: 0.65rem;
-        font-variant-numeric: tabular-nums;
-        font-weight: 800;
-        color: var(--ink);
-      }
-
-      .price small {
-        font-weight: 600;
-        color: var(--muted);
-      }
-
-      .table-wrap {
-        overflow-x: auto;
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        background: var(--card);
-        box-shadow: var(--shadow);
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 760px;
-        font-size: 0.88rem;
-      }
-
-      caption {
-        text-align: left;
-        padding: 1rem 1.1rem 0.7rem;
-        color: var(--muted);
-        font-size: 0.78rem;
-      }
-
-      th,
-      td {
-        text-align: left;
-        vertical-align: top;
-        padding: 0.78rem 1rem;
-        border-top: 1px solid var(--line);
-      }
-
-      thead th {
-        border-top: 0;
-        background: color-mix(in srgb, var(--paper-2) 78%, transparent);
-        color: var(--muted);
-        font-size: 0.68rem;
-        text-transform: uppercase;
-        letter-spacing: 0.11em;
-        white-space: nowrap;
-      }
-
-      tbody tr:hover {
-        background: color-mix(in srgb, var(--accent) 4%, transparent);
-      }
-
-      td.num {
-        font-variant-numeric: tabular-nums;
-        white-space: nowrap;
-      }
-
-      .badge {
-        display: inline-block;
-        padding: 0.12rem 0.45rem;
-        border-radius: 999px;
-        border: 1px solid currentColor;
-        font-size: 0.67rem;
-        font-weight: 800;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        white-space: nowrap;
-      }
-
-      .badge.good {
-        color: var(--good);
-      }
-      .badge.warn {
-        color: var(--warn);
-      }
-      .badge.bad {
-        color: var(--bad);
-      }
-      .badge.neutral {
-        color: var(--muted);
-      }
-
-      .tag-pick {
-        display: inline-block;
-        margin-left: 0.35rem;
-        padding: 0.08rem 0.4rem;
-        border-radius: 999px;
-        background: color-mix(in srgb, var(--accent) 14%, transparent);
-        color: var(--accent);
-        font-size: 0.62rem;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        white-space: nowrap;
-      }
-
-      .grid-2 {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-
-      .panel {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        padding: 1.25rem;
-      }
-
-      .panel p {
-        margin: 0.45rem 0 0;
-        color: var(--muted);
-        font-size: 0.93rem;
-      }
-      .panel p:last-child {
-        margin-bottom: 0;
-      }
-
-      .callout {
-        background: color-mix(in srgb, var(--accent) 7%, var(--card));
-        border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line));
-        border-left: 0.35rem solid var(--accent);
-        border-radius: 0 var(--radius) var(--radius) 0;
-        padding: 1rem 1.15rem;
-      }
-
-      .callout.warn {
-        background: color-mix(in srgb, var(--accent-2) 8%, var(--card));
-        border-color: color-mix(in srgb, var(--accent-2) 35%, var(--line));
-        border-left-color: var(--accent-2);
-      }
-
-      .callout p {
-        margin: 0.25rem 0 0;
-        color: var(--muted);
-        font-size: 0.92rem;
-      }
-
-      .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.45rem;
-        margin-top: 0.8rem;
-      }
-
-      .chip {
-        display: inline-block;
-        padding: 0.3rem 0.6rem;
-        border-radius: 8px;
-        border: 1px solid var(--line);
-        background: var(--paper);
-        color: var(--ink);
-        font-size: 0.79rem;
-        font-family:
-          ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
-          monospace;
-        white-space: nowrap;
-      }
-
-      .decision {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.8rem;
-        counter-reset: decision;
-      }
-
-      .decision-item {
-        position: relative;
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 1rem 1rem 1rem 3rem;
-      }
-
-      .decision-item::before {
-        counter-increment: decision;
-        content: counter(decision);
-        position: absolute;
-        left: 0.9rem;
-        top: 0.95rem;
-        width: 1.35rem;
-        height: 1.35rem;
-        display: grid;
-        place-items: center;
-        border-radius: 50%;
-        background: color-mix(in srgb, var(--accent) 14%, transparent);
-        color: var(--accent);
-        font-size: 0.72rem;
-        font-weight: 800;
-      }
-
-      .decision-item h3 {
-        font-size: 0.94rem;
-      }
-      .decision-item p {
-        margin: 0.25rem 0 0;
-        color: var(--muted);
-        font-size: 0.87rem;
-      }
-
-      .sources {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.65rem 1.1rem;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .sources li {
-        font-size: 0.82rem;
-        color: var(--muted);
-        line-height: 1.35;
-      }
-
-      .sources a {
-        display: inline;
-      }
-
-      footer {
-        border-top: 1px solid var(--line);
-        padding: 1.4rem 0 2.4rem;
-        color: var(--muted);
-        font-size: 0.82rem;
-      }
-
-      footer .bundle-links {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem 0.9rem;
-        margin-top: 0.5rem;
-      }
-
-      .small {
-        font-size: 0.8rem;
-        color: var(--muted);
-      }
-
-      .nowrap {
-        white-space: nowrap;
-      }
-
-      @media (max-width: 900px) {
-        .verdict {
-          grid-template-columns: 1fr 1fr;
-        }
-        .verdict .card:first-child {
-          grid-column: 1 / -1;
-        }
-        .sources {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-
+      a { color: var(--accent); text-underline-offset: 0.18em; }
+      a:hover { text-decoration-thickness: 0.12em; }
+      .skip { position: absolute; left: -999px; top: 0; background: var(--card); color: var(--ink); padding: 0.7rem 1rem; border: 1px solid var(--line); border-radius: 0 0 10px 0; z-index: 100; }
+      .skip:focus { left: 0; }
+      .wrap { width: min(calc(100% - 2.4rem), var(--max)); margin-inline: auto; }
+      header.hero { border-bottom: 1px solid var(--line); padding: clamp(2.6rem, 6vw, 5.4rem) 0 clamp(2rem, 4vw, 3.2rem); }
+      .eyebrow { margin: 0 0 0.9rem; text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.72rem; font-weight: 800; color: var(--accent); }
+      h1 { margin: 0; max-width: 20ch; font-size: clamp(2.1rem, 5.2vw, 4.1rem); line-height: 1.0; letter-spacing: -0.045em; text-wrap: balance; }
+      h1 em { font-style: normal; color: var(--accent); }
+      .deck { max-width: 68ch; margin: 1.2rem 0 0; color: var(--muted); font-size: clamp(1rem, 1.4vw, 1.16rem); text-wrap: pretty; }
+      .hero-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+      .pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.32rem 0.68rem; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--card) 80%, transparent); color: var(--muted); font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+      .pill::before { content: ""; width: 0.42rem; height: 0.42rem; border-radius: 50%; background: var(--accent); }
+      main { padding: 2.2rem 0 4rem; }
+      .toc { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.1rem 1.25rem; box-shadow: var(--shadow); margin: 0 0 2rem; }
+      .toc h2 { margin: 0 0 0.6rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); border: 0; padding: 0; }
+      .toc ol { margin: 0; padding-left: 1.2rem; columns: 2; column-gap: 2rem; font-size: 0.9rem; }
+      .toc li { margin: 0.18rem 0; break-inside: avoid; }
+      .snapshot { margin: 0 0 1.6rem; padding: 0.9rem 1.1rem; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent); color: var(--muted); font-size: 0.92rem; }
+      h2 { margin: 2.6rem 0 0.8rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: clamp(1.45rem, 2.6vw, 2.0rem); line-height: 1.12; letter-spacing: -0.03em; text-wrap: balance; }
+      h3 { margin: 1.6rem 0 0.45rem; font-size: 1.06rem; line-height: 1.28; letter-spacing: -0.01em; }
+      p { margin: 0.7rem 0; }
+      ul, ol { margin: 0.7rem 0; padding-left: 1.35rem; }
+      li { margin: 0.35rem 0; }
+      blockquote { margin: 1.2rem 0; padding: 0.2rem 1.2rem; border-left: 3px solid var(--accent-2); background: color-mix(in srgb, var(--accent-2) 7%, transparent); color: var(--ink); }
+      blockquote p { margin: 0.55rem 0; }
+      code { font-size: 0.9em; background: color-mix(in srgb, var(--ink) 8%, transparent); padding: 0.08rem 0.3rem; border-radius: 4px; }
+      pre { overflow-x: auto; padding: 1rem; border-radius: 12px; background: var(--paper-2); border: 1px solid var(--line); }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow); margin: 1.2rem 0; }
+      table { width: 100%; border-collapse: collapse; min-width: 620px; font-size: 0.88rem; }
+      caption { text-align: left; padding: 1rem 1.1rem 0.7rem; color: var(--muted); font-size: 0.78rem; }
+      th, td { text-align: left; vertical-align: top; padding: 0.75rem 1rem; border-top: 1px solid var(--line); }
+      thead th { border-top: 0; background: color-mix(in srgb, var(--paper-2) 78%, transparent); color: var(--muted); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.11em; white-space: nowrap; }
+      tbody tr:hover { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+      .cite { font-variant-numeric: tabular-nums; font-weight: 700; text-decoration: none; padding: 0 0.06em; }
+      .cite:hover { text-decoration: underline; }
+      .references { margin-top: 3rem; }
+      .references h2 { border-top: 2px solid var(--accent); }
+      .reference-list { list-style: none; margin: 0; padding: 0; counter-reset: refs; }
+      .reference-list li { display: grid; grid-template-columns: 3.2rem 1fr; gap: 0.4rem; padding: 0.7rem 0; border-top: 1px solid var(--line); scroll-margin-top: 1rem; }
+      .reference-list li:target { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+      .ref-n { font-weight: 800; color: var(--accent); font-variant-numeric: tabular-nums; }
+      .ref-publisher { font-weight: 700; }
+      .ref-accessed { color: var(--muted); white-space: nowrap; }
+      cite { font-style: italic; }
+      footer { border-top: 1px solid var(--line); padding: 1.4rem 0 2.4rem; color: var(--muted); font-size: 0.82rem; }
+      footer a { color: var(--accent); }
       @media (max-width: 720px) {
-        .wrap {
-          width: min(calc(100% - 1.4rem), var(--max));
-        }
-        .verdict,
-        .grid-2,
-        .decision {
-          grid-template-columns: 1fr;
-        }
-        .verdict .card:first-child {
-          grid-column: auto;
-        }
-        .section-head {
-          display: block;
-        }
-        .section-note {
-          text-align: left;
-          margin-top: 0.35rem;
-        }
-        .sources {
-          grid-template-columns: 1fr;
-        }
-        h1 {
-          max-width: 18ch;
-        }
+        .toc ol { columns: 1; }
+        .reference-list li { grid-template-columns: 2.6rem 1fr; }
       }
-
       @media print {
-        body {
-          background: #fff;
-          color: #111;
-        }
-        .card,
-        .table-wrap,
-        .panel,
-        .decision-item {
-          box-shadow: none;
-        }
-        a {
-          color: inherit;
-          text-decoration: underline;
-        }
-        .hero {
-          padding-top: 0;
-        }
-        section {
-          break-inside: avoid;
-        }
+        body { background: #fff; color: #111; }
+        header.hero { padding-top: 0; }
+        .toc { break-inside: avoid; box-shadow: none; }
+        .table-wrap, .toc { box-shadow: none; }
+        a { color: inherit; text-decoration: underline; }
+        .reference-list li { break-inside: avoid; }
       }
     </style>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-
     <header class="hero">
       <div class="wrap">
         <p class="eyebrow">Research snapshot · 5 November 2026</p>
         <h1>Smart plugs that do what the <em>Shelly Plug S Gen3</em> did</h1>
-        <p class="deck">
-          The S Gen3 is discontinued, but it is still on Danish shelves. Here is
-          the official replacement, the non-Shelly alternatives that match its
-          local-control and power-monitoring job, and what to search for instead
-          of “Shelly”.
-        </p>
+        <p class="deck">The S Gen3 is discontinued, but it is still on Danish shelves. Here is the official replacement, the non-Shelly alternatives that match its local-control and power-monitoring job, and what to search for instead of “Shelly”.</p>
         <div class="hero-meta">
           <span class="pill">Denmark</span>
           <span class="pill">Prices in DKK incl. VAT</span>
@@ -585,605 +129,438 @@
         </div>
       </div>
     </header>
-
     <main id="main" class="wrap">
-      <section aria-labelledby="verdict-title">
-        <div class="section-head">
-          <h2 id="verdict-title">The short answer</h2>
-          <span class="section-note"
-            >Unless you specifically need the smaller S Gen3 body, buy the M
-            Gen3.</span
-          >
-        </div>
+      <nav class="toc" aria-labelledby="toc-title">
+        <h2 id="toc-title">Contents</h2>
+        <ol><li><a href="#bottom-line">Bottom line</a></li>
+<li><a href="#what-the-shelly-plug-s-gen3-actually-is">1. What the Shelly Plug S Gen3 actually is</a></li>
+<li><a href="#can-you-still-buy-the-s-gen3-in-denmark">2. Can you still buy the S Gen3 in Denmark?</a></li>
+<li><a href="#alternatives-worth-buying">3. Alternatives worth buying</a></li>
+<li><a href="#is-shelly-becoming-a-keyword-for-copy-cats">4. Is “Shelly” becoming a keyword for copy-cats?</a></li>
+<li><a href="#the-keywords-that-actually-find-this-category">5. The keywords that actually find this category</a></li>
+<li><a href="#what-i-would-buy">6. What I would buy</a></li>
+<li><a href="#caveats">7. Caveats</a></li></ol>
+      </nav>
+      <div class="report-body">
+        <p><em>Research snapshot: 5 November 2026. Prices are DKK including VAT; stock and prices change. This is a shortlist of the strongest options, not an exhaustive catalogue.</em></p>
+<h2 id="bottom-line">Bottom line</h2>
+<ol>
+<li><strong>The Shelly Plug S Gen3 is officially discontinued.</strong> Shelly’s own product page says it is “no longer produced and sold by Shelly Group” and names the <strong>Shelly Plug M Gen3</strong> as the recommended successor. The M Gen3 is the default buy: 13 A / 3000 W, Matter, Wi-Fi/Bluetooth, power metering, MQTT and a local web UI — and it is cheaper than the old S Gen3. Shelly S Gen3 <a class="cite" href="#ref-1">[1]</a> · Shelly M Gen3 <a class="cite" href="#ref-2">[2]</a></li>
+<li><strong>You can still get the S Gen3 as residual stock.</strong> Proshop had the black at 116 DKK and the white at 137 DKK on “fjernlager” (remote warehouse, 2–5 days); avXperten had the white at 115 DKK in stock. Treat this as end-of-line stock, not a long-term supply. Proshop search <a class="cite" href="#ref-3">[3]</a> · avXperten <a class="cite" href="#ref-4">[4]</a></li>
+<li><strong>If you want another brand, the best all-round alternative is the Aqara Power Plug H2 EU</strong> (259 DKK, 16 A / 3680 W, Matter over Thread or Zigbee, energy monitoring). For privacy/no cloud, choose <strong>Eve Energy</strong> (268 DKK, Matter/Thread, no Eve cloud). For a cheap Zigbee plug, choose <strong>Sonoff S60ZBTPF</strong> (120 DKK, 16 A, needs a hub). For budget Matter, <strong>Osram SMART+ Matter 10 A</strong> is 90 DKK if 10 A is enough.</li>
+<li><strong>“Shelly” has not become a generic word for smart plugs.</strong> A Proshop search for <code>shelly plug</code> returned <strong>9 varer</strong>, all genuine Shelly. The alternatives appear when you search the category (<code>smart stikkontakt</code>, <code>smart plug</code>). “Shelly kompatibel” is used as a compatibility label, and at least one such product is an official EcoFlow × Shelly co-brand, not a clone.</li>
+</ol>
+<h2 id="what-the-shelly-plug-s-gen3-actually-is">1. What the Shelly Plug S Gen3 actually is</h2>
+<p>Shelly’s knowledge base also calls it the <strong>Shelly Plug S MTR Gen3</strong> (model <code>S3PL-00112EU</code>); “MTR” is the Matter-capable variant name, not a separate product. Shelly KB <a class="cite" href="#ref-5">[5]</a></p>
+<p>Key specs from Shelly’s product page: <strong>12 A / 2500 W</strong> resistive load, 44 × 44 × 70 mm, Wi-Fi 2.4 GHz + Bluetooth, <strong>Matter</strong>, power/energy metering, multicolor LED, scripting, webhooks, <strong>MQTT</strong>, local web interface, no hub required. Shelly S Gen3 <a class="cite" href="#ref-1">[1]</a></p>
+<p>The Gen3 plug family, according to Shelly’s comparison page:</p>
+<div class="table-wrap"><table><caption>Shelly Gen3 plug family, from Shelly’s comparison page.</caption>
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 18%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Model</th>
+<th scope="col">Status</th>
+<th style="text-align: right;">Max load</th>
+<th scope="col">Relay</th>
+<th scope="col">Metering</th>
+<th scope="col">Matter</th>
+<th scope="col">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Plug S Gen3 / S MTR Gen3</strong></td>
+<td>discontinued</td>
+<td style="text-align: right;">12 A / 2500 W</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>44 × 44 × 70 mm, most compact</td>
+</tr>
+<tr>
+<td><strong>Plug M Gen3</strong></td>
+<td>current</td>
+<td style="text-align: right;">13 A / 3000 W</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>46 × 46 × 85 mm, successor</td>
+</tr>
+<tr>
+<td><strong>Plug PM Gen3</strong></td>
+<td>current</td>
+<td style="text-align: right;">16 A / 3680 W</td>
+<td><strong>no</strong></td>
+<td>yes</td>
+<td><strong>no</strong></td>
+<td>monitoring only; cannot switch</td>
+</tr>
+<tr>
+<td><strong>Outdoor Plug S Gen3</strong></td>
+<td>current</td>
+<td style="text-align: right;">12 A / 2500 W</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>IP44</td>
+</tr>
+</tbody>
+</table></div>
+<p>Source: Shelly smart plugs comparison <a class="cite" href="#ref-6">[6]</a>; the PM’s missing relay is also explicit in Shelly’s support comparison (support article <a class="cite" href="#ref-7">[7]</a>).</p>
+<p>Shelly’s own shop on 5 November 2026 showed the S Gen3 and PM Gen3 <strong>sold out</strong>, while the M Gen3 (108 DKK) and Outdoor (265 DKK) were in stock. That is consistent with the S Gen3 being phased out and the M Gen3 being the replacement.</p>
+<h2 id="can-you-still-buy-the-s-gen3-in-denmark">2. Can you still buy the S Gen3 in Denmark?</h2>
+<p>Yes, but only as residual/remote stock. Proshop’s <code>shelly plug</code> search returned 9 items, all genuine Shelly:</p>
+<div class="table-wrap"><table><caption>Danish retail stock and prices, Proshop and avXperten, 5 November 2026.</caption>
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Product</th>
+<th style="text-align: right;">Price</th>
+<th scope="col">Stock note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shelly Outdoor Plug S Gen3</td>
+<td style="text-align: right;">167 DKK</td>
+<td>in stock, next-day</td>
+</tr>
+<tr>
+<td>Shelly Plug S Gen3 Black</td>
+<td style="text-align: right;">116 DKK</td>
+<td>remote warehouse, 2–3 days; expected own stock 06-11-2026</td>
+</tr>
+<tr>
+<td>Shelly Plug S Gen3 White</td>
+<td style="text-align: right;">137 DKK</td>
+<td>remote warehouse, 4–5 days; expected own stock 10-11-2026</td>
+</tr>
+<tr>
+<td>Shelly Plug M Gen3 2-pack</td>
+<td style="text-align: right;">137 DKK</td>
+<td>in stock, next-day</td>
+</tr>
+<tr>
+<td>Shelly Plug M Gen3 4-pack</td>
+<td style="text-align: right;">259 DKK</td>
+<td>in stock, next-day</td>
+</tr>
+<tr>
+<td>Shelly Plug PM Gen3 (white/black)</td>
+<td style="text-align: right;">143 DKK</td>
+<td>in stock, next-day</td>
+</tr>
+</tbody>
+</table></div>
+<p>Source: Proshop <code>?s=shelly+plug</code> <a class="cite" href="#ref-3">[3]</a>, retrieved 2026-11-05. Proshop does not label these “restlager”; it uses “Fjernlager” and gives an expected date for its own stock.</p>
+<p>avXperten listed the white S Gen3 at <strong>115 DKK</strong>, in stock with one-day delivery, and the black at a higher price. avXperten Shelly category <a class="cite" href="#ref-4">[4]</a></p>
+<h2 id="alternatives-worth-buying">3. Alternatives worth buying</h2>
+<h3 id="same-brand-simplest-path">Same brand (simplest path)</h3>
+<ul>
+<li><strong>Shelly Plug M Gen3</strong> — the official successor. 13 A / 3000 W, Matter, Wi-Fi/BT, metering, MQTT, local web UI, scripting. 108 DKK single from Shelly; <strong>137 DKK for a 2-pack at Proshop</strong> (about 69 DKK each), 259 DKK for a 4-pack. It is 15 mm taller than the S Gen3 but otherwise the same idea, with a higher load rating. Shelly M Gen3 <a class="cite" href="#ref-2">[2]</a> · Proshop search <a class="cite" href="#ref-3">[3]</a></li>
+<li><strong>Shelly Plug PM Gen3</strong> — only if you want to <em>measure</em> an always-on appliance and never switch it. 16 A / 3680 W, <strong>no relay</strong>, no Matter. 143 DKK at Proshop. Shelly comparison <a class="cite" href="#ref-6">[6]</a></li>
+<li><strong>Shelly Outdoor Plug S Gen3</strong> — IP44, 12 A / 2500 W, Matter, metering. 167 DKK at Proshop.</li>
+<li><strong>Shelly Wave Plug S LR</strong> — Z-Wave 800 Long Range version if you already have a Z-Wave hub. 398 DKK from Shelly. Shelly smart plugs <a class="cite" href="#ref-6">[6]</a></li>
+</ul>
+<h3 id="other-brands">Other brands</h3>
+<div class="table-wrap"><table><caption>Smart-plug alternatives available in Denmark, 5 November 2026.</caption>
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col">Product</th>
+<th scope="col">Protocol</th>
+<th style="text-align: right;">Max load</th>
+<th scope="col">Metering</th>
+<th scope="col">Local control / cloud</th>
+<th scope="col">Hub needed</th>
+<th style="text-align: right;">Price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Eve Energy</strong></td>
+<td>Matter over Thread</td>
+<td style="text-align: right;">11 A / 2500 W (EU)</td>
+<td>yes</td>
+<td>Matter local; no Eve cloud, no registration</td>
+<td>Thread border router</td>
+<td style="text-align: right;">268 DKK</td>
+</tr>
+<tr>
+<td><strong>Aqara Power Plug H2 EU (RGB)</strong></td>
+<td>Matter over Thread or Zigbee 3.0</td>
+<td style="text-align: right;">16 A / 3680 W</td>
+<td>yes</td>
+<td>Matter local, or Zigbee via Aqara hub</td>
+<td>Thread router or Aqara hub</td>
+<td style="text-align: right;">259 DKK</td>
+</tr>
+<tr>
+<td><strong>Sonoff S60ZBTPF</strong></td>
+<td>Zigbee 3.0</td>
+<td style="text-align: right;">16 A / 4000 W</td>
+<td>yes</td>
+<td>Zigbee local; Zigbee2MQTT exposes the most entities</td>
+<td>Zigbee hub/coordinator</td>
+<td style="text-align: right;">120 DKK</td>
+</tr>
+<tr>
+<td><strong>THIRDREALITY Smart Plug E2</strong></td>
+<td>Zigbee 3.0</td>
+<td style="text-align: right;">16 A</td>
+<td>yes</td>
+<td>Zigbee local</td>
+<td>Zigbee hub</td>
+<td style="text-align: right;">129 DKK (out of stock)</td>
+</tr>
+<tr>
+<td><strong>frient Smart Plug Mini 2</strong></td>
+<td>Zigbee 3.0</td>
+<td style="text-align: right;">10 A continuous / 16 A peak</td>
+<td>yes</td>
+<td>Zigbee local</td>
+<td>Zigbee hub</td>
+<td style="text-align: right;">268 DKK</td>
+</tr>
+<tr>
+<td><strong>Osram SMART+ MATTER Plug</strong></td>
+<td>Matter over Wi-Fi</td>
+<td style="text-align: right;">10 A / 2300 W</td>
+<td>yes</td>
+<td>Matter local</td>
+<td>Matter controller</td>
+<td style="text-align: right;">90 DKK</td>
+</tr>
+<tr>
+<td><strong>Osram SMART+ MATTER Outdoor</strong></td>
+<td>Matter over Wi-Fi, IP44</td>
+<td style="text-align: right;">16 A / 3680 W</td>
+<td>yes</td>
+<td>Matter local</td>
+<td>Matter controller</td>
+<td style="text-align: right;">122 DKK</td>
+</tr>
+<tr>
+<td><strong>Meross Matter Smart Plug 2-pack</strong></td>
+<td>Matter (Wi-Fi)</td>
+<td style="text-align: right;">16 A</td>
+<td>yes, often app-only</td>
+<td>Matter on/off local; energy may not reach the controller</td>
+<td>Matter controller</td>
+<td style="text-align: right;">269 DKK</td>
+</tr>
+<tr>
+<td><strong>Bosch Smart Plug Compact [+M]</strong></td>
+<td>Matter over Thread + Zigbee</td>
+<td style="text-align: right;">3680 W</td>
+<td>yes</td>
+<td>Matter local; Z2M power reporting is unreliable</td>
+<td>Thread router / Bosch controller</td>
+<td style="text-align: right;">349 DKK</td>
+</tr>
+<tr>
+<td><strong>Gosund EP2-Z</strong></td>
+<td>Zigbee 3.0</td>
+<td style="text-align: right;">10 A</td>
+<td>yes</td>
+<td>Zigbee local via hub; Gosund app is cloud</td>
+<td>Zigbee hub</td>
+<td style="text-align: right;">114 DKK single / 208 DKK 2-pack</td>
+</tr>
+<tr>
+<td><strong>Nous A1T</strong></td>
+<td>Wi-Fi + Tasmota</td>
+<td style="text-align: right;">10 A / 2400–2500 W</td>
+<td>yes</td>
+<td>Local web UI, REST API, MQTT; no factory cloud</td>
+<td>No</td>
+<td style="text-align: right;">€16.67 (EU warehouse)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Prices from Proshop on 2026-11-05 unless noted: Eve <a class="cite" href="#ref-8">[8]</a>, Aqara <a class="cite" href="#ref-9">[9]</a>, Sonoff <a class="cite" href="#ref-10">[10]</a>, THIRDREALITY <a class="cite" href="#ref-11">[11]</a>, frient <a class="cite" href="#ref-12">[12]</a>, Osram 10 A <a class="cite" href="#ref-13">[13]</a>, Osram outdoor <a class="cite" href="#ref-14">[14]</a>, Meross <a class="cite" href="#ref-15">[15]</a>, Bosch <a class="cite" href="#ref-16">[16]</a>, Gosund <a class="cite" href="#ref-17">[17]</a>.</p>
+<p>Specs and caveats:</p>
+<ul>
+<li><strong>Eve Energy</strong> is the privacy option: Matter over Thread, no Eve cloud, no registration. EU version is 11 A / 2500 W, so it is a lamp/office plug, not a heater plug. A Thread border router is required. Eve <a class="cite" href="#ref-18">[18]</a></li>
+<li><strong>Aqara H2 EU</strong> is the strongest all-round non-Shelly choice: 16 A / 3680 W, energy monitoring, Matter over Thread <em>or</em> Zigbee 3.0. You need a Thread border router or an Aqara hub; it is not a Wi-Fi plug. Aqara <a class="cite" href="#ref-19">[19]</a></li>
+<li><strong>Sonoff S60ZBTPF</strong> is the cheap high-load Zigbee option: 16 A / 4000 W, Zigbee 3.0, metering, repeater. It needs a Zigbee hub. Zigbee2MQTT exposes all entities; ZHA has had missing features in reviews, so check the current state before buying. CNX review <a class="cite" href="#ref-20">[20]</a></li>
+<li><strong>THIRDREALITY E2</strong> is also 16 A Zigbee with real-time metering, but it was out of stock at Proshop on the check date.</li>
+<li><strong>frient Mini 2</strong> is well built but only 10 A continuous; it is not for a 16 A heater. frient <a class="cite" href="#ref-21">[21]</a></li>
+<li><strong>Osram SMART+ Matter</strong> is the budget Matter route: 90 DKK for 10 A / 2300 W, 122 DKK for the 16 A / 3680 W IP44 outdoor version. Both are Matter over Wi-Fi, so no hub, but you need a Matter controller.</li>
+<li><strong>Meross Matter</strong> is a 16 A plug and cheap for a 2-pack, but its energy data is primarily in the Meross app. Several users report that Matter controllers get on/off but not power/energy. MSS315 specs <a class="cite" href="#ref-22">[22]</a> · Matter energy-monitoring caveat <a class="cite" href="#ref-23">[23]</a></li>
+<li><strong>Bosch [+M]</strong> supports Matter/Thread and Zigbee and measures power, but it is expensive and Zigbee2MQTT users report missing power data. Buy it for the Bosch ecosystem, not as a cheap Shelly replacement. Bosch help <a class="cite" href="#ref-24">[24]</a> · power measurement <a class="cite" href="#ref-25">[25]</a></li>
+<li><strong>Gosund EP2-Z</strong> is a cheap 10 A Zigbee plug; fine for lamps and small appliances, not for high-load heating.</li>
+<li><strong>Nous A1T</strong> is the closest thing to a “Shelly for tinkerers”: factory-installed Tasmota, MQTT, REST API, local web UI, no cloud, 10 A / 2400–2500 W, compact 46 × 46 × 72 mm. It is not sold at Proshop; the EU warehouse price was €16.67. Nous <a class="cite" href="#ref-26">[26]</a> · EU shop <a class="cite" href="#ref-27">[27]</a></li>
+</ul>
+<h2 id="is-shelly-becoming-a-keyword-for-copy-cats">4. Is “Shelly” becoming a keyword for copy-cats?</h2>
+<p>Partly, but not in the way it first looks.</p>
+<ul>
+<li><strong>Shelly is still a brand.</strong> Proshop’s <code>shelly plug</code> search returned 9 genuine Shelly products and no third-party lookalikes. A <code>shelly kompatibel</code> search returned Shelly accessories, not a clone shelf. Proshop <code>shelly plug</code> <a class="cite" href="#ref-3">[3]</a> · Proshop <code>shelly kompatibel</code> <a class="cite" href="#ref-28">[28]</a></li>
+<li><strong>“Shelly kompatibel” is a compatibility label.</strong> avXperten sells an “EcoFlow Stream Smart Plug — Shelly Kompatibel, 2500W” for 359 DKK. The product page lists brand as both Shelly and EcoFlow. EcoFlow itself calls it the “EcoFlow × Shelly Smart Plug” (€34.90, 12 A, 44 × 44 × 70 mm, 2500 W) and says it is only compatible with the EcoFlow STREAM system. This is a co-brand, not a counterfeit. avXperten <a class="cite" href="#ref-29">[29]</a> · EcoFlow <a class="cite" href="#ref-30">[30]</a></li>
+<li><strong>Shelly has an official third-party program.</strong> “Powered by Shelly” devices contain a Shelly connectivity module and work with the Shelly app; the product itself is made by the partner. Shelly’s current examples are the Ogemray 25 A relay, Ecowitt WS90 weather station, FrankEver sprinkler controller and similar devices — no smart plugs in that collection on the check date. Program definition <a class="cite" href="#ref-31">[31]</a> · Collection <a class="cite" href="#ref-32">[32]</a></li>
+<li><strong>Independent brands are not copies.</strong> Sonoff, Aqara, Eve, Meross, Osram, Bosch, Nous and Athom have their own apps, protocols and trade-offs. Reviewers call them “Shelly alternatives” because they match the feature set, not because they imitate the brand.</li>
+<li><strong>Counterfeits exist on marketplaces</strong>, so buy from a reputable retailer and check the model/box. There are public reports of lookalike Shelly PM Mini boxes on Amazon (example <a class="cite" href="#ref-33">[33]</a>), but I found no evidence of a widespread counterfeit Shelly-plug shelf in Danish retail. The more likely explanation for “a bunch of alternatives” is a broader search query or compatibility wording.</li>
+</ul>
+<h2 id="the-keywords-that-actually-find-this-category">5. The keywords that actually find this category</h2>
+<div class="table-wrap"><table><caption>Search terms for the smart-plug category.</caption>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col">What you want</th>
+<th scope="col">Danish search terms</th>
+<th scope="col">English terms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Generic product</td>
+<td>smart stikkontakt, smartstik, smart plug</td>
+<td>smart plug, smart socket</td>
+</tr>
+<tr>
+<td>Power measurement</td>
+<td>stikkontakt med energimåling, stikkontakt med effektmåler, energimåler</td>
+<td>smart plug with energy monitoring, power monitoring plug</td>
+</tr>
+<tr>
+<td>Remote/timer</td>
+<td>fjernbetjent stikkontakt, programmerbar stikkontakt, stikkontakt med timer</td>
+<td>remote control plug, programmable plug</td>
+</tr>
+<tr>
+<td>Wi-Fi</td>
+<td>WiFi-stikkontakt, trådløs stikkontakt</td>
+<td>Wi-Fi smart plug</td>
+</tr>
+<tr>
+<td>Zigbee</td>
+<td>Zigbee-stikkontakt, Zigbee smartstik</td>
+<td>Zigbee smart plug</td>
+</tr>
+<tr>
+<td>Matter/Thread</td>
+<td>Matter-stikkontakt, Thread-stikkontakt</td>
+<td>Matter smart plug, Thread smart plug</td>
+</tr>
+<tr>
+<td>Z-Wave</td>
+<td>Z-Wave-stikkontakt</td>
+<td>Z-Wave smart plug</td>
+</tr>
+<tr>
+<td>Outdoor</td>
+<td>udendørs smartstikkontakt, stikkontakt IP44</td>
+<td>outdoor smart plug, IP44 smart plug</td>
+</tr>
+<tr>
+<td>High load</td>
+<td>16A stikkontakt, 3680W stikkontakt</td>
+<td>16A smart plug, 3680W smart plug</td>
+</tr>
+<tr>
+<td>Local-first</td>
+<td>lokal styring, lokal API, ingen cloud, MQTT, Tasmota, ESPHome, Home Assistant</td>
+<td>local control, no cloud, MQTT, Tasmota, ESPHome, Home Assistant</td>
+</tr>
+</tbody>
+</table></div>
+<p>A practical search ladder:</p>
+<ol>
+<li><code>smart stikkontakt energimåling</code> — broad Danish retail.</li>
+<li><code>stikkontakt effektmåler Matter</code> — modern ecosystem plugs.</li>
+<li><code>Zigbee stikkontakt energimåling</code> — hub-based plugs.</li>
+<li><code>Tasmota stikkontakt</code> or <code>ESPHome smart plug</code> — local-first, no cloud.</li>
+<li><code>Shelly kompatibel stikkontakt</code> — compatibility/co-brand results, not a brand list.</li>
+<li>Add <code>site:proshop.dk</code>, <code>site:avxperten.dk</code> or <code>site:pricerunner.dk</code> to compare Danish stock and prices.</li>
+</ol>
+<p>One warning: <code>smart stikkontakt</code> on Proshop returned <strong>4105 varer</strong>, because the search matches loosely and pulls in cameras and other Smart Home gear. Add <code>energimåling</code>, <code>effektmåler</code>, <code>Zigbee</code>, <code>Matter</code> or <code>16A</code> to narrow it. The raw count is not a product count. Proshop <code>smart stikkontakt</code> <a class="cite" href="#ref-34">[34]</a></p>
+<h2 id="what-i-would-buy">6. What I would buy</h2>
+<ul>
+<li><strong>Simplest, best value:</strong> Shelly Plug M Gen3 2-pack, 137 DKK at Proshop. Same local API/MQTT/Matter approach as the S Gen3, higher 13 A rating, and cheaper per plug. If you only need one, 108 DKK from Shelly.</li>
+<li><strong>Exact S Gen3:</strong> avXperten white 115 DKK (in stock) or Proshop black 116 DKK (remote warehouse). Do not pay much more; it is discontinued.</li>
+<li><strong>No cloud / privacy:</strong> Eve Energy (268 DKK) if 11 A is enough and you have a Thread border router; Nous A1T (€16.67) if you are comfortable with Tasmota and MQTT.</li>
+<li><strong>Zigbee hub already installed:</strong> Sonoff S60ZBTPF (120 DKK, 16 A) for value, or Aqara H2 EU (259 DKK, 16 A, Matter/Thread + Zigbee) for a more polished dual-protocol plug.</li>
+<li><strong>Cheap Matter:</strong> Osram SMART+ Matter 10 A (90 DKK) for lamps/small appliances; the 16 A outdoor version is 122 DKK.</li>
+<li><strong>Outdoor:</strong> Shelly Outdoor Plug S Gen3 (167 DKK) if you want the Shelly ecosystem; Osram SMART+ Matter Outdoor (122 DKK) if you want cheap Matter/IP44.</li>
+<li><strong>Measure only, never switch:</strong> Shelly Plug PM Gen3 (143 DKK). Do not buy this expecting on/off control.</li>
+</ul>
+<h2 id="caveats">7. Caveats</h2>
+<ul>
+<li>Prices and stock are a 5 November 2026 snapshot. Proshop’s search results and expected stock dates change; “fjernlager” is not the same as “on the shelf”.</li>
+<li>“Local control” is not binary. A plug can pair locally over Matter or Zigbee while its energy history stays in the vendor app. Check that the controller you use exposes the metering cluster, not just on/off.</li>
+<li>Zigbee energy reporting depends on the coordinator. The Sonoff review found Zigbee2MQTT exposed more entities than ZHA; check current firmware/integration before relying on it.</li>
+<li>Matter energy reporting is still uneven across brands. Eve exposes power/energy through Matter; Meross has been app-only in practice (Matter energy-monitoring caveat <a class="cite" href="#ref-23">[23]</a>). Do not assume that a “Matter” label means your controller will see the meter.</li>
+<li>Shelly’s 2026 catalogue also shows a new <strong>Plug C Gen4 / Plug C PM Gen4</strong> cord-end design, but it was not broadly listed in Danish retail at the time of this check. If you can wait, it may be the more space-saving Gen4 option. Matter-SmartHome <a class="cite" href="#ref-35">[35]</a></li>
+<li>I did not audit every Danish webshop or marketplace. The shortlist is based on Shelly’s official pages, Proshop/avXperten listings, and manufacturer documentation retrieved on the check date.</li>
+</ul>
 
-        <div class="verdict">
-          <article class="card">
-            <span class="tag">Default buy</span>
-            <h3>Shelly Plug M Gen3</h3>
-            <p>
-              Official successor. 13 A / 3000 W, Matter, Wi-Fi/Bluetooth, power
-              metering, MQTT and a local web UI. Same approach as the S Gen3,
-              higher load rating.
-            </p>
-            <span class="price"
-              >137 DKK <small>2-pack at Proshop · ~69 DKK/plug</small></span
-            >
-          </article>
-
-          <article class="card">
-            <span class="tag">Exact S Gen3</span>
-            <h3>Residual stock only</h3>
-            <p>
-              avXperten has the white at 115 DKK in stock. Proshop has black at
-              116 DKK and white at 137 DKK on remote warehouse. Treat it as
-              end-of-line stock.
-            </p>
-            <span class="price">115–137 DKK</span>
-          </article>
-
-          <article class="card">
-            <span class="tag">Another brand</span>
-            <h3>Aqara H2 EU</h3>
-            <p>
-              The strongest all-round non-Shelly option: 16 A / 3680 W, Matter
-              over Thread or Zigbee, energy monitoring. Eve Energy is the
-              no-cloud pick; Sonoff is the cheap Zigbee pick.
-            </p>
-            <span class="price"
-              >259 DKK <small>Aqara · 268 DKK Eve · 120 DKK Sonoff</small></span
-            >
-          </article>
-        </div>
-      </section>
-
-      <section aria-labelledby="family-title">
-        <div class="section-head">
-          <h2 id="family-title">What replaced what</h2>
-          <span class="section-note"
-            >Shelly Gen3 plug family, from Shelly’s own comparison.</span
-          >
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <caption>
-              Max load is resistive load. “PM” means power monitoring, not
-              “power meter with relay”.
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Model</th>
-                <th scope="col">Status</th>
-                <th scope="col">Max load</th>
-                <th scope="col">Relay</th>
-                <th scope="col">Metering</th>
-                <th scope="col">Matter</th>
-                <th scope="col">Best for</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <strong>Plug S Gen3</strong><br /><span class="small"
-                    >a.k.a. S MTR Gen3</span
-                  >
-                </td>
-                <td><span class="badge bad">Discontinued</span></td>
-                <td class="num">12 A / 2500 W</td>
-                <td>Yes</td>
-                <td>Yes</td>
-                <td>Yes</td>
-                <td>Compact lamps, office gear, small appliances</td>
-              </tr>
-              <tr>
-                <td><strong>Plug M Gen3</strong></td>
-                <td><span class="badge good">Current</span></td>
-                <td class="num">13 A / 3000 W</td>
-                <td>Yes</td>
-                <td>Yes</td>
-                <td>Yes</td>
-                <td>Everyday use + higher load; official successor</td>
-              </tr>
-              <tr>
-                <td><strong>Plug PM Gen3</strong></td>
-                <td><span class="badge good">Current</span></td>
-                <td class="num">16 A / 3680 W</td>
-                <td><strong>No</strong></td>
-                <td>Yes</td>
-                <td>No</td>
-                <td>Monitoring only; cannot switch the load</td>
-              </tr>
-              <tr>
-                <td><strong>Outdoor Plug S Gen3</strong></td>
-                <td><span class="badge good">Current</span></td>
-                <td class="num">12 A / 2500 W</td>
-                <td>Yes</td>
-                <td>Yes</td>
-                <td>Yes</td>
-                <td>IP44 outdoor lights, heaters, holiday lights</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section aria-labelledby="alternatives-title">
-        <div class="section-head">
-          <h2 id="alternatives-title">Alternatives at a glance</h2>
-          <span class="section-note"
-            >Danish prices, 5 Nov 2026. “Local” means control does not require
-            the vendor cloud.</span
-          >
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <caption>
-              Hub column is the minimum you need for local control. A Matter
-              controller is still a hub in practice.
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Product</th>
-                <th scope="col">Protocol</th>
-                <th scope="col">Max load</th>
-                <th scope="col">Metering</th>
-                <th scope="col">Local / cloud</th>
-                <th scope="col">Hub needed</th>
-                <th scope="col">Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>Eve Energy</strong></td>
-                <td>Matter over Thread</td>
-                <td class="num">11 A / 2500 W</td>
-                <td>Yes</td>
-                <td>Local; no Eve cloud, no registration</td>
-                <td>Thread border router</td>
-                <td class="num">268 DKK</td>
-              </tr>
-              <tr>
-                <td>
-                  <strong>Aqara Power Plug H2 EU</strong
-                  ><span class="tag-pick">Top pick</span>
-                </td>
-                <td>Matter over Thread or Zigbee 3.0</td>
-                <td class="num">16 A / 3680 W</td>
-                <td>Yes</td>
-                <td>Local via Matter controller or Aqara hub</td>
-                <td>Thread router or Aqara hub</td>
-                <td class="num">259 DKK</td>
-              </tr>
-              <tr>
-                <td>
-                  <strong>Sonoff S60ZBTPF</strong
-                  ><span class="tag-pick">Value</span>
-                </td>
-                <td>Zigbee 3.0</td>
-                <td class="num">16 A / 4000 W</td>
-                <td>Yes</td>
-                <td>Zigbee local; Zigbee2MQTT exposes the most entities</td>
-                <td>Zigbee hub/coordinator</td>
-                <td class="num">120 DKK</td>
-              </tr>
-              <tr>
-                <td><strong>THIRDREALITY E2</strong></td>
-                <td>Zigbee 3.0</td>
-                <td class="num">16 A</td>
-                <td>Yes</td>
-                <td>Zigbee local</td>
-                <td>Zigbee hub</td>
-                <td class="num">
-                  129 DKK <span class="badge warn">Out of stock</span>
-                </td>
-              </tr>
-              <tr>
-                <td><strong>frient Smart Plug Mini 2</strong></td>
-                <td>Zigbee 3.0</td>
-                <td class="num">10 A cont. / 16 A peak</td>
-                <td>Yes</td>
-                <td>Zigbee local</td>
-                <td>Zigbee hub</td>
-                <td class="num">268 DKK</td>
-              </tr>
-              <tr>
-                <td><strong>Osram SMART+ Matter 10 A</strong></td>
-                <td>Matter over Wi-Fi</td>
-                <td class="num">10 A / 2300 W</td>
-                <td>Yes</td>
-                <td>Matter local</td>
-                <td>Matter controller</td>
-                <td class="num">90 DKK</td>
-              </tr>
-              <tr>
-                <td><strong>Osram SMART+ Matter Outdoor</strong></td>
-                <td>Matter over Wi-Fi, IP44</td>
-                <td class="num">16 A / 3680 W</td>
-                <td>Yes</td>
-                <td>Matter local</td>
-                <td>Matter controller</td>
-                <td class="num">122 DKK</td>
-              </tr>
-              <tr>
-                <td><strong>Meross Matter 2-pack</strong></td>
-                <td>Matter over Wi-Fi</td>
-                <td class="num">16 A</td>
-                <td>Yes, app-first</td>
-                <td>Matter on/off local; energy may stay in Meross app</td>
-                <td>Matter controller</td>
-                <td class="num">269 DKK</td>
-              </tr>
-              <tr>
-                <td><strong>Bosch Smart Plug Compact [+M]</strong></td>
-                <td>Matter/Thread + Zigbee</td>
-                <td class="num">3680 W</td>
-                <td>Yes</td>
-                <td>Local; Z2M power reporting is unreliable</td>
-                <td>Thread router / Bosch controller</td>
-                <td class="num">349 DKK</td>
-              </tr>
-              <tr>
-                <td><strong>Gosund EP2-Z</strong></td>
-                <td>Zigbee 3.0</td>
-                <td class="num">10 A</td>
-                <td>Yes</td>
-                <td>Zigbee local; Gosund app is cloud</td>
-                <td>Zigbee hub</td>
-                <td class="num">114 DKK</td>
-              </tr>
-              <tr>
-                <td><strong>Nous A1T</strong></td>
-                <td>Wi-Fi + Tasmota</td>
-                <td class="num">10 A / 2500 W</td>
-                <td>Yes</td>
-                <td>Local web UI, REST API, MQTT; no factory cloud</td>
-                <td>None</td>
-                <td class="num">€16.67</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section aria-labelledby="shelly-keyword-title">
-        <div class="section-head">
-          <h2 id="shelly-keyword-title">
-            Is “Shelly” becoming a generic keyword?
-          </h2>
-          <span class="section-note"
-            >Short answer: not at Proshop. It is a brand, but also a
-            compatibility label.</span
-          >
-        </div>
-
-        <div class="grid-2">
-          <article class="panel">
-            <h3>It is still a brand</h3>
-            <p>
-              A Proshop search for <code>shelly plug</code> returned
-              <strong>9 varer</strong>, all genuine Shelly. A
-              <code>shelly kompatibel</code> search returned Shelly accessories,
-              not a clone shelf.
-            </p>
-            <p class="small">
-              <a
-                href="https://www.proshop.dk/?s=shelly+plug"
-                target="_blank"
-                rel="noopener noreferrer"
-                >Proshop `shelly plug`</a
-              >
-              ·
-              <a
-                href="https://www.proshop.dk/?s=shelly+kompatibel"
-                target="_blank"
-                rel="noopener noreferrer"
-                >Proshop `shelly kompatibel`</a
-              >
-            </p>
-          </article>
-
-          <article class="panel">
-            <h3>But it is used as a compatibility label</h3>
-            <p>
-              avXperten sells an
-              <strong
-                >“EcoFlow Stream Smart Plug — Shelly Kompatibel, 2500W”</strong
-              >
-              for 359 DKK. The product page lists brand as both Shelly and
-              EcoFlow. It is an official
-              <strong>EcoFlow × Shelly</strong> co-brand, not a counterfeit —
-              and it only works with EcoFlow’s STREAM system.
-            </p>
-            <p class="small">
-              <a
-                href="https://www.avxperten.dk/ecoflow-stream-smart-plug-shelly-kompatibel-2500w.asp"
-                target="_blank"
-                rel="noopener noreferrer"
-                >avXperten listing</a
-              >
-              ·
-              <a
-                href="https://eu.ecoflow.com/products/shelly-smart-plug"
-                target="_blank"
-                rel="noopener noreferrer"
-                >EcoFlow product page</a
-              >
-            </p>
-          </article>
-        </div>
-
-        <div class="callout" style="margin-top: 1rem">
-          <h3>What to search instead</h3>
-          <p>
-            Search the function, not the brand. Add
-            <strong>energimåling</strong> or <strong>effektmåler</strong> to cut
-            the noise, and add a protocol if you have a hub.
-          </p>
-          <div class="chips">
-            <span class="chip">smart stikkontakt</span>
-            <span class="chip">stikkontakt med energimåling</span>
-            <span class="chip">stikkontakt med effektmåler</span>
-            <span class="chip">Zigbee-stikkontakt</span>
-            <span class="chip">Matter-stikkontakt</span>
-            <span class="chip">WiFi-stikkontakt</span>
-            <span class="chip">Tasmota</span>
-            <span class="chip">ESPHome</span>
-            <span class="chip">MQTT</span>
-            <span class="chip">Home Assistant</span>
-            <span class="chip">lokal styring</span>
-            <span class="chip">ingen cloud</span>
-          </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="decision-title">
-        <div class="section-head">
-          <h2 id="decision-title">What I would buy</h2>
-          <span class="section-note"
-            >Pick by the constraint that matters most to you.</span
-          >
-        </div>
-
-        <div class="decision">
-          <article class="decision-item">
-            <h3>I want the same thing, cheapest</h3>
-            <p>
-              Shelly Plug M Gen3 2-pack, 137 DKK at Proshop. About 69 DKK per
-              plug.
-            </p>
-          </article>
-          <article class="decision-item">
-            <h3>I want the exact S Gen3</h3>
-            <p>
-              avXperten white 115 DKK (in stock) or Proshop black 116 DKK
-              (remote warehouse).
-            </p>
-          </article>
-          <article class="decision-item">
-            <h3>I want no cloud</h3>
-            <p>
-              Eve Energy 268 DKK if 11 A is enough and you have a Thread border
-              router; Nous A1T €16.67 if Tasmota/MQTT is fine.
-            </p>
-          </article>
-          <article class="decision-item">
-            <h3>I already have Zigbee</h3>
-            <p>
-              Sonoff S60ZBTPF 120 DKK (16 A) for value, or Aqara H2 EU 259 DKK
-              for a polished dual-protocol plug.
-            </p>
-          </article>
-          <article class="decision-item">
-            <h3>I want cheap Matter</h3>
-            <p>
-              Osram SMART+ Matter 10 A, 90 DKK for lamps and small appliances.
-              The 16 A outdoor version is 122 DKK.
-            </p>
-          </article>
-          <article class="decision-item">
-            <h3>I want outdoor</h3>
-            <p>
-              Shelly Outdoor Plug S Gen3 167 DKK for the Shelly ecosystem; Osram
-              Matter Outdoor 122 DKK for cheap Matter/IP44.
-            </p>
-          </article>
-          <article class="decision-item">
-            <h3>I only want to measure</h3>
-            <p>
-              Shelly Plug PM Gen3, 143 DKK. No relay — it cannot switch the
-              load.
-            </p>
-          </article>
-          <article class="decision-item">
-            <h3>I want multiple outlets</h3>
-            <p>
-              Proshop lists the
-              <a
-                href="https://www.proshop.dk/Shelly"
-                target="_blank"
-                rel="noopener noreferrer"
-                >Shelly Power Strip Gen4</a
-              >: four individually switched, individually metered outlets, 12 A
-              per outlet / 16 A total.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section aria-labelledby="caveats-title">
-        <div class="section-head">
-          <h2 id="caveats-title">Caveats</h2>
-          <span class="section-note"
-            >The two big ones: stock is a snapshot, and “Matter” does not
-            guarantee metering.</span
-          >
-        </div>
-
-        <div class="grid-2">
-          <div class="callout warn">
-            <h3>Prices and stock move</h3>
-            <p>
-              This is a 5 November 2026 snapshot. Proshop uses “fjernlager” for
-              remote warehouse stock, not “restlager”; expected own-stock dates
-              were 06-11 and 10-11-2026 for the S Gen3 colours. Check the
-              listing before ordering.
-            </p>
-          </div>
-          <div class="callout warn">
-            <h3>“Local” and “Matter” are not promises</h3>
-            <p>
-              A plug can pair locally while its energy history stays in the
-              vendor app. Meross and some other Matter plugs have been app-only
-              for power data in practice. Zigbee reporting also depends on the
-              coordinator: Zigbee2MQTT exposed more entities than ZHA for the
-              Sonoff S60ZBTPF.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section aria-labelledby="sources-title">
-        <div class="section-head">
-          <h2 id="sources-title">Key sources</h2>
-          <span class="section-note"
-            >Full source ledger and audit are in the research bundle.</span
-          >
-        </div>
-
-        <ul class="sources">
-          <li>
-            <a
-              href="https://www.shelly.com/products/shelly-plug-s-gen3"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Shelly Plug S Gen3 — discontinued, successor named</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.shelly.com/products/shelly-plug-m-gen3-white"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Shelly Plug M Gen3 — specs, price</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.shelly.com/pages/shelly-smart-plugs"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Shelly smart-plug comparison and stock</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://support.shelly.cloud/en/support/solutions/articles/103000390376-comparison-of-shelly-plug-s-gen3-shelly-plug-pm-gen3-shelly-plug-m-gen3-shelly-outdoor-plug-s-gen3"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Shelly support: PM Gen3 has no relay</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.proshop.dk/?s=shelly+plug"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Proshop `shelly plug` — 9 genuine Shelly items</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.avxperten.dk/shelly-smart-home-stikkontakt"
-              target="_blank"
-              rel="noopener noreferrer"
-              >avXperten Shelly category — S Gen3 115 DKK</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.avxperten.dk/ecoflow-stream-smart-plug-shelly-kompatibel-2500w.asp"
-              target="_blank"
-              rel="noopener noreferrer"
-              >EcoFlow “Shelly Kompatibel” listing</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://eu.ecoflow.com/products/shelly-smart-plug"
-              target="_blank"
-              rel="noopener noreferrer"
-              >EcoFlow × Shelly Smart Plug</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://support.shelly.cloud/en/support/solutions/articles/103000406137-support-scope-for-powered-by-shelly-devices"
-              target="_blank"
-              rel="noopener noreferrer"
-              >“Powered by Shelly” program definition</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.evehome.com/en/eve-energy"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Eve Energy — no cloud, 11 A / 2500 W EU</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.aqara.com/en/product/power-plug-h2-eu"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Aqara Power Plug H2 EU — 16 A, Matter/Zigbee</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.frient.com/products/smart-plug-mini-2"
-              target="_blank"
-              rel="noopener noreferrer"
-              >frient Smart Plug Mini 2 — 10 A continuous / 16 A peak</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://nous.technology/product/a1t2.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Nous A1T — Tasmota, MQTT, 10 A</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://www.cnx-software.com/2025/06/18/sonoff-iplug-s60-zigbee-smart-plug-s60zbtpf-review-with-ewelink-and-home-assistant"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Sonoff S60ZBTPF — Z2M vs ZHA review</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://neilturner.me.uk/2025/09/17/energy-monitoring-over-matter"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Matter energy monitoring caveat</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://matter-smarthome.de/en/products/shelly-announces-additional-matter-products-for-2026"
-              target="_blank"
-              rel="noopener noreferrer"
-              >Shelly Plug C Gen4 announcement</a
-            >
-          </li>
-        </ul>
-      </section>
+        <section id="references" class="references" aria-labelledby="references-title">
+          <h2 id="references-title">References</h2>
+          <p class="snapshot">Numbered in order of first citation. All URLs accessed 5 November 2026. Full source ledger: <a href="sources.jsonl">sources.jsonl</a>.</p>
+          <ul class="reference-list">
+            <li id="ref-1"><span class="ref-n">[1]</span> <span class="ref-body"><span class="ref-publisher">Shelly.</span> <cite>Shelly Plug S Gen3 White | Smart Wi-Fi Plug with Power Monitoring | Shelly Europe</cite>. <a href="https://www.shelly.com/products/shelly-plug-s-gen3" target="_blank" rel="noopener noreferrer">https://www.shelly.com/products/shelly-plug-s-gen3</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-2"><span class="ref-n">[2]</span> <span class="ref-body"><span class="ref-publisher">Shelly.</span> <cite>Shelly Plug M Gen3 White</cite>. <a href="https://www.shelly.com/products/shelly-plug-m-gen3-white" target="_blank" rel="noopener noreferrer">https://www.shelly.com/products/shelly-plug-m-gen3-white</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-3"><span class="ref-n">[3]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Search results for “shelly plug”</cite>. <a href="https://www.proshop.dk/?s=shelly+plug" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/?s=shelly+plug</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-4"><span class="ref-n">[4]</span> <span class="ref-body"><span class="ref-publisher">avXperten.</span> <cite>Shelly smart home stikkontakt</cite>. <a href="https://www.avxperten.dk/shelly-smart-home-stikkontakt" target="_blank" rel="noopener noreferrer">https://www.avxperten.dk/shelly-smart-home-stikkontakt</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-5"><span class="ref-n">[5]</span> <span class="ref-body"><span class="ref-publisher">Shelly Knowledge Base.</span> <cite>Shelly Plug S MTR Gen3 | Shelly Knowledge Base</cite>. <a href="https://kb.shelly.cloud/knowledge-base/shelly-plug-s-mtr-gen3" target="_blank" rel="noopener noreferrer">https://kb.shelly.cloud/knowledge-base/shelly-plug-s-mtr-gen3</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-6"><span class="ref-n">[6]</span> <span class="ref-body"><span class="ref-publisher">Shelly.</span> <cite>Shelly Smart Plugs | Shelly Europe</cite>. <a href="https://www.shelly.com/pages/shelly-smart-plugs" target="_blank" rel="noopener noreferrer">https://www.shelly.com/pages/shelly-smart-plugs</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-7"><span class="ref-n">[7]</span> <span class="ref-body"><span class="ref-publisher">Shelly Support.</span> <cite>Comparison of Shelly Plug S Gen3, Shelly Plug PM Gen3, Shelly Plug M Gen3, Shelly Outdoor Plug S Gen3 :</cite>. <a href="https://support.shelly.cloud/en/support/solutions/articles/103000390376-comparison-of-shelly-plug-s-gen3-shelly-plug-pm-gen3-shelly-plug-m-gen3-shelly-outdoor-plug-s-gen3" target="_blank" rel="noopener noreferrer">https://support.shelly.cloud/en/support/solutions/articles/103000390376-comparison-of-shelly-plug-s-gen3-shelly-plug-pm-gen3-shelly-plug-m-gen3-shelly-outdoor-plug-s-gen3</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-8"><span class="ref-n">[8]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Eve Energy Smart Plug Power Meter Matter</cite>. <a href="https://www.proshop.dk/Smart-Home/Eve-Energy-Smart-Plug-Power-Meter-Matter/3154143" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/Smart-Home/Eve-Energy-Smart-Plug-Power-Meter-Matter/3154143</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-9"><span class="ref-n">[9]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Aqara Matter Smart Power Plug H2 EU RGB</cite>. <a href="https://www.proshop.dk/Smart-Home/Aqara-Matter-Smart-Power-Plug-H2-EU-RGB/3494479" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/Smart-Home/Aqara-Matter-Smart-Power-Plug-H2-EU-RGB/3494479</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-10"><span class="ref-n">[10]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Sonoff S60ZBTPF ZigBee smart stikkontakt</cite>. <a href="https://www.proshop.dk/Smart-Home/Sonoff-S60ZBTPF-ZigBee-smart-stikkontakt/3491818" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/Smart-Home/Sonoff-S60ZBTPF-ZigBee-smart-stikkontakt/3491818</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-11"><span class="ref-n">[11]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>THIRDREALITY Smart Plug E2 Type F</cite>. <a href="https://www.proshop.dk/Smart-Home/THIRDREALITY-Smart-Plug-E2-Type-F/3397625" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/Smart-Home/THIRDREALITY-Smart-Plug-E2-Type-F/3397625</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-12"><span class="ref-n">[12]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>frient Smart Plug Mini 2 Schuko F</cite>. <a href="https://www.proshop.dk/Smart-Home/frient-Smart-Plug-Mini-2-Schuko-F/3208952" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/Smart-Home/frient-Smart-Plug-Mini-2-Schuko-F/3208952</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-13"><span class="ref-n">[13]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Osram SMART+ MATTER Plug energimåler 10 A hvid WiFi</cite>. <a href="https://www.proshop.dk/Smart-Home/Osram-SMART-MATTER-Plug-energimaaler-10A-hvid-WiFi/3409987" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/Smart-Home/Osram-SMART-MATTER-Plug-energimaaler-10A-hvid-WiFi/3409987</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-14"><span class="ref-n">[14]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Osram SMART+ MATTER Outdoor Compact Plug 16 A energimåler WiFi</cite>. <a href="https://www.proshop.dk/Smart-Home/Osram-SMART-MATTER-Outdoor-Compact-Plug-16A-energimaaler-WiFi/3409988" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/Smart-Home/Osram-SMART-MATTER-Outdoor-Compact-Plug-16A-energimaaler-WiFi/3409988</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-15"><span class="ref-n">[15]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Meross Matter Smart Plug with Energy Monitor 2-pack</cite>. <a href="https://www.proshop.dk/Smart-Home/Meross-Matter-Smart-Plug-with-Enery-Monitor-2-Pack/3399471" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/Smart-Home/Meross-Matter-Smart-Plug-with-Enery-Monitor-2-Pack/3399471</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-16"><span class="ref-n">[16]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Bosch Smart stikkontakt kompakt M</cite>. <a href="https://www.proshop.dk/Smart-Home/Bosch-Smart-stikkontakt-kompakt-M/3418724" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/Smart-Home/Bosch-Smart-stikkontakt-kompakt-M/3418724</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-17"><span class="ref-n">[17]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Gosund EP2-Z 10 A Smart ZigBee Outlet</cite>. <a href="https://www.proshop.dk/Smart-Home/Gosund-EP2-Z-10A-Smart-ZigBee-Outlet/3408582" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/Smart-Home/Gosund-EP2-Z-10A-Smart-ZigBee-Outlet/3408582</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-18"><span class="ref-n">[18]</span> <span class="ref-body"><span class="ref-publisher">Eve.</span> <cite>Eve Energy</cite>. <a href="https://www.evehome.com/en/eve-energy" target="_blank" rel="noopener noreferrer">https://www.evehome.com/en/eve-energy</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-19"><span class="ref-n">[19]</span> <span class="ref-body"><span class="ref-publisher">Aqara.</span> <cite>Aqara Power Plug H2 EU</cite>. <a href="https://www.aqara.com/en/product/power-plug-h2-eu" target="_blank" rel="noopener noreferrer">https://www.aqara.com/en/product/power-plug-h2-eu</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-20"><span class="ref-n">[20]</span> <span class="ref-body"><span class="ref-publisher">CNX Software.</span> <cite>Sonoff S60ZBTPF review with eWeLink and Home Assistant</cite>. <a href="https://www.cnx-software.com/2025/06/18/sonoff-iplug-s60-zigbee-smart-plug-s60zbtpf-review-with-ewelink-and-home-assistant" target="_blank" rel="noopener noreferrer">https://www.cnx-software.com/2025/06/18/sonoff-iplug-s60-zigbee-smart-plug-s60zbtpf-review-with-ewelink-and-home-assistant</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-21"><span class="ref-n">[21]</span> <span class="ref-body"><span class="ref-publisher">frient.</span> <cite>frient Smart Plug Mini 2</cite>. <a href="https://www.frient.com/products/smart-plug-mini-2" target="_blank" rel="noopener noreferrer">https://www.frient.com/products/smart-plug-mini-2</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-22"><span class="ref-n">[22]</span> <span class="ref-body"><span class="ref-publisher">SmartHomeScene.</span> <cite>Meross Matter Smart Plug MSS315 review and Home Assistant integration</cite>. <a href="https://smarthomescene.com/reviews/meross-matter-smart-plug-mss315-review-and-home-assistant-integration" target="_blank" rel="noopener noreferrer">https://smarthomescene.com/reviews/meross-matter-smart-plug-mss315-review-and-home-assistant-integration</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-23"><span class="ref-n">[23]</span> <span class="ref-body"><span class="ref-publisher">Neil Turner.</span> <cite>Energy monitoring over Matter</cite>. <a href="https://neilturner.me.uk/2025/09/17/energy-monitoring-over-matter" target="_blank" rel="noopener noreferrer">https://neilturner.me.uk/2025/09/17/energy-monitoring-over-matter</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-24"><span class="ref-n">[24]</span> <span class="ref-body"><span class="ref-publisher">Bosch Smart Home.</span> <cite>Plug Compact M help</cite>. <a href="https://www.bosch-smarthome.com/gb/en/support/help/product-help/plug-compact-m-help" target="_blank" rel="noopener noreferrer">https://www.bosch-smarthome.com/gb/en/support/help/product-help/plug-compact-m-help</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-25"><span class="ref-n">[25]</span> <span class="ref-body"><span class="ref-publisher">MatterHome.</span> <cite>Bosch Smart Plug Compact M</cite>. <a href="https://matterhome.io/devices/bosch-smart-plug-compact-m" target="_blank" rel="noopener noreferrer">https://matterhome.io/devices/bosch-smart-plug-compact-m</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-26"><span class="ref-n">[26]</span> <span class="ref-body"><span class="ref-publisher">Nous.</span> <cite>Nous A1T</cite>. <a href="https://nous.technology/product/a1t2.html" target="_blank" rel="noopener noreferrer">https://nous.technology/product/a1t2.html</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-27"><span class="ref-n">[27]</span> <span class="ref-body"><span class="ref-publisher">Smarter Home Shop.</span> <cite>Nous A1T Wi-Fi smart plug with power meter — EU shop</cite>. <a href="https://www.smarterhomeshop.eu/Nous-A1T-WiFi-smart-plug-with-power-meter-factory" target="_blank" rel="noopener noreferrer">https://www.smarterhomeshop.eu/Nous-A1T-WiFi-smart-plug-with-power-meter-factory</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-28"><span class="ref-n">[28]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Search results for “shelly kompatibel”</cite>. <a href="https://www.proshop.dk/?s=shelly+kompatibel" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/?s=shelly+kompatibel</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-29"><span class="ref-n">[29]</span> <span class="ref-body"><span class="ref-publisher">avXperten.</span> <cite>EcoFlow Stream Smart Plug — Shelly Kompatibel, 2500W</cite>. <a href="https://www.avxperten.dk/ecoflow-stream-smart-plug-shelly-kompatibel-2500w.asp" target="_blank" rel="noopener noreferrer">https://www.avxperten.dk/ecoflow-stream-smart-plug-shelly-kompatibel-2500w.asp</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-30"><span class="ref-n">[30]</span> <span class="ref-body"><span class="ref-publisher">EcoFlow.</span> <cite>EcoFlow × Shelly Smart Plug</cite>. <a href="https://eu.ecoflow.com/products/shelly-smart-plug" target="_blank" rel="noopener noreferrer">https://eu.ecoflow.com/products/shelly-smart-plug</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-31"><span class="ref-n">[31]</span> <span class="ref-body"><span class="ref-publisher">Shelly Support.</span> <cite>Support scope for Powered by Shelly devices</cite>. <a href="https://support.shelly.cloud/en/support/solutions/articles/103000406137-support-scope-for-powered-by-shelly-devices" target="_blank" rel="noopener noreferrer">https://support.shelly.cloud/en/support/solutions/articles/103000406137-support-scope-for-powered-by-shelly-devices</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-32"><span class="ref-n">[32]</span> <span class="ref-body"><span class="ref-publisher">Shelly.</span> <cite>Powered by Shelly collection</cite>. <a href="https://us.shelly.com/collections/powered-by-shelly" target="_blank" rel="noopener noreferrer">https://us.shelly.com/collections/powered-by-shelly</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-33"><span class="ref-n">[33]</span> <span class="ref-body"><span class="ref-publisher">Reddit r/homeassistant.</span> <cite>Amazon sent me 2 Shelly PM Mini Gen3 that look like counterfeits</cite>. <a href="https://www.reddit.com/r/homeassistant/comments/1qm0mdr/amazon_sent_me_2_shelly_pm_mini_gen3_that_look" target="_blank" rel="noopener noreferrer">https://www.reddit.com/r/homeassistant/comments/1qm0mdr/amazon_sent_me_2_shelly_pm_mini_gen3_that_look</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-34"><span class="ref-n">[34]</span> <span class="ref-body"><span class="ref-publisher">Proshop.</span> <cite>Search results for “smart stikkontakt”</cite>. <a href="https://www.proshop.dk/?s=smart+stikkontakt" target="_blank" rel="noopener noreferrer">https://www.proshop.dk/?s=smart+stikkontakt</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+<li id="ref-35"><span class="ref-n">[35]</span> <span class="ref-body"><span class="ref-publisher">Matter-SmartHome.</span> <cite>Shelly announces additional Matter products for 2026</cite>. <a href="https://matter-smarthome.de/en/products/shelly-announces-additional-matter-products-for-2026" target="_blank" rel="noopener noreferrer">https://matter-smarthome.de/en/products/shelly-announces-additional-matter-products-for-2026</a> <span class="ref-accessed">Accessed 5 November 2026.</span></span></li>
+          </ul>
+        </section>
+      </div>
     </main>
-
     <footer>
       <div class="wrap">
         <strong>Research bundle:</strong> 2026-11-05-shelly-plug-alternatives.
