@@ -1,0 +1,14 @@
+{
+  "job_id": null,
+  "question": "How can a Live Linux USB be booted on a 2013-2014 Intel MacBook to run open-source data recovery tools, and which tools can perform an HFS+ deep scan to recover deleted files that are no longer listed in a directory?",
+  "depth": "thorough",
+  "status": "completed",
+  "provider": "builtin+tavily",
+  "created_at": "2026-11-06T10:59:28Z",
+  "completed_at": "2026-11-06T11:25:00Z",
+  "output_dir": "research/2026-11-06-macbook-hfs-deleted-recovery",
+  "query_count": 45,
+  "source_count": 53,
+  "tavily_credits": 2,
+  "notes": "Manual bundle. Built-in websearch/webfetch plus two Tavily searches. Source-code inspection of TSK hfs.cpp/hfs_dent.cpp/hfs_journal.cpp and hfsprescue hfsprescue.cpp provided the decisive evidence. No report.html. See audit.md."
+}

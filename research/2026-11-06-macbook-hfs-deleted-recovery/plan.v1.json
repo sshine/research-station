@@ -1,0 +1,92 @@
+{
+  "id": "2026-11-06-macbook-hfs-plan-v1",
+  "version": 1,
+  "raw_topic": "How can a Live Linux USB be booted on a 2013-2014 Intel MacBook to run open-source data recovery tools, and which of those tools can perform an HFS+ deep scan to recover deleted files that are no longer listed in a directory?",
+  "sharpened_topic": "Establish the reliable UEFI boot path for a 2013-2014 MacBook, determine the actual on-disk filesystem (HFS+ vs APFS vs CoreStorage/FileVault), and evaluate the LinuxLinks data-recovery tools plus hfsprescue, The Sleuth Kit, PhotoRec, TestDisk, fsck.hfsplus, libfvde and APFS tooling for genuine HFS+ deleted-file recovery.",
+  "subquestions": [
+    {
+      "id": "sq1-filesystem",
+      "question": "Is the MacBook's volume actually HFS+, APFS, or CoreStorage/FileVault, and how is that checked without writing to it?",
+      "source_class": "primary",
+      "query_seeds": [
+        "macOS High Sierra automatically converts SSD to APFS",
+        "diskutil info file system encrypted TRIM",
+        "Linux detect HFS+ APFS CoreStorage lsblk blkid fsstat"
+      ],
+      "success_criterion": "Apple's APFS conversion rule is retrieved, plus concrete read-only identification commands for macOS and Linux."
+    },
+    {
+      "id": "sq2-hfs-deletion",
+      "question": "What exactly does HFS+ remove when a file is deleted, and which structures can retain recoverable evidence?",
+      "source_class": "primary/reference",
+      "query_seeds": [
+        "HFS+ catalog B-tree deleted file extents overflow",
+        "HFS+ journal deleted file recovery DFRWS",
+        "Apple TN1150 HFS Plus volume format catalog journal"
+      ],
+      "success_criterion": "The catalog/extents/allocation/journal roles and the deletion sequence are established from Apple TN1150 and forensic sources."
+    },
+    {
+      "id": "sq3-tool-matrix",
+      "question": "Which roundup tools are imaging, partition repair, carving, filesystem-aware recovery, or unrelated?",
+      "source_class": "primary",
+      "query_seeds": [
+        "TestDisk undelete HFS+ supported filesystems",
+        "PhotoRec HFS+ file carving",
+        "Sleuth Kit HFS+ deleted files fls",
+        "ext4magic ext4 only",
+        "OpenSuperClone cloning imaging"
+      ],
+      "success_criterion": "Each of the 18 roundup tools is classified with a primary source for the classification."
+    },
+    {
+      "id": "sq4-hfs-deep-scan",
+      "question": "Which open-source Linux tools can scan HFS+ for deleted catalog records or file data, and how do they work?",
+      "source_class": "primary/source",
+      "query_seeds": [
+        "hfsprescue restore deleted files HFS+",
+        "hfsprescue source ScanBuffer catalog records",
+        "Sleuth Kit hfs_journal not implemented",
+        "PhotoRec HFS+ filesystem type free space"
+      ],
+      "success_criterion": "At least one tool is shown, from documentation and source code, to scan raw HFS+ blocks for catalog records; the limits of TSK and PhotoRec are shown from source/docs."
+    },
+    {
+      "id": "sq5-mac-boot",
+      "question": "What is the reliable way to boot a Linux live USB on a 2013-2014 MacBook, and what are the model-specific failure modes?",
+      "source_class": "primary/secondary",
+      "query_seeds": [
+        "Apple startup key combinations Intel Mac Option T",
+        "rEFInd install macOS bless ESP",
+        "Ventoy MacBookPro11,1 regression",
+        "MacBookPro11,3 nomodeset nouveau",
+        "BCM4360 broadcom-wl MacBook"
+      ],
+      "success_criterion": "The boot keys, firmware-password constraint, UEFI USB layout, rEFInd fallback, and at least three model-specific hardware quirks are documented."
+    },
+    {
+      "id": "sq6-alternatives",
+      "question": "What are the safer alternatives to booting Linux on the Mac, and what are the destructive caveats (TRIM, encryption, compression, fragmentation)?",
+      "source_class": "secondary/commercial",
+      "query_seeds": [
+        "OWC Envoy Pro 2013 MacBook PCIe SSD enclosure",
+        "Mac target disk mode Linux Thunderbolt",
+        "Apple SSD TRIM deleted files unrecoverable",
+        "HFS+ compression decmpfs recovery"
+      ],
+      "success_criterion": "The SSD-removal path is confirmed with a compatibility list; TRIM, FileVault and HFS+ compression limits are stated with sources."
+    }
+  ],
+  "constraints": {
+    "include_domains": [],
+    "exclude_domains": []
+  },
+  "budget": {
+    "max_queries": 30,
+    "max_sources": 50,
+    "max_llm_tokens": 180000,
+    "max_credits": 120,
+    "max_wall_seconds": 1800
+  },
+  "created_at": "2026-11-06T10:59:28Z"
+}
