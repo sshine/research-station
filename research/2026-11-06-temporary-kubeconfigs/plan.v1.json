@@ -1,0 +1,60 @@
+{
+  "id": "01a1b2d0-c5e7-74fd-afc2-f0b08755b22d",
+  "version": 1,
+  "raw_topic": "Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal",
+  "sharpened_topic": "Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal",
+  "subquestions": [
+    {
+      "id": "01a1b2d0-c5e7-74fd-afc2-f0ac70a22af1",
+      "question": "Overview and definitions: Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal",
+      "source_class": "reference",
+      "query_seeds": [
+        "Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal overview",
+        "what is Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal definition"
+      ],
+      "success_criterion": "At least two independent sources define the topic consistently."
+    },
+    {
+      "id": "01a1b2d0-c5e7-74fd-afc2-f0ad853f2705",
+      "question": "Primary sources and documentation: Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal",
+      "source_class": "primary",
+      "query_seeds": [
+        "Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal official documentation",
+        "Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal primary source"
+      ],
+      "success_criterion": "At least one primary source is retrieved."
+    },
+    {
+      "id": "01a1b2d0-c5e7-74fd-afc2-f0aed035a46a",
+      "question": "Limitations, risks, and criticisms: Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal",
+      "source_class": "secondary",
+      "query_seeds": [
+        "Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal limitations",
+        "Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal criticism risks"
+      ],
+      "success_criterion": "At least two sources name a concrete limitation or risk."
+    },
+    {
+      "id": "01a1b2d0-c5e7-74fd-afc2-f0afd555b080",
+      "question": "Recent developments and comparisons: Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal",
+      "source_class": "news",
+      "query_seeds": [
+        "Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal recent developments",
+        "Temporary scoped kubeconfigs for Kubernetes: alternatives to Infisical Community Edition that combine ServiceAccounts, kubeconfig issuance, and a web-based portal comparison alternatives"
+      ],
+      "success_criterion": "At least one source is dated within the last year, or recency is noted as unavailable."
+    }
+  ],
+  "constraints": {
+    "include_domains": [],
+    "exclude_domains": []
+  },
+  "budget": {
+    "max_queries": 40,
+    "max_sources": 60,
+    "max_llm_tokens": 200000,
+    "max_credits": 100,
+    "max_wall_seconds": 900
+  },
+  "created_at": "2026-11-06T21:43:09.031104262Z"
+}
