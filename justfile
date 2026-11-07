@@ -36,6 +36,10 @@ secrets-set:
 secrets-set-llm:
     secretspec set OPENCODE_GO_API_KEY
 
+# Store the optional Redditapis key that enables Reddit search.
+secrets-set-reddit:
+    secretspec set REDDIT_API_KEY
+
 # Report which provider credentials are missing from the configured provider.
 secrets-check:
     secretspec check --reason {{quote(secretspec_reason)}}
@@ -52,7 +56,19 @@ search query *args='':
 extract *urls:
     secretspec run --reason {{quote(secretspec_reason)}} -- cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- provider extract {{urls}}
 
-# Run a research question end to end with Tavily.
+# Search Reddit through Redditapis, with credentials from secretspec.
+reddit-search query *args='':
+    secretspec run --reason {{quote(secretspec_reason)}} -- cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- provider reddit-search "{{query}}" {{args}}
+
+# Fetch one Reddit thread and its comments.
+reddit-thread id_or_url *args='':
+    secretspec run --reason {{quote(secretspec_reason)}} -- cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- provider reddit-thread "{{id_or_url}}" {{args}}
+
+# Verify the Reddit key with one live read.
+reddit-test:
+    secretspec run --reason {{quote(secretspec_reason)}} -- cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- provider reddit-test
+
+# Run a research question end to end with Tavily and optional Reddit.
 research query *args='':
     secretspec run --reason {{quote(secretspec_reason)}} -- cargo run -q --manifest-path research-daemon/Cargo.toml -p research-cli -- run "{{query}}" {{args}}
 

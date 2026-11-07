@@ -37,6 +37,31 @@ pub fn resolve_api_key(config: &Config) -> Result<String, ServiceError> {
     }
 }
 
+/// Resolve the optional Reddit key from the environment, then SecretSpec.
+///
+/// A missing key is not an error: Reddit is an optional provider and the
+/// daemon degrades to web search when it is not configured.
+pub fn resolve_optional_reddit_api_key(config: &Config) -> Result<Option<String>, ServiceError> {
+    if let Ok(Some(key)) = config.reddit_api_key() {
+        return Ok(Some(key));
+    }
+
+    let name = &config.provider.reddit.api_key_env;
+    let manifest = config.provider.reddit.secretspec_file.as_deref().or(config
+        .provider
+        .tavily
+        .secretspec_file
+        .as_deref());
+    match resolve_from_secretspec(manifest, name) {
+        Ok(Some(key)) => Ok(Some(key)),
+        Ok(None) | Err(SecretSpecError::NoManifest) => Ok(None),
+        Err(err) => Err(ServiceError::Message(format!(
+            "could not resolve {name} through SecretSpec: {err}. \
+             Run `just secrets-check` to inspect the configured provider."
+        ))),
+    }
+}
+
 /// Resolve the model provider key from the environment, then SecretSpec.
 ///
 /// The primary variable is `llm.api_key_env`; older names such as
@@ -151,6 +176,25 @@ mod tests {
         config.provider.tavily.api_key_env = name.clone();
 
         assert_eq!(resolve_api_key(&config).unwrap(), "from-environment");
+        unsafe { std::env::remove_var(&name) };
+    }
+
+    #[test]
+    fn reddit_key_is_optional_and_read_from_the_environment() {
+        let name = format!("RESEARCH_TEST_REDDIT_KEY_{}", std::process::id());
+        // SAFETY: the name is unique to this test.
+        unsafe { std::env::remove_var(&name) };
+
+        let mut config = Config::default();
+        config.provider.reddit.api_key_env = name.clone();
+        assert_eq!(resolve_optional_reddit_api_key(&config).unwrap(), None);
+
+        // SAFETY: the name is unique to this test.
+        unsafe { std::env::set_var(&name, "reddit-from-environment") };
+        assert_eq!(
+            resolve_optional_reddit_api_key(&config).unwrap().as_deref(),
+            Some("reddit-from-environment")
+        );
         unsafe { std::env::remove_var(&name) };
     }
 

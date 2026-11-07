@@ -7,8 +7,12 @@
 
 pub mod action;
 pub mod prompt;
+pub mod reddit;
 pub mod runner;
 
 pub use action::{AgentAction, PlanDraft, SubquestionDraft, SynthesisDraft};
 pub use prompt::PROMPT_VERSION;
+pub use reddit::{
+    explicit_reddit_mention, opinion_intent, should_enable_reddit, should_preseed_reddit,
+};
 pub use runner::{AgentError, AgentOutcome, AgentRunner};

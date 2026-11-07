@@ -4,7 +4,10 @@ use std::time::Duration;
 use anyhow::Context;
 use clap::Parser;
 use research_core::Config;
-use research_service::{Worker, WorkerOptions, build_llm_provider, build_provider};
+use research_provider::RedditProvider;
+use research_service::{
+    Worker, WorkerOptions, build_llm_provider, build_provider, build_reddit_provider,
+};
 use research_store::{AgentStore, JobStore};
 use tracing_subscriber::EnvFilter;
 
@@ -65,11 +68,15 @@ async fn main() -> anyhow::Result<()> {
     let provider = build_provider(&config, cli.fake)
         .await
         .context("creating provider")?;
+    let reddit = build_reddit_provider(&config, cli.fake)
+        .await
+        .context("creating Reddit provider")?;
+    let reddit_label = reddit.as_ref().map(RedditProvider::id).unwrap_or("off");
     let llm = build_llm_provider(&config, cli.fake_llm).context("creating model provider")?;
     let transcripts = AgentStore::open(config.database_path())
         .await
         .context("opening agent transcript store")?;
-    let worker = Worker::with_agent(store, provider, llm, transcripts, options);
+    let worker = Worker::with_agent_reddit(store, provider, reddit, llm, transcripts, options);
     worker.reap_expired().await?;
 
     if cli.once {
@@ -79,9 +86,10 @@ async fn main() -> anyhow::Result<()> {
     }
 
     println!(
-        "researchd: owner={} provider={} database={}",
+        "researchd: owner={} provider={} reddit={} database={}",
         worker.options().owner,
         if cli.fake { "fake" } else { "tavily" },
+        reddit_label,
         config.database_path().display()
     );
     worker

@@ -3277,6 +3277,7 @@ dependencies = [
  "anyhow",
  "clap",
  "research-core",
+ "research-provider",
  "research-service",
  "research-store",
  "tokio",

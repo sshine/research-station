@@ -5,7 +5,7 @@ pub mod error;
 pub mod runner;
 pub mod worker;
 
-pub use credentials::{resolve_api_key, resolve_llm_api_key};
+pub use credentials::{resolve_api_key, resolve_llm_api_key, resolve_optional_reddit_api_key};
 pub use error::ServiceError;
 pub use research_pipeline::{Bundle, RunMetadata};
 pub use runner::{RunOutcome, Runner};
@@ -13,9 +13,12 @@ pub use worker::{Worker, WorkerOptions};
 
 use std::sync::Arc;
 
-use research_core::{Config, Job, JobId};
+use research_core::{Config, Job, JobId, RedditMode};
 use research_llm::{AnyLlm, FakeLlm, OpenAiCompatibleConfig, OpenAiCompatibleProvider};
-use research_provider::{AnyProvider, Budget, FakeProvider, TavilyProvider};
+use research_provider::{
+    AnyProvider, AnyReddit, Budget, FakeProvider, FakeRedditProvider, RedditapisProvider,
+    TavilyProvider,
+};
 use research_store::{BlobStore, JobStore, SqliteCache};
 
 /// Build the production Tavily provider from resolved configuration.
@@ -44,6 +47,46 @@ pub async fn build_provider(config: &Config, fake: bool) -> Result<AnyProvider, 
     } else {
         Ok(AnyProvider::Tavily(build_tavily_provider(config).await?))
     }
+}
+
+/// Build the optional Reddit provider.
+///
+/// Returns `None` when Reddit is disabled or no key is configured. A missing
+/// key is a normal state, not a startup failure: the agent simply keeps using
+/// web search. The deterministic fake is selected by `fake`.
+pub async fn build_reddit_provider(
+    config: &Config,
+    fake: bool,
+) -> Result<Option<AnyReddit>, ServiceError> {
+    if fake {
+        return Ok(Some(AnyReddit::Fake(FakeRedditProvider)));
+    }
+    if config.provider.reddit.mode == RedditMode::Never {
+        return Ok(None);
+    }
+    if config.provider.reddit.backend != "redditapis" {
+        return Err(ServiceError::Message(format!(
+            "unsupported reddit backend '{}'; only 'redditapis' is implemented",
+            config.provider.reddit.backend
+        )));
+    }
+
+    let Some(api_key) = resolve_optional_reddit_api_key(config)? else {
+        tracing::warn!(
+            key = %config.provider.reddit.api_key_env,
+            "Reddit is enabled but no key is configured; falling back to web search"
+        );
+        return Ok(None);
+    };
+
+    let cache = Arc::new(SqliteCache::open(config.cache_path()).await?);
+    let blobs = Arc::new(BlobStore::new(config.blob_dir()));
+    let budget = Arc::new(Budget::new(
+        config.budget.max_queries,
+        config.budget.max_credits,
+    ));
+    let provider = RedditapisProvider::new(&config.provider.reddit, api_key, cache, blobs, budget)?;
+    Ok(Some(AnyReddit::Redditapis(provider)))
 }
 
 /// Build the configured model provider, or the deterministic fake.

@@ -5,7 +5,7 @@ use chrono::Utc;
 use research_agent::AgentRunner;
 use research_core::{Config, Engine, Job, JobStatus};
 use research_llm::AnyLlm;
-use research_provider::SearchProvider;
+use research_provider::{AnyReddit, SearchProvider};
 use research_store::{AgentStore, JobStore};
 use tokio::sync::watch;
 use tokio::time::MissedTickBehavior;
@@ -45,6 +45,7 @@ enum StopSignal {
 pub struct Worker<P: SearchProvider> {
     store: JobStore,
     provider: P,
+    reddit: Option<AnyReddit>,
     llm: Option<AnyLlm>,
     transcripts: Option<AgentStore>,
     options: WorkerOptions,
@@ -57,6 +58,7 @@ impl<P: SearchProvider> Worker<P> {
         Self {
             store,
             provider,
+            reddit: None,
             llm: None,
             transcripts: None,
             options,
@@ -71,9 +73,22 @@ impl<P: SearchProvider> Worker<P> {
         transcripts: AgentStore,
         options: WorkerOptions,
     ) -> Self {
+        Self::with_agent_reddit(store, provider, None, llm, transcripts, options)
+    }
+
+    /// Worker that can execute the agent engine and optionally query Reddit.
+    pub fn with_agent_reddit(
+        store: JobStore,
+        provider: P,
+        reddit: Option<AnyReddit>,
+        llm: AnyLlm,
+        transcripts: AgentStore,
+        options: WorkerOptions,
+    ) -> Self {
         Self {
             store,
             provider,
+            reddit,
             llm: Some(llm),
             transcripts: Some(transcripts),
             options,
@@ -245,9 +260,15 @@ impl<P: SearchProvider> Worker<P> {
                             job.id
                         ))
                     })?;
-                    let outcome = AgentRunner::new(&self.store, &self.provider, llm, transcripts)
-                        .run(job.clone())
-                        .await?;
+                    let outcome = AgentRunner::new(
+                        &self.store,
+                        &self.provider,
+                        self.reddit.as_ref(),
+                        llm,
+                        transcripts,
+                    )
+                    .run(job.clone())
+                    .await?;
                     Ok::<RunOutcome, ServiceError>(RunOutcome {
                         status: outcome.status,
                         report_path: outcome.report_path,

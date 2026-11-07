@@ -4,11 +4,14 @@ use std::time::Duration;
 
 use async_trait::async_trait;
 use research_core::{
-    Depth, Engine, ExtractRequest, ExtractResponse, JobId, JobStatus, ResearchRequest,
+    Depth, Engine, ExtractRequest, ExtractResponse, JobId, JobStatus, RedditMode, ResearchRequest,
     ReviewPolicy, SearchRequest, SearchResponse,
 };
+use research_llm::{AnyLlm, FakeLlm};
 use research_pipeline::{Bundle, RunMetadata};
-use research_provider::{FakeProvider, ProviderError, ProviderResponse, SearchProvider};
+use research_provider::{
+    AnyReddit, FakeProvider, FakeRedditProvider, ProviderError, ProviderResponse, SearchProvider,
+};
 use research_service::{Worker, WorkerOptions};
 use research_store::JobStore;
 
@@ -74,6 +77,90 @@ async fn agent_run_produces_a_transcript_and_bundle() {
             .any(|event| event.kind == "synthesis_response")
     );
     assert!(events.iter().any(|event| event.kind == "run_end"));
+}
+
+#[tokio::test]
+async fn reddit_agent_adds_community_sources_and_records_the_trigger() {
+    let dir = tempfile::tempdir().unwrap();
+    let store = JobStore::open(dir.path().join("jobs.sqlite"))
+        .await
+        .unwrap();
+    let transcripts = research_store::AgentStore::open(dir.path().join("jobs.sqlite"))
+        .await
+        .unwrap();
+    let bundle_dir = dir.path().join("research/2026-11-04-reddit-run");
+    let mut request = request("What do people say about the fake topic?", Depth::Quick);
+    request.engine = Engine::Agent;
+    request.reddit = RedditMode::Auto;
+    let job = store.enqueue(request, &bundle_dir, None).await.unwrap().job;
+
+    let llm = AnyLlm::Fake(FakeLlm::agent_with_reddit());
+    let worker = Worker::with_agent_reddit(
+        store.clone(),
+        FakeProvider,
+        Some(AnyReddit::Fake(FakeRedditProvider)),
+        llm,
+        transcripts.clone(),
+        worker_options(),
+    );
+    assert_eq!(worker.run_until_idle().await.unwrap(), 1);
+
+    let job = store.require(job.id).await.unwrap();
+    assert_eq!(job.status, JobStatus::Completed);
+
+    let sources = std::fs::read_to_string(bundle_dir.join("sources.jsonl")).unwrap();
+    assert!(sources.contains("reddit.com/r/faketest"));
+    assert!(sources.contains("fake Reddit thread"));
+    let first_source: serde_json::Value =
+        serde_json::from_str(sources.lines().next().unwrap()).unwrap();
+    assert_eq!(first_source["source_type"], "community");
+
+    let events = transcripts.events(job.id).await.unwrap();
+    assert!(events.iter().any(|event| event.kind == "reddit_enabled"));
+    assert!(events.iter().any(|event| {
+        event.kind == "tool_result"
+            && event.payload.get("tool").and_then(|value| value.as_str()) == Some("reddit_search")
+    }));
+}
+
+#[tokio::test]
+async fn reddit_action_without_a_provider_falls_back_to_web_search() {
+    let dir = tempfile::tempdir().unwrap();
+    let store = JobStore::open(dir.path().join("jobs.sqlite"))
+        .await
+        .unwrap();
+    let transcripts = research_store::AgentStore::open(dir.path().join("jobs.sqlite"))
+        .await
+        .unwrap();
+    let bundle_dir = dir.path().join("research/2026-11-04-reddit-fallback-run");
+    let mut request = request("What do people say about the fake topic?", Depth::Quick);
+    request.engine = Engine::Agent;
+    request.reddit = RedditMode::Auto;
+    let job = store.enqueue(request, &bundle_dir, None).await.unwrap().job;
+
+    // The model asks for Reddit, but the worker has no Reddit provider.
+    let llm = AnyLlm::Fake(FakeLlm::agent_with_reddit());
+    let worker = Worker::with_agent(
+        store.clone(),
+        FakeProvider,
+        llm,
+        transcripts.clone(),
+        worker_options(),
+    );
+    assert_eq!(worker.run_until_idle().await.unwrap(), 1);
+
+    let job = store.require(job.id).await.unwrap();
+    assert_eq!(job.status, JobStatus::Completed);
+
+    let sources = std::fs::read_to_string(bundle_dir.join("sources.jsonl")).unwrap();
+    assert!(!sources.contains("reddit.com/r/faketest"));
+    assert!(sources.contains("example1.test"));
+
+    let events = transcripts.events(job.id).await.unwrap();
+    assert!(events.iter().any(|event| {
+        event.kind == "tool_result"
+            && event.payload.get("error").and_then(|value| value.as_str()) == Some("unavailable")
+    }));
 }
 
 #[tokio::test]

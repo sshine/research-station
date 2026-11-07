@@ -1,10 +1,17 @@
 # Reddit search for research-station: capability review and access options
 
 **Date:** 2026-11-06
-**Status:** investigation complete; provider choice and trigger policy need a decision.
+**Status:** investigation complete; Phase 1+2 implemented on 2026-11-07.
 **Scope:** the external `reddit-research-skills` repository, Reddit's official Data
 API in 2026, third-party Reddit search APIs, and how a dedicated Reddit tool
 should fit the existing `research-agent` loop.
+
+**Implementation note (2026-11-07):** Redditapis is the selected first backend.
+The provider, CLI (`provider reddit-search|reddit-thread|reddit-test`), optional
+`REDDIT_API_KEY`, deterministic trigger, pre-seeding, agent action, community
+evidence mapping, and fake-provider end-to-end tests are implemented. A live
+smoke test is the only step that still needs a real key. The rest of this
+document is the evidence behind those choices.
 
 ---
 
@@ -709,10 +716,9 @@ anything the web-only run missed.
 
 ## 6. Decisions needed
 
-1. **Backend.** Redditapis (recommended: 1,000 free reads/month, $1.50/1k) vs
-   FetchLayer (30 free, $1.99/1k) vs Reddapi (semantic, $19.9/mo) vs waiting for
-   official Reddit approval. Recommendation: Redditapis first, abstracted so it
-   can be swapped.
+1. **Backend.** **Decided:** Redditapis (1,000 free reads/month, $1.50/1k),
+   abstracted so FetchLayer, Arctic Shift, or an approved official Reddit client
+   can be swapped in later.
 2. **Trigger scope.** Is the positive/negative phrase list above the right
    boundary, or should “reviews” alone trigger Reddit? Recommendation: keep the
    negative guards; reviews of products are often better served by the web

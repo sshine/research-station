@@ -6,6 +6,7 @@ pub mod budget;
 pub mod error;
 pub mod fake;
 pub mod limiter;
+pub mod reddit;
 pub mod tavily;
 
 pub use any::AnyProvider;
@@ -13,6 +14,7 @@ pub use budget::{Budget, BudgetExceeded, QueryReservation};
 pub use error::ProviderError;
 pub use fake::FakeProvider;
 pub use limiter::{RateLimitPermit, RateLimiter};
+pub use reddit::{AnyReddit, FakeRedditProvider, RedditProvider, RedditapisProvider};
 pub use tavily::TavilyProvider;
 
 use async_trait::async_trait;

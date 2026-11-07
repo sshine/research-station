@@ -43,6 +43,15 @@ impl Config {
         }
     }
 
+    /// Read the optional Reddit key from the configured environment variable.
+    pub fn reddit_api_key(&self) -> Result<Option<String>, ConfigError> {
+        let name = &self.provider.reddit.api_key_env;
+        match std::env::var(name) {
+            Ok(value) if !value.trim().is_empty() => Ok(Some(value)),
+            _ => Ok(None),
+        }
+    }
+
     /// Find a config file from an explicit path, the environment, a project
     /// config, or the XDG config directory.
     pub fn discover(explicit: Option<PathBuf>) -> Option<PathBuf> {
@@ -106,6 +115,7 @@ fn default_cache_dir() -> PathBuf {
 #[serde(default)]
 pub struct ProviderConfig {
     pub tavily: TavilyConfig,
+    pub reddit: RedditConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -135,6 +145,59 @@ impl Default for TavilyConfig {
             max_retries: 4,
             timeout_seconds: 60,
             cache_ttl_seconds: 21_600,
+            secretspec_file: None,
+        }
+    }
+}
+
+/// Reddit search provider settings.
+///
+/// Reddit is optional. When `api_key_env` is absent, the daemon disables the
+/// Reddit tool and falls back to web search instead of failing startup.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
+pub struct RedditConfig {
+    pub mode: crate::reddit::RedditMode,
+    pub backend: String,
+    pub base_url: String,
+    pub api_key_env: String,
+    pub requests_per_minute: u32,
+    pub burst: u32,
+    pub max_concurrency: usize,
+    pub max_retries: u32,
+    pub timeout_seconds: u64,
+    pub cache_ttl_seconds: u64,
+    pub max_results: u8,
+    pub include_comments: bool,
+    pub comment_limit: u8,
+    /// Fetch comments for this many top search results per search.
+    pub comment_thread_limit: u8,
+    /// Cap on Reddit searches (pre-seeded and model-chosen) per job.
+    pub max_searches_per_job: u32,
+    /// Optional path to `secretspec.toml`. Falls back to the Tavily manifest
+    /// and then to `SECRETSPEC_FILE`.
+    pub secretspec_file: Option<PathBuf>,
+}
+
+impl Default for RedditConfig {
+    fn default() -> Self {
+        Self {
+            mode: crate::reddit::RedditMode::Auto,
+            backend: "redditapis".to_owned(),
+            base_url: "https://api.redditapis.com".to_owned(),
+            api_key_env: "REDDIT_API_KEY".to_owned(),
+            // Redditapis allows a burst of about 20 then about 10 reads/s.
+            requests_per_minute: 600,
+            burst: 20,
+            max_concurrency: 2,
+            max_retries: 3,
+            timeout_seconds: 30,
+            cache_ttl_seconds: 3_600,
+            max_results: 25,
+            include_comments: true,
+            comment_limit: 20,
+            comment_thread_limit: 3,
+            max_searches_per_job: 4,
             secretspec_file: None,
         }
     }
@@ -272,6 +335,13 @@ mod tests {
         let config = Config::default();
         assert_eq!(config.provider.tavily.base_url, "https://api.tavily.com");
         assert_eq!(config.provider.tavily.requests_per_minute, 60);
+        assert_eq!(
+            config.provider.reddit.base_url,
+            "https://api.redditapis.com"
+        );
+        assert_eq!(config.provider.reddit.backend, "redditapis");
+        assert_eq!(config.provider.reddit.api_key_env, "REDDIT_API_KEY");
+        assert_eq!(config.provider.reddit.max_searches_per_job, 4);
         assert_eq!(config.llm.provider, "opencode-go");
         assert_eq!(
             config.llm.base_url,

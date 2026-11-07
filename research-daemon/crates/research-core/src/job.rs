@@ -7,6 +7,8 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::reddit::RedditMode;
+
 macro_rules! define_id {
     ($name:ident) => {
         #[derive(
@@ -193,6 +195,9 @@ pub struct ResearchRequest {
     pub budget: JobBudget,
     #[serde(default)]
     pub review: ReviewPolicy,
+    /// Whether this job may use the Reddit provider.
+    #[serde(default)]
+    pub reddit: RedditMode,
     /// Bundle directory requested by the caller. The service allocates one when
     /// this is absent.
     #[serde(default)]
@@ -209,6 +214,7 @@ impl ResearchRequest {
             exclude_domains: Vec::new(),
             budget: JobBudget::default(),
             review: ReviewPolicy::default(),
+            reddit: RedditMode::default(),
             output_dir: None,
         }
     }

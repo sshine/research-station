@@ -6,7 +6,8 @@ use research_core::{
     RawContentFormat, SearchDepth, SearchRequest, SearchTopic, SourceClass, SourceId, SourceRecord,
     Subquestion, TimeRange,
 };
-use research_provider::SearchProvider;
+use research_core::{RedditSearchRequest, RedditThreadRequest};
+use research_provider::{RedditProvider, SearchProvider};
 use sha2::{Digest, Sha256};
 use url::Url;
 
@@ -246,56 +247,16 @@ impl<'a, P: SearchProvider> Collector<'a, P> {
         known_hashes: &mut HashSet<String>,
         collected: &mut CollectedSubquestion,
     ) {
-        let Some(canonical_url) = canonicalize_url(url) else {
-            return;
-        };
-        if !known_urls.insert(canonical_url.clone()) {
-            return;
-        }
-
-        let content = content.trim();
-        if content.is_empty() {
-            known_urls.remove(&canonical_url);
-            return;
-        }
-
-        let id = SourceId::new();
-        let content_hash = hex::encode(Sha256::digest(content.as_bytes()));
-        if !known_hashes.insert(content_hash.clone()) {
-            return;
-        }
-        let publisher = publisher(url);
-        let title = if title.trim().is_empty() {
-            url.to_owned()
-        } else {
-            title.trim().to_owned()
-        };
-        let content_path = format!("notes/{id}.md");
-
-        collected.notes.push(NoteFile {
-            path: content_path.clone(),
-            content: content.to_owned(),
-        });
-        collected.sources.push(SourceRecord {
-            id,
-            subquestion_id: subquestion.id,
-            url: url.to_owned(),
-            canonical_url,
+        accept_source_record(
+            subquestion,
+            url,
             title,
-            publisher: publisher.clone(),
+            content,
             published_date,
-            retrieved_at: Utc::now(),
-            source_type: subquestion.source_class,
-            content_hash,
-            quality_rationale: format!(
-                "{} source selected for: {}",
-                subquestion.source_class.as_str(),
-                subquestion.question
-            ),
-            independence_group: publisher,
-            content_path,
-            excerpt: excerpt(content),
-        });
+            known_urls,
+            known_hashes,
+            collected,
+        );
     }
 
     fn search_request(&self, subquestion: &Subquestion, seed: &str) -> SearchRequest {
@@ -316,12 +277,218 @@ impl<'a, P: SearchProvider> Collector<'a, P> {
     }
 }
 
+/// Execute one Reddit search and accept its normalized thread results.
+///
+/// The provider returns `SearchResponse` with the post body and, when
+/// requested, the top comments already rendered into `content`. That keeps the
+/// evidence ledger and the audit independent of the vendor response shape.
+pub async fn collect_reddit<R: RedditProvider>(
+    reddit: &R,
+    subquestion: &Subquestion,
+    request: RedditSearchRequest,
+    limits: CollectionLimits,
+    known_urls: &mut HashSet<String>,
+    known_hashes: &mut HashSet<String>,
+) -> Result<CollectedSubquestion, PipelineError> {
+    let mut collected = CollectedSubquestion::default();
+    if limits.max_queries == 0 || limits.max_sources == 0 || limits.max_credits == 0 {
+        return Ok(collected);
+    }
+
+    let text = match &request.subreddit {
+        Some(subreddit) => format!("reddit r/{subreddit}: {}", request.query),
+        None => format!("reddit: {}", request.query),
+    };
+    let response = reddit.search(request).await?;
+    collected.queries.push(QueryRecord {
+        id: QueryId::new(),
+        subquestion_id: subquestion.id,
+        provider: response.provider.clone(),
+        text,
+        at: Utc::now(),
+        status: "ok".to_owned(),
+        result_count: response.data.results.len(),
+        latency_ms: response.latency_ms,
+        credits: response.credits,
+        raw_hash: response.raw_hash.clone(),
+        cache_hit: response.cache_hit,
+    });
+
+    // Reddit evidence is community evidence even when the pre-seed ran for a
+    // subquestion the planner classified as reference or secondary.
+    let mut community = subquestion.clone();
+    community.source_class = SourceClass::Community;
+
+    for result in response.data.results {
+        if collected.sources.len() >= limits.max_sources {
+            break;
+        }
+        let content = result
+            .raw_content
+            .as_deref()
+            .filter(|content| !content.trim().is_empty())
+            .unwrap_or(&result.content);
+        accept_source_record(
+            &community,
+            &result.url,
+            &result.title,
+            content,
+            result.published_date,
+            known_urls,
+            known_hashes,
+            &mut collected,
+        );
+    }
+
+    Ok(collected)
+}
+
+/// Fetch one Reddit thread and accept it as a source.
+pub async fn collect_reddit_thread<R: RedditProvider>(
+    reddit: &R,
+    subquestion: &Subquestion,
+    request: RedditThreadRequest,
+    limits: CollectionLimits,
+    known_urls: &mut HashSet<String>,
+    known_hashes: &mut HashSet<String>,
+) -> Result<CollectedSubquestion, PipelineError> {
+    let mut collected = CollectedSubquestion::default();
+    if limits.max_queries == 0 || limits.max_sources == 0 || limits.max_credits == 0 {
+        return Ok(collected);
+    }
+
+    let text = format!("reddit thread: {}", request.id_or_url);
+    let response = reddit.thread(request).await?;
+    let mut community = subquestion.clone();
+    community.source_class = SourceClass::Community;
+    collected.queries.push(QueryRecord {
+        id: QueryId::new(),
+        subquestion_id: subquestion.id,
+        provider: response.provider.clone(),
+        text,
+        at: Utc::now(),
+        status: "ok".to_owned(),
+        result_count: response.data.results.len(),
+        latency_ms: response.latency_ms,
+        credits: response.credits,
+        raw_hash: response.raw_hash.clone(),
+        cache_hit: response.cache_hit,
+    });
+
+    for result in response.data.results {
+        if collected.sources.len() >= limits.max_sources {
+            break;
+        }
+        let content = result
+            .raw_content
+            .as_deref()
+            .filter(|content| !content.trim().is_empty())
+            .unwrap_or(&result.content);
+        accept_source_record(
+            &community,
+            &result.url,
+            &result.title,
+            content,
+            result.published_date,
+            known_urls,
+            known_hashes,
+            &mut collected,
+        );
+    }
+
+    Ok(collected)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn accept_source_record(
+    subquestion: &Subquestion,
+    url: &str,
+    title: &str,
+    content: &str,
+    published_date: Option<String>,
+    known_urls: &mut HashSet<String>,
+    known_hashes: &mut HashSet<String>,
+    collected: &mut CollectedSubquestion,
+) {
+    let Some(canonical_url) = canonicalize_url(url) else {
+        return;
+    };
+    if !known_urls.insert(canonical_url.clone()) {
+        return;
+    }
+
+    let content = content.trim();
+    if content.is_empty() {
+        known_urls.remove(&canonical_url);
+        return;
+    }
+
+    let id = SourceId::new();
+    let content_hash = hex::encode(Sha256::digest(content.as_bytes()));
+    if !known_hashes.insert(content_hash.clone()) {
+        return;
+    }
+    let publisher = publisher(url);
+    let title = if title.trim().is_empty() {
+        url.to_owned()
+    } else {
+        title.trim().to_owned()
+    };
+    let content_path = format!("notes/{id}.md");
+
+    collected.notes.push(NoteFile {
+        path: content_path.clone(),
+        content: content.to_owned(),
+    });
+    collected.sources.push(SourceRecord {
+        id,
+        subquestion_id: subquestion.id,
+        url: url.to_owned(),
+        canonical_url,
+        title,
+        publisher: publisher.clone(),
+        published_date,
+        retrieved_at: Utc::now(),
+        source_type: subquestion.source_class,
+        content_hash,
+        quality_rationale: format!(
+            "{} source selected for: {}",
+            subquestion.source_class.as_str(),
+            subquestion.question
+        ),
+        independence_group: publisher,
+        content_path,
+        excerpt: excerpt(content),
+    });
+}
+
 fn publisher(raw_url: &str) -> String {
-    Url::parse(raw_url)
-        .ok()
-        .and_then(|url| url.host_str().map(ToOwned::to_owned))
-        .map(|host| host.strip_prefix("www.").unwrap_or(&host).to_owned())
-        .unwrap_or_else(|| "unknown".to_owned())
+    let Ok(url) = Url::parse(raw_url) else {
+        return "unknown".to_owned();
+    };
+    let Some(host) = url.host_str() else {
+        return "unknown".to_owned();
+    };
+    let host = host
+        .strip_prefix("www.")
+        .unwrap_or(host)
+        .to_ascii_lowercase();
+
+    // Reddit threads are independent communities, not one publisher. Keeping
+    // the subreddit in the independence group stops three threads from the same
+    // community being counted as three independent sources.
+    if host == "reddit.com" || host.ends_with(".reddit.com") {
+        let segments: Vec<_> = url.path_segments().into_iter().flatten().collect();
+        if let Some(position) = segments.iter().position(|segment| *segment == "r") {
+            if let Some(subreddit) = segments.get(position + 1) {
+                if !subreddit.is_empty() {
+                    return format!("reddit.com/r/{subreddit}");
+                }
+            }
+        }
+    }
+
+    host
 }
 
 fn title_from_url(raw_url: &str) -> String {
@@ -363,5 +530,17 @@ mod tests {
     fn publishers_drop_www() {
         assert_eq!(publisher("https://www.example.com/a"), "example.com");
         assert_eq!(publisher("not a url"), "unknown");
+    }
+
+    #[test]
+    fn reddit_publishers_keep_the_subreddit() {
+        assert_eq!(
+            publisher("https://www.reddit.com/r/framework/comments/abc123/title/"),
+            "reddit.com/r/framework"
+        );
+        assert_eq!(
+            publisher("https://old.reddit.com/r/NixOS/comments/abc123/title/"),
+            "reddit.com/r/NixOS"
+        );
     }
 }

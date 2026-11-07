@@ -10,6 +10,7 @@ enum FakeMode {
     #[default]
     Echo,
     Agent,
+    AgentReddit,
 }
 
 #[derive(Debug, Default)]
@@ -52,6 +53,19 @@ impl FakeLlm {
         Self {
             state: Arc::new(Mutex::new(FakeState {
                 mode: FakeMode::Agent,
+                action_turns: 0,
+                responses: VecDeque::new(),
+                requests: Vec::new(),
+            })),
+        }
+    }
+
+    /// Fake model that plans a community subquestion, emits one Reddit action,
+    /// then finishes. Used by the Reddit integration tests.
+    pub fn agent_with_reddit() -> Self {
+        Self {
+            state: Arc::new(Mutex::new(FakeState {
+                mode: FakeMode::AgentReddit,
                 action_turns: 0,
                 responses: VecDeque::new(),
                 requests: Vec::new(),
@@ -104,8 +118,9 @@ impl LlmProvider for FakeLlm {
             .find(|message| message.role == LlmRole::User)
             .map(|message| message.content.as_str())
             .unwrap_or_default();
-        let content = if state.mode == FakeMode::Agent {
-            match agent_response(last_user, &mut state.action_turns) {
+        let mode = state.mode;
+        let content = if matches!(mode, FakeMode::Agent | FakeMode::AgentReddit) {
+            match agent_response(last_user, &mut state.action_turns, mode) {
                 Some(response) => response,
                 None => state
                     .responses
@@ -145,18 +160,26 @@ impl LlmProvider for FakeLlm {
     }
 }
 
-fn agent_response(prompt: &str, action_turns: &mut usize) -> Option<String> {
+fn agent_response(prompt: &str, action_turns: &mut usize, mode: FakeMode) -> Option<String> {
     if prompt.contains("TASK: PLAN") {
-        return Some(
+        let plan = if mode == FakeMode::AgentReddit {
+            r#"{"sharpened_topic":"fake reddit topic","subquestions":[
+                {"question":"What do people say about the fake topic?","source_class":"community","success_criterion":"one community source","query_seeds":["fake reddit community search"]},
+                {"question":"What is the main finding?","source_class":"reference","success_criterion":"one source","query_seeds":["fake agent search two"]}
+            ]}"#
+        } else {
             r#"{"sharpened_topic":"fake agent topic","subquestions":[
                 {"question":"What is the main finding?","source_class":"reference","success_criterion":"one source","query_seeds":["fake agent search one"]},
                 {"question":"What are the limitations?","source_class":"secondary","success_criterion":"one source","query_seeds":["fake agent search two"]}
             ]}"#
-                .to_owned(),
-        );
+        };
+        return Some(plan.to_owned());
     }
     if prompt.contains("TASK: ACTION") {
-        let response = if *action_turns % 2 == 0 {
+        let response = if mode == FakeMode::AgentReddit && *action_turns == 0 {
+            r#"{"action":"reddit_search","query":"fake reddit community search","include_comments":true,"max_results":3}"#
+                .to_owned()
+        } else if *action_turns % 2 == 0 {
             format!(
                 r#"{{"action":"search","query":"fake agent search {}","max_results":3}}"#,
                 *action_turns
@@ -213,6 +236,22 @@ mod tests {
             fake.complete(LlmRequest::new(Vec::new())).await,
             Err(LlmError::InvalidRequest(_))
         ));
+    }
+
+    #[tokio::test]
+    async fn reddit_agent_mode_emits_a_community_plan_and_reddit_action() {
+        let fake = FakeLlm::agent_with_reddit();
+        let plan = fake
+            .complete(LlmRequest::new(vec![LlmMessage::user("TASK: PLAN")]))
+            .await
+            .unwrap();
+        assert!(plan.content.contains("\"source_class\":\"community\""));
+
+        let action = fake
+            .complete(LlmRequest::new(vec![LlmMessage::user("TASK: ACTION")]))
+            .await
+            .unwrap();
+        assert!(action.content.contains("reddit_search"));
     }
 
     #[tokio::test]

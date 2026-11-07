@@ -1,4 +1,4 @@
-use research_core::{SearchTopic, SourceClass, TimeRange};
+use research_core::{RedditSearchMode, RedditSort, SearchTopic, SourceClass, TimeRange};
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
@@ -20,6 +20,25 @@ pub enum AgentAction {
         #[serde(default)]
         query: Option<String>,
     },
+    RedditSearch {
+        query: String,
+        #[serde(default)]
+        subreddit: Option<String>,
+        #[serde(default)]
+        sort: Option<RedditSort>,
+        #[serde(default)]
+        mode: Option<RedditSearchMode>,
+        #[serde(default)]
+        time_range: Option<TimeRange>,
+        #[serde(default)]
+        max_results: Option<u8>,
+        #[serde(default)]
+        min_score: Option<u32>,
+        #[serde(default)]
+        include_comments: Option<bool>,
+        #[serde(default)]
+        comment_limit: Option<u8>,
+    },
     ReadSource {
         source_id: String,
     },
@@ -34,6 +53,7 @@ impl AgentAction {
         match self {
             Self::Search { .. } => "search",
             Self::Extract { .. } => "extract",
+            Self::RedditSearch { .. } => "reddit_search",
             Self::ReadSource { .. } => "read_source",
             Self::Finish { .. } => "finish",
         }
@@ -114,6 +134,13 @@ mod tests {
                 ..
             }
         ));
+
+        let reddit: AgentAction = parse_json_object(
+            r#"{"action":"reddit_search","query":"framework problems","include_comments":true}"#,
+        )
+        .unwrap();
+        assert!(matches!(reddit, AgentAction::RedditSearch { .. }));
+        assert_eq!(reddit.kind(), "reddit_search");
     }
 
     #[test]

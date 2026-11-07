@@ -11,6 +11,7 @@ pub fn render_brief(job: &Job) -> String {
          - **Question:** {question}\n\
          - **Depth:** {depth}\n\
          - **Review:** {review}\n\
+         - **Reddit:** {reddit}\n\
          - **Job:** `{id}`\n\
          - **Created:** {created}\n\
          - **Output:** `{output}`\n\
@@ -21,6 +22,7 @@ pub fn render_brief(job: &Job) -> String {
             research_core::ReviewPolicy::Automatic => "automatic",
             research_core::ReviewPolicy::Manual => "manual",
         },
+        reddit = job.request.reddit.as_str(),
         id = job.id,
         created = job.created_at.to_rfc3339(),
         output = job.output_dir.display(),

@@ -16,7 +16,9 @@ pub mod synth;
 pub use audit::audit;
 pub use bundle::{Bundle, NoteFile, Progress, RunMetadata, RunUsage};
 pub use canonical::canonicalize_url;
-pub use collect::{CollectedSubquestion, CollectionLimits, Collector};
+pub use collect::{
+    CollectedSubquestion, CollectionLimits, Collector, collect_reddit, collect_reddit_thread,
+};
 pub use plan::RuleBasedPlanner;
 pub use render::{render_audit, render_brief, render_plan, render_report};
 pub use synth::synthesize;

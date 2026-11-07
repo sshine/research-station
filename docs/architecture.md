@@ -67,7 +67,7 @@ research-station/
 │   └── crates/
 │       ├── research-core/         # domain types, config, errors; no I/O
 │       ├── research-store/        # SQLite cache, blob store, later job store
-│       ├── research-provider/     # SearchProvider trait, Tavily, limiter, budget
+│       ├── research-provider/     # SearchProvider trait, Tavily, Reddit, limiter, budget
 │       ├── research-llm/          # OpenAI-compatible model client, fake, usage
 │       ├── research-agent/        # budgeted model-driven plan/search/synthesis loop
 │       ├── research-pipeline/     # later: plan, collect, evidence, synthesis, audit
@@ -154,6 +154,20 @@ Tavily implementation:
 - `include_usage: true` so credits are recorded.
 - `432`/`433` are quota/plan errors; `434` is capacity; `429` honors `Retry-After`.
 - Limits are configuration, never hard-coded.
+
+Reddit is a separate backend and agent action, not a Tavily topic:
+
+- `reddit_search` is available to the agent when the question is explicit about
+  Reddit, asks for community opinion/experience/reviews, or the planner assigns
+  `SourceClass::Community`.
+- The first backend is Redditapis (`GET /api/reddit/search`,
+  `/api/reddit/search/comments`, `/api/reddit/post/{id}/comments`).
+- A thread is one `SourceRecord`; its note contains the post body and top
+  comments, so the same exact-quote audit applies.
+- Reddit failures disable the tool for the rest of the job and fall back to web
+  search. A missing `REDDIT_API_KEY` is not a startup error.
+- See `docs/reddit-search-investigation.md` for the provider comparison and
+  cost model.
 
 Credentials are declared in the root `secretspec.toml`. Nothing secret is
 stored in the config file, the Nix store, or the repository. The `research`

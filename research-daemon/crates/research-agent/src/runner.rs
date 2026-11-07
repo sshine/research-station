@@ -4,20 +4,24 @@ use std::path::PathBuf;
 use chrono::Utc;
 use research_core::{
     Claim, ClaimId, Depth, Evidence, Job, JobStatus, PassageId, Plan, PlanConstraints, PlanId,
-    QueryRecord, RawContentFormat, ReviewPolicy, SearchDepth, SearchRequest, SearchTopic, SourceId,
-    SourceRecord, Subquestion, SubquestionCoverage, SubquestionId, SupportStatus, Synthesis,
+    QueryRecord, RawContentFormat, RedditSearchMode, RedditSearchRequest, RedditSort, ReviewPolicy,
+    SearchDepth, SearchRequest, SearchTopic, SourceId, SourceRecord, Subquestion,
+    SubquestionCoverage, SubquestionId, SupportStatus, Synthesis, TimeRange,
 };
 use research_llm::{LlmProvider, LlmRequest, LlmResponse, LlmUsage};
 use research_pipeline::{
     Bundle, CollectionLimits, Collector, PipelineError, RuleBasedPlanner, RunMetadata, RunUsage,
-    audit, render_audit, render_report, synthesize,
+    audit, collect_reddit, render_audit, render_report, synthesize,
 };
-use research_provider::SearchProvider;
+use research_provider::{AnyReddit, RedditProvider, SearchProvider};
 use research_store::{AgentRun, AgentStore, JobStore};
 use serde_json::json;
 
 use crate::action::{AgentAction, PlanDraft, SynthesisDraft, parse_json_object};
 use crate::prompt::{PROMPT_VERSION, action_request, plan_request, synthesis_request};
+use crate::reddit::{
+    explicit_reddit_mention, opinion_intent, should_enable_reddit, should_preseed_reddit,
+};
 
 #[derive(Debug, thiserror::Error)]
 pub enum AgentError {
@@ -52,6 +56,7 @@ pub struct AgentOutcome {
 pub struct AgentRunner<'a, P: SearchProvider, L: LlmProvider> {
     store: &'a JobStore,
     provider: &'a P,
+    reddit: Option<&'a AnyReddit>,
     llm: &'a L,
     transcripts: &'a AgentStore,
 }
@@ -60,12 +65,14 @@ impl<'a, P: SearchProvider, L: LlmProvider> AgentRunner<'a, P, L> {
     pub fn new(
         store: &'a JobStore,
         provider: &'a P,
+        reddit: Option<&'a AnyReddit>,
         llm: &'a L,
         transcripts: &'a AgentStore,
     ) -> Self {
         Self {
             store,
             provider,
+            reddit,
             llm,
             transcripts,
         }
@@ -142,6 +149,38 @@ impl<'a, P: SearchProvider, L: LlmProvider> AgentRunner<'a, P, L> {
         };
         bundle.save_plan(&plan)?;
 
+        let explicit_reddit = explicit_reddit_mention(&job.request.question);
+        let opinion_reddit = opinion_intent(&job.request.question);
+        let trigger_preseed = explicit_reddit || opinion_reddit;
+        let mut reddit_available = self.reddit.is_some()
+            && should_enable_reddit(job.request.reddit, &job.request.question, &plan);
+        let max_reddit_searches = self
+            .reddit
+            .map(RedditProvider::max_searches_per_job)
+            .unwrap_or(0);
+        let mut reddit_searches = 0u32;
+        let mut trigger_preseeded = false;
+        if reddit_available {
+            let reason = if explicit_reddit {
+                "explicit"
+            } else if opinion_reddit {
+                "opinion_intent"
+            } else {
+                "auto"
+            };
+            self.transcripts
+                .append(
+                    job.id,
+                    "reddit_enabled",
+                    json!({
+                        "reason": reason,
+                        "max_searches": max_reddit_searches,
+                        "provider": self.reddit.map(RedditProvider::id),
+                    }),
+                )
+                .await?;
+        }
+
         let mut progress = bundle.load_progress()?;
         if job.request.review == ReviewPolicy::Manual
             && !progress.plan_approved
@@ -205,6 +244,83 @@ impl<'a, P: SearchProvider, L: LlmProvider> AgentRunner<'a, P, L> {
             }
 
             let mut history = Vec::new();
+
+            if reddit_available
+                && reddit_searches < max_reddit_searches
+                && should_preseed_reddit(
+                    job.request.reddit,
+                    &job.request.question,
+                    subquestion,
+                    trigger_preseeded,
+                )
+            {
+                if let Some(reddit) = self.reddit {
+                    let (remaining_queries, remaining_sources, remaining_credits) =
+                        remaining_budget(&job, &queries, &sources);
+                    if remaining_queries > 0 && remaining_sources > 0 && remaining_credits > 0 {
+                        let mut request = reddit_request_for_subquestion(subquestion);
+                        if trigger_preseed && !trigger_preseeded {
+                            request.query = job.request.question.clone();
+                        }
+                        let limits = CollectionLimits {
+                            max_queries: remaining_queries,
+                            max_sources: remaining_sources,
+                            max_credits: remaining_credits,
+                        };
+                        match collect_reddit(
+                            reddit,
+                            subquestion,
+                            request,
+                            limits,
+                            &mut known_urls,
+                            &mut known_hashes,
+                        )
+                        .await
+                        {
+                            Ok(collected) => {
+                                let added = record_collected(
+                                    &bundle,
+                                    &mut queries,
+                                    &mut sources,
+                                    collected,
+                                )?;
+                                reddit_searches = reddit_searches.saturating_add(1);
+                                if trigger_preseed {
+                                    trigger_preseeded = true;
+                                }
+                                history.push(format!("reddit pre-seed: added {added} source(s)"));
+                                self.transcripts
+                                    .append(
+                                        job.id,
+                                        "tool_result",
+                                        json!({
+                                            "tool": "reddit_search",
+                                            "preseed": true,
+                                            "sources_added": added,
+                                        }),
+                                    )
+                                    .await?;
+                            }
+                            Err(err) => {
+                                reddit_available = false;
+                                history.push(format!("reddit pre-seed failed: {err}"));
+                                self.transcripts
+                                    .append(
+                                        job.id,
+                                        "reddit_fallback",
+                                        json!({"reason": err.to_string()}),
+                                    )
+                                    .await?;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if reddit_searches >= max_reddit_searches {
+                reddit_available = false;
+            }
+
             let mut rounds = 0u32;
             loop {
                 if self.cancellation_requested(job.id).await? {
@@ -246,6 +362,8 @@ impl<'a, P: SearchProvider, L: LlmProvider> AgentRunner<'a, P, L> {
                     .filter(|source| source.subquestion_id == subquestion.id)
                     .cloned()
                     .collect();
+                let reddit_available_now =
+                    reddit_available && reddit_searches < max_reddit_searches;
                 let request = action_request(
                     &job,
                     subquestion,
@@ -255,6 +373,8 @@ impl<'a, P: SearchProvider, L: LlmProvider> AgentRunner<'a, P, L> {
                     remaining_credits,
                     remaining_tokens,
                     rounds + 1,
+                    reddit_available_now,
+                    max_reddit_searches.saturating_sub(reddit_searches),
                     &history,
                 );
                 let response = self
@@ -365,6 +485,117 @@ impl<'a, P: SearchProvider, L: LlmProvider> AgentRunner<'a, P, L> {
                                 }),
                             )
                             .await?;
+                    }
+                    AgentAction::RedditSearch {
+                        query,
+                        subreddit,
+                        sort,
+                        mode,
+                        time_range,
+                        max_results,
+                        min_score,
+                        include_comments,
+                        comment_limit,
+                    } => {
+                        let Some(reddit) = self.reddit else {
+                            history.push("reddit_search rejected: provider unavailable".to_owned());
+                            self.transcripts
+                                .append(
+                                    job.id,
+                                    "tool_result",
+                                    json!({"tool": "reddit_search", "error": "unavailable"}),
+                                )
+                                .await?;
+                            rounds += 1;
+                            total_rounds += 1;
+                            continue;
+                        };
+                        if !reddit_available || reddit_searches >= max_reddit_searches {
+                            history.push(
+                                "reddit_search rejected: per-job search cap reached".to_owned(),
+                            );
+                            self.transcripts
+                                .append(
+                                    job.id,
+                                    "tool_result",
+                                    json!({"tool": "reddit_search", "error": "cap_reached"}),
+                                )
+                                .await?;
+                            rounds += 1;
+                            total_rounds += 1;
+                            continue;
+                        }
+
+                        let mut request = RedditSearchRequest::new(query.clone());
+                        request.subreddit = subreddit.clone();
+                        request.sort = sort.unwrap_or(RedditSort::Relevance);
+                        request.mode = mode.unwrap_or(RedditSearchMode::Posts);
+                        request.time_range = time_range;
+                        request.max_results = Some(max_results.unwrap_or(25).clamp(1, 100));
+                        request.min_score = min_score;
+                        request.include_comments = Some(include_comments.unwrap_or(true));
+                        request.comment_limit = comment_limit;
+
+                        let limits = CollectionLimits {
+                            max_queries: remaining_queries,
+                            max_sources: remaining_sources,
+                            max_credits: remaining_credits,
+                        };
+                        match collect_reddit(
+                            reddit,
+                            subquestion,
+                            request,
+                            limits,
+                            &mut known_urls,
+                            &mut known_hashes,
+                        )
+                        .await
+                        {
+                            Ok(collected) => {
+                                let added = record_collected(
+                                    &bundle,
+                                    &mut queries,
+                                    &mut sources,
+                                    collected,
+                                )?;
+                                reddit_searches = reddit_searches.saturating_add(1);
+                                history.push(format!(
+                                    "reddit_search \"{query}\": added {added} source(s)"
+                                ));
+                                self.transcripts
+                                    .append(
+                                        job.id,
+                                        "tool_result",
+                                        json!({
+                                            "tool": "reddit_search",
+                                            "query": query,
+                                            "subreddit": subreddit,
+                                            "mode": mode
+                                                .unwrap_or(RedditSearchMode::Posts)
+                                                .as_str(),
+                                            "sources_added": added,
+                                        }),
+                                    )
+                                    .await?;
+                            }
+                            Err(err) => {
+                                // A failed Reddit call should degrade the job, not
+                                // abort it. Disable Reddit for the rest of this job
+                                // and let the model continue with web search.
+                                reddit_available = false;
+                                history.push(format!("reddit_search failed: {err}"));
+                                self.transcripts
+                                    .append(
+                                        job.id,
+                                        "reddit_fallback",
+                                        json!({
+                                            "reason": err.to_string(),
+                                            "query": query,
+                                        }),
+                                    )
+                                    .await?;
+                            }
+                        }
                     }
                     AgentAction::ReadSource { source_id } => {
                         let id: SourceId = source_id.parse().map_err(|err: uuid::Error| {
@@ -669,6 +900,21 @@ impl<'a, P: SearchProvider, L: LlmProvider> AgentRunner<'a, P, L> {
     async fn cancellation_requested(&self, id: research_core::JobId) -> Result<bool, AgentError> {
         Ok(self.store.require(id).await?.cancel_requested)
     }
+}
+
+fn reddit_request_for_subquestion(subquestion: &Subquestion) -> RedditSearchRequest {
+    let query = subquestion
+        .query_seeds
+        .first()
+        .cloned()
+        .unwrap_or_else(|| subquestion.question.clone());
+    let mut request = RedditSearchRequest::new(query);
+    request.sort = RedditSort::Relevance;
+    request.mode = RedditSearchMode::Posts;
+    request.time_range = Some(TimeRange::Year);
+    request.max_results = Some(25);
+    request.include_comments = Some(true);
+    request
 }
 
 fn plan_from_draft(job: &Job, draft: PlanDraft) -> Plan {

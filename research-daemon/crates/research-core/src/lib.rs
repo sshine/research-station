@@ -6,11 +6,12 @@ pub mod config;
 pub mod domain;
 pub mod evidence;
 pub mod job;
+pub mod reddit;
 pub mod text;
 
 pub use config::{
-    BudgetConfig, Config, ConfigError, JobsConfig, LlmConfig, ProviderConfig, StoreConfig,
-    TavilyConfig,
+    BudgetConfig, Config, ConfigError, JobsConfig, LlmConfig, ProviderConfig, RedditConfig,
+    StoreConfig, TavilyConfig,
 };
 pub use domain::{
     ExtractDepth, ExtractFailure, ExtractFormat, ExtractRequest, ExtractResponse, ExtractResult,
@@ -25,5 +26,8 @@ pub use job::{
     ClaimId, Depth, Engine, Job, JobBudget, JobEvent, JobId, JobStatus, ParseJobStatusError,
     PassageId, PlanId, QueryId, RequestError, ResearchRequest, ReviewPolicy, SourceId,
     SubquestionId,
+};
+pub use reddit::{
+    RedditMode, RedditSearchMode, RedditSearchRequest, RedditSort, RedditThreadRequest,
 };
 pub use text::slugify;

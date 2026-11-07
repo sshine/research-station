@@ -12,6 +12,31 @@ cache_ttl_seconds = 21600
 # searches upward from the working directory and honours SECRETSPEC_FILE.
 # secretspec_file = "/path/to/research-station/secretspec.toml"
 
+# Reddit is optional. Without a key the daemon keeps using Tavily and records
+# a warning; it does not fail startup.
+[provider.reddit]
+mode = "auto"                 # auto | always | never
+backend = "redditapis"        # only redditapis is implemented
+base_url = "https://api.redditapis.com"
+api_key_env = "REDDIT_API_KEY"
+# Redditapis allows about 20 burst reads, then about 10 reads/s.
+requests_per_minute = 600
+burst = 20
+max_concurrency = 2
+max_retries = 3
+timeout_seconds = 30
+cache_ttl_seconds = 3600
+max_results = 25
+include_comments = true
+comment_limit = 20
+# Fetch comments for this many leading search results.
+comment_thread_limit = 3
+# Cap on pre-seeded plus model-chosen Reddit searches per job.
+max_searches_per_job = 4
+# Optional explicit manifest. Falls back to provider.tavily.secretspec_file and
+# then SECRETSPEC_FILE.
+# secretspec_file = "/path/to/research-station/secretspec.toml"
+
 # OpenAI-compatible model provider. The key itself is never stored here.
 [llm]
 provider = "opencode-go"

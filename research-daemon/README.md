@@ -2,8 +2,8 @@
 
 Rust workspace for the research-station daemon, API, CLI, and MCP surfaces.
 
-Phase 1 is implemented: the Tavily provider layer, rate limiting, budgets,
-caching, raw-response storage, and a CLI to exercise them.
+Phase 1 is implemented: the Tavily and Reddit provider layers, rate limiting,
+budgets, caching, raw-response storage, and a CLI to exercise them.
 
 Phase 2 is implemented through the working pipeline and daemon: durable jobs,
 leases, crash recovery, a deterministic planner/collector/synthesizer/auditor,
@@ -227,7 +227,7 @@ Transcript storage shares the job SQLite database:
 crates/
   research-core/      domain types, config, errors; no I/O
   research-store/     SQLite query cache, blob store, and durable job queue
-  research-provider/  SearchProvider trait, Tavily, fake provider, limiter, budget
+  research-provider/  SearchProvider trait, Tavily, Reddit, fake providers, limiter, budget
   research-llm/       OpenAI-compatible model client, fake model, usage accounting
   research-agent/     budgeted agent loop, prompts, transcript integration
   research-pipeline/  planner, collector, synthesis, audit, bundle writer
@@ -503,6 +503,49 @@ full prompts, model responses, actions, and tool results.
 Progress is persisted after each subquestion. If the worker dies, the expired
 lease becomes `interrupted`; `research job resume <id>` requeues it, and the
 next worker skips completed subquestions instead of paying for them again.
+
+## Reddit search
+
+Reddit is an optional second search backend. It is implemented as a dedicated
+`reddit_search` agent action rather than a Tavily topic, because Reddit has its
+own query grammar, result shape, and comment trees.
+
+The first backend is [Redditapis.com](https://redditapis.com): 1,000 free reads
+per month, then $1.50 per 1,000 reads. It exposes post search, comment search,
+and full comment trees. The provider is behind a trait, so FetchLayer, Arctic
+Shift, or an approved official Reddit OAuth client can be added later.
+
+Configuration is in `[provider.reddit]`; the key is `REDDIT_API_KEY` and is
+optional. Without it the daemon logs a warning and keeps using Tavily. Store it
+with:
+
+```bash
+just secrets-set-reddit
+just reddit-test          # one live read
+just reddit-search "Framework laptop problems" --subreddit framework --comments
+just reddit-thread https://www.reddit.com/r/framework/comments/.../
+```
+
+The agent uses Reddit when any of these is true (`mode = "auto"`):
+
+- the question mentions `reddit`, `r/<name>`, or `subreddit`;
+- the question asks what people say, opinions, experiences, complaints,
+  recommendations, or reviews;
+- the planner assigns `SourceClass::Community` to a subquestion.
+
+Academic, code, peer, and performance reviews are explicitly excluded, as are
+official documentation, specifications, and source-code questions. `--reddit
+always` overrides the gate; `--reddit never` disables Reddit for a job.
+
+When Reddit is enabled, the daemon pre-seeds one search per community
+subquestion (capped by `max_searches_per_job`), then lets the model refine with
+more searches. A Reddit failure disables the tool for the rest of the job and
+falls back to web search; it never fails the job. Each thread becomes one
+`SourceRecord` with the post body and top comments in its note, so the existing
+exact-quote audit applies unchanged.
+
+The design and provider comparison are in
+[`../docs/reddit-search-investigation.md`](../docs/reddit-search-investigation.md).
 
 ## Provider behaviour
 

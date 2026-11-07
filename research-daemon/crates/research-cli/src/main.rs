@@ -6,14 +6,17 @@ use chrono::{NaiveDate, Utc};
 use clap::{Args, Parser, Subcommand, ValueEnum};
 use research_core::{
     Config, Depth, Engine, ExtractDepth, ExtractFormat, ExtractRequest, Job, JobBudget, JobStatus,
-    RawContentFormat, ResearchRequest, ReviewPolicy, SearchDepth, SearchRequest, SearchTopic,
+    RawContentFormat, RedditMode, RedditSearchMode, RedditSearchRequest, RedditSort,
+    RedditThreadRequest, ResearchRequest, ReviewPolicy, SearchDepth, SearchRequest, SearchTopic,
     TimeRange, slugify,
 };
 use research_llm::{LlmMessage, LlmProvider, LlmRequest};
-use research_provider::{ProviderResponse, SearchProvider, TavilyProvider};
+use research_provider::{
+    AnyReddit, ProviderResponse, RedditProvider, SearchProvider, TavilyProvider,
+};
 use research_service::{
-    Worker, WorkerOptions, approve_plan, build_llm_provider, build_provider, build_tavily_provider,
-    resolve_api_key, resolve_llm_api_key,
+    Worker, WorkerOptions, approve_plan, build_llm_provider, build_provider, build_reddit_provider,
+    build_tavily_provider, resolve_api_key, resolve_llm_api_key, resolve_optional_reddit_api_key,
 };
 use research_store::JobStore;
 use tracing_subscriber::EnvFilter;
@@ -67,6 +70,12 @@ enum ProviderCommand {
     Extract(ExtractArgs),
     /// Verify that the configured provider, key, cache, and blob store work.
     Test,
+    /// Search Reddit through the configured Reddit provider.
+    RedditSearch(RedditSearchArgs),
+    /// Fetch one Reddit thread and its comments.
+    RedditThread(RedditThreadArgs),
+    /// Verify the Reddit provider with one live read.
+    RedditTest,
 }
 
 #[derive(Debug, Subcommand)]
@@ -171,6 +180,10 @@ struct EnqueueArgs {
     #[arg(long)]
     review: bool,
 
+    /// Reddit policy: auto, always, or never.
+    #[arg(long, value_enum, default_value_t = RedditModeArg::Auto)]
+    reddit: RedditModeArg,
+
     /// Query budget for this job. Defaults to the depth's allowance.
     #[arg(long)]
     max_queries: Option<u32>,
@@ -244,6 +257,10 @@ struct RunArgs {
     /// Pause for plan approval before collecting evidence.
     #[arg(long)]
     review: bool,
+
+    /// Reddit policy: auto, always, or never.
+    #[arg(long, value_enum, default_value_t = RedditModeArg::Auto)]
+    reddit: RedditModeArg,
 
     /// Query budget for this job.
     #[arg(long)]
@@ -374,6 +391,60 @@ struct ExtractArgs {
     json: bool,
 }
 
+#[derive(Debug, Args)]
+struct RedditSearchArgs {
+    /// Reddit search query.
+    query: String,
+
+    /// Restrict the search to one subreddit (no r/ prefix needed).
+    #[arg(long)]
+    subreddit: Option<String>,
+
+    #[arg(long, value_enum, default_value_t = RedditSortArg::Relevance)]
+    sort: RedditSortArg,
+
+    /// Search post titles/selftext or comment bodies.
+    #[arg(long, value_enum, default_value_t = RedditSearchModeArg::Posts)]
+    mode: RedditSearchModeArg,
+
+    #[arg(long, value_enum)]
+    time_range: Option<TimeRangeArg>,
+
+    #[arg(long, default_value_t = 25)]
+    limit: u8,
+
+    /// Keep only posts with at least this score.
+    #[arg(long)]
+    min_score: Option<u32>,
+
+    /// Fetch and store the top comments for the leading results.
+    #[arg(long)]
+    comments: bool,
+
+    #[arg(long, default_value_t = 20)]
+    comment_limit: u8,
+
+    /// Print the full normalized response as JSON.
+    #[arg(long)]
+    json: bool,
+}
+
+#[derive(Debug, Args)]
+struct RedditThreadArgs {
+    /// Reddit post id or full URL.
+    id_or_url: String,
+
+    #[arg(long, default_value_t = 100)]
+    limit: u8,
+
+    #[arg(long, value_enum, default_value_t = RedditSortArg::Top)]
+    sort: RedditSortArg,
+
+    /// Print the full normalized response as JSON.
+    #[arg(long)]
+    json: bool,
+}
+
 #[derive(Debug, Clone, Copy, ValueEnum)]
 enum DepthArg {
     Fast,
@@ -405,6 +476,59 @@ impl From<EngineArg> for Engine {
         match value {
             EngineArg::Agent => Self::Agent,
             EngineArg::Deterministic => Self::Deterministic,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, ValueEnum)]
+enum RedditSortArg {
+    Relevance,
+    Hot,
+    New,
+    Top,
+    Comments,
+}
+
+impl From<RedditSortArg> for RedditSort {
+    fn from(value: RedditSortArg) -> Self {
+        match value {
+            RedditSortArg::Relevance => Self::Relevance,
+            RedditSortArg::Hot => Self::Hot,
+            RedditSortArg::New => Self::New,
+            RedditSortArg::Top => Self::Top,
+            RedditSortArg::Comments => Self::Comments,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, ValueEnum)]
+enum RedditSearchModeArg {
+    Posts,
+    Comments,
+}
+
+impl From<RedditSearchModeArg> for RedditSearchMode {
+    fn from(value: RedditSearchModeArg) -> Self {
+        match value {
+            RedditSearchModeArg::Posts => Self::Posts,
+            RedditSearchModeArg::Comments => Self::Comments,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, ValueEnum)]
+enum RedditModeArg {
+    Auto,
+    Always,
+    Never,
+}
+
+impl From<RedditModeArg> for RedditMode {
+    fn from(value: RedditModeArg) -> Self {
+        match value {
+            RedditModeArg::Auto => Self::Auto,
+            RedditModeArg::Always => Self::Always,
+            RedditModeArg::Never => Self::Never,
         }
     }
 }
@@ -524,10 +648,6 @@ impl From<ExtractFormatArg> for ExtractFormat {
     }
 }
 
-struct App {
-    provider: TavilyProvider,
-}
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
@@ -544,24 +664,12 @@ async fn main() -> anyhow::Result<()> {
         Command::Config {
             command: ConfigCommand::Show,
         } => show_config(config_path),
-        Command::Provider { command } => {
-            let app = build_app(config_path).await?;
-            run_provider_command(&app, command).await
-        }
+        Command::Provider { command } => run_provider_command(config_path, command).await,
         Command::Job { command } => run_job_command(config_path, command).await,
         Command::Serve(args) => run_serve(config_path, args).await,
         Command::Run(args) => run_research(config_path, args).await,
         Command::Doctor(args) => run_doctor(config_path, args).await,
     }
-}
-
-async fn build_app(config_path: Option<PathBuf>) -> anyhow::Result<App> {
-    let config = Config::load(config_path.as_deref()).context("loading configuration")?;
-    let provider = build_tavily_provider(&config)
-        .await
-        .context("creating Tavily provider")?;
-
-    Ok(App { provider })
 }
 
 async fn run_job_command(config_path: Option<PathBuf>, command: JobCommand) -> anyhow::Result<()> {
@@ -733,6 +841,7 @@ async fn run_job_enqueue(store: &JobStore, args: EnqueueArgs) -> anyhow::Result<
     } else {
         ReviewPolicy::Automatic
     };
+    request.reddit = args.reddit.into();
     if let Some(max_queries) = args.max_queries {
         request.budget.max_queries = max_queries;
     }
@@ -804,11 +913,15 @@ async fn run_serve(config_path: Option<PathBuf>, args: ServeArgs) -> anyhow::Res
     let provider = build_provider(&config, args.fake)
         .await
         .context("creating provider")?;
+    let reddit = build_reddit_provider(&config, args.fake)
+        .await
+        .context("creating Reddit provider")?;
+    let reddit_label = reddit.as_ref().map(RedditProvider::id).unwrap_or("off");
     let llm = build_llm_provider(&config, args.fake_llm).context("creating model provider")?;
     let transcripts = research_store::AgentStore::open(config.database_path())
         .await
         .context("opening agent transcript store")?;
-    let worker = Worker::with_agent(store, provider, llm, transcripts, options);
+    let worker = Worker::with_agent_reddit(store, provider, reddit, llm, transcripts, options);
     worker.reap_expired().await?;
 
     if args.once {
@@ -818,9 +931,10 @@ async fn run_serve(config_path: Option<PathBuf>, args: ServeArgs) -> anyhow::Res
     }
 
     println!(
-        "research worker: owner={} provider={} database={}",
+        "research worker: owner={} provider={} reddit={} database={}",
         worker.options().owner,
         if args.fake { "fake" } else { "tavily" },
+        reddit_label,
         config.database_path().display()
     );
     worker
@@ -840,6 +954,9 @@ async fn run_research(config_path: Option<PathBuf>, args: RunArgs) -> anyhow::Re
     let provider = build_provider(&config, args.fake)
         .await
         .context("creating provider")?;
+    let reddit = build_reddit_provider(&config, args.fake)
+        .await
+        .context("creating Reddit provider")?;
     let llm = build_llm_provider(&config, args.fake_llm).context("creating model provider")?;
     let transcripts = research_store::AgentStore::open(config.database_path())
         .await
@@ -854,6 +971,7 @@ async fn run_research(config_path: Option<PathBuf>, args: RunArgs) -> anyhow::Re
     } else {
         ReviewPolicy::Automatic
     };
+    request.reddit = args.reddit.into();
     if let Some(max_queries) = args.max_queries {
         request.budget.max_queries = max_queries;
     }
@@ -870,7 +988,8 @@ async fn run_research(config_path: Option<PathBuf>, args: RunArgs) -> anyhow::Re
     let mut options = WorkerOptions::from_config(&config, "research-run");
     options.poll_interval = Duration::from_millis(200);
 
-    let worker = Worker::with_agent(store.clone(), provider, llm, transcripts, options);
+    let worker =
+        Worker::with_agent_reddit(store.clone(), provider, reddit, llm, transcripts, options);
 
     println!("running {} in {}", job.id, job.output_dir.display());
     let Some(outcome) = worker.run_job(job.id).await? else {
@@ -1021,6 +1140,28 @@ async fn run_doctor(config_path: Option<PathBuf>, args: DoctorArgs) -> anyhow::R
         }
     }
 
+    let reddit_label = match resolve_optional_reddit_api_key(&config) {
+        Ok(Some(_)) => format!("ok ({})", config.provider.reddit.api_key_env),
+        Ok(None) if config.provider.reddit.mode == RedditMode::Never => {
+            "disabled by config".to_owned()
+        }
+        Ok(None) => format!(
+            "missing ({}, optional; web fallback)",
+            config.provider.reddit.api_key_env
+        ),
+        Err(err) => {
+            warnings.push(err.to_string());
+            "failed to resolve".to_owned()
+        }
+    };
+    println!("reddit key:   {reddit_label}");
+    println!(
+        "reddit:       mode={} backend={} base={}",
+        config.provider.reddit.mode.as_str(),
+        config.provider.reddit.backend,
+        config.provider.reddit.base_url
+    );
+
     let llm_names = config.llm.api_key_names().join(" or ");
     match resolve_llm_api_key(&config) {
         Ok(_) => println!("llm key:      ok ({llm_names})"),
@@ -1113,11 +1254,66 @@ async fn run_doctor(config_path: Option<PathBuf>, args: DoctorArgs) -> anyhow::R
     Ok(())
 }
 
-async fn run_provider_command(app: &App, command: ProviderCommand) -> anyhow::Result<()> {
+async fn run_provider_command(
+    config_path: Option<PathBuf>,
+    command: ProviderCommand,
+) -> anyhow::Result<()> {
+    let config = Config::load(config_path.as_deref()).context("loading configuration")?;
     match command {
-        ProviderCommand::Search(args) => run_search(&app.provider, args).await,
-        ProviderCommand::Extract(args) => run_extract(&app.provider, args).await,
-        ProviderCommand::Test => run_test(&app.provider).await,
+        ProviderCommand::Search(args) => {
+            let provider = build_tavily_provider(&config)
+                .await
+                .context("creating Tavily provider")?;
+            run_search(&provider, args).await
+        }
+        ProviderCommand::Extract(args) => {
+            let provider = build_tavily_provider(&config)
+                .await
+                .context("creating Tavily provider")?;
+            run_extract(&provider, args).await
+        }
+        ProviderCommand::Test => {
+            let provider = build_tavily_provider(&config)
+                .await
+                .context("creating Tavily provider")?;
+            run_test(&provider).await
+        }
+        ProviderCommand::RedditSearch(args) => {
+            let reddit = build_reddit_provider(&config, false)
+                .await
+                .context("creating Reddit provider")?
+                .ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "Reddit is not configured; store {} with `just secrets-set-reddit` or export it",
+                        config.provider.reddit.api_key_env
+                    )
+                })?;
+            run_reddit_search(&reddit, args).await
+        }
+        ProviderCommand::RedditThread(args) => {
+            let reddit = build_reddit_provider(&config, false)
+                .await
+                .context("creating Reddit provider")?
+                .ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "Reddit is not configured; store {} with `just secrets-set-reddit` or export it",
+                        config.provider.reddit.api_key_env
+                    )
+                })?;
+            run_reddit_thread(&reddit, args).await
+        }
+        ProviderCommand::RedditTest => {
+            let reddit = build_reddit_provider(&config, false)
+                .await
+                .context("creating Reddit provider")?
+                .ok_or_else(|| {
+                    anyhow::anyhow!(
+                        "Reddit is not configured; store {} with `just secrets-set-reddit` or export it",
+                        config.provider.reddit.api_key_env
+                    )
+                })?;
+            run_reddit_test(&reddit).await
+        }
     }
 }
 
@@ -1232,6 +1428,95 @@ async fn run_test(provider: &TavilyProvider) -> anyhow::Result<()> {
     Ok(())
 }
 
+async fn run_reddit_search(provider: &AnyReddit, args: RedditSearchArgs) -> anyhow::Result<()> {
+    let mut request = RedditSearchRequest::new(args.query);
+    request.subreddit = args.subreddit;
+    request.sort = args.sort.into();
+    request.mode = args.mode.into();
+    request.time_range = args.time_range.map(Into::into);
+    request.max_results = Some(args.limit.clamp(1, 100));
+    request.min_score = args.min_score;
+    request.include_comments = Some(args.comments);
+    request.comment_limit = args.comments.then_some(args.comment_limit.clamp(1, 100));
+
+    let response = provider.search(request).await?;
+
+    if args.json {
+        print_json(&response)?;
+        return Ok(());
+    }
+
+    print_header(&response);
+    println!("query: {}", response.data.query);
+    for (index, result) in response.data.results.iter().enumerate() {
+        println!(
+            "\n{}. {}",
+            index + 1,
+            display_title(result.title.as_str(), &result.url)
+        );
+        println!("   {}", result.url);
+        if let Some(score) = result.score {
+            println!("   score: {score:.0}");
+        }
+        if let Some(published) = &result.published_date {
+            println!("   created: {published}");
+        }
+        let preview = truncate(&result.content, 500);
+        if !preview.is_empty() {
+            println!("   {preview}");
+        }
+    }
+    if let Some(hash) = &response.raw_hash {
+        println!("\nraw response blob: {hash}");
+    }
+    Ok(())
+}
+
+async fn run_reddit_thread(provider: &AnyReddit, args: RedditThreadArgs) -> anyhow::Result<()> {
+    let request = RedditThreadRequest {
+        id_or_url: args.id_or_url,
+        limit: Some(args.limit.clamp(1, 100)),
+        sort: args.sort.into(),
+    };
+    let response = provider.thread(request).await?;
+
+    if args.json {
+        print_json(&response)?;
+        return Ok(());
+    }
+
+    print_header(&response);
+    for result in &response.data.results {
+        println!("\n# {}", result.title);
+        println!("{}", result.url);
+        println!("{}", truncate(&result.content, 2_000));
+    }
+    if let Some(hash) = &response.raw_hash {
+        println!("\nraw response blob: {hash}");
+    }
+    Ok(())
+}
+
+async fn run_reddit_test(provider: &AnyReddit) -> anyhow::Result<()> {
+    let request = RedditSearchRequest {
+        subreddit: Some("test".to_owned()),
+        max_results: Some(1),
+        ..RedditSearchRequest::new("research-station connectivity test")
+    };
+    let response = provider.search(request).await?;
+    println!(
+        "ok: provider={} results={} cache_hit={} credits={}",
+        response.provider,
+        response.data.results.len(),
+        response.cache_hit,
+        response
+            .credits
+            .map(|credits| credits.to_string())
+            .unwrap_or_else(|| "unknown".to_owned())
+    );
+    Ok(())
+}
+
 fn show_config(config_path: Option<PathBuf>) -> anyhow::Result<()> {
     let config = Config::load(config_path.as_deref())?;
     println!("{}", toml::to_string_pretty(&config)?);
@@ -1240,6 +1525,10 @@ fn show_config(config_path: Option<PathBuf>) -> anyhow::Result<()> {
     println!(
         "# API key variable:    {}",
         config.provider.tavily.api_key_env
+    );
+    println!(
+        "# Reddit key variable: {} (optional)",
+        config.provider.reddit.api_key_env
     );
     Ok(())
 }
