@@ -56,6 +56,8 @@ research/<date>-<slug>/
 
 Working rules:
 
+- For a quick factual question, delegate to the `question` subagent (1-3 searches,
+  no bundle) instead of starting a full research run.
 - Prefer primary sources and record every claim's source URL.
 - Use `just demo "<question>" --depth quick` for a credential-free dry run, or
   `just research "<question>" --depth thorough` for the real Tavily path. Both
