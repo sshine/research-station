@@ -1,0 +1,54 @@
+{
+  "id": "01a1b7ef-9cb9-7195-8cf7-843e56fbfb5f",
+  "version": 1,
+  "raw_topic": "What was the NSA-linked airgapped cyberweapon used against Iranian nuclear facilities called, and what is the evidence for US and Israeli involvement?",
+  "sharpened_topic": "Identify the air-gapped cyberweapon commonly known as Stuxnet, its targeting of Iranian nuclear facilities, and the evidence cited for US/NSA-CIA and Israeli involvement.",
+  "subquestions": [
+    {
+      "id": "01a1b7ef-9cb9-7195-8cf7-843b8b8ca0c6",
+      "question": "What is the cyberweapon called, and what technical evidence shows it was designed to sabotage air-gapped Iranian nuclear centrifuge operations?",
+      "source_class": "secondary",
+      "query_seeds": [
+        "Stuxnet airgapped Iranian nuclear facilities centrifuge Siemens PLC",
+        "Stuxnet technical analysis Natanz centrifuge sabotage",
+        "Stuxnet USB air gap propagation evidence"
+      ],
+      "success_criterion": "Sources name Stuxnet and describe technical indicators such as Siemens PLC/Step7 targeting, Natanz centrifuge sabotage, USB-based air-gap crossing, and its 2010 discovery."
+    },
+    {
+      "id": "01a1b7ef-9cb9-7195-8cf7-843ce3d57358",
+      "question": "What reporting or documents support US/NSA/CIA involvement in Stuxnet and the associated Olympic Games program?",
+      "source_class": "news",
+      "query_seeds": [
+        "Stuxnet Olympic Games NSA CIA New York Times",
+        "Snowden Stuxnet NSA document",
+        "US involvement Stuxnet CIA Olympic Games report"
+      ],
+      "success_criterion": "Evidence includes named investigative reporting or documents describing the US 'Olympic Games' program, NSA/CIA roles, and official authorization or participation."
+    },
+    {
+      "id": "01a1b7ef-9cb9-7195-8cf7-843d7a01872d",
+      "question": "What evidence supports Israeli involvement in Stuxnet, including reported roles for Unit 8200, Mossad, or a joint US-Israel program?",
+      "source_class": "news",
+      "query_seeds": [
+        "Stuxnet Israel Unit 8200 Mossad evidence",
+        "Stuxnet Israeli involvement New York Times",
+        "Stuxnet joint US Israel Olympic Games program"
+      ],
+      "success_criterion": "Evidence includes investigative reporting on Israeli participation, code or operational links, and claims about joint US-Israeli development or testing."
+    }
+  ],
+  "constraints": {
+    "include_domains": [],
+    "exclude_domains": []
+  },
+  "budget": {
+    "max_queries": 12,
+    "max_sources": 60,
+    "max_llm_tokens": 200000,
+    "max_credits": 100,
+    "max_wall_seconds": 900,
+    "max_agent_rounds": 24
+  },
+  "created_at": "2026-11-07T21:34:56.185855441Z"
+}

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What was the NSA-linked air-gapped attack on Iran’s nuclear programme called?</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #fbfaf7;
+    --surface: #ffffff;
+    --surface-2: #f2efe8;
+    --text: #1d1d1b;
+    --muted: #5b5a54;
+    --rule: #d9d4c8;
+    --accent: #8a2b1f;
+    --accent-2: #28546b;
+    --accent-soft: #f3e2dc;
+    --shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.05);
+    --max: 54rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141413;
+      --surface: #1d1d1b;
+      --surface-2: #262521;
+      --text: #ece9e2;
+      --muted: #b6b1a6;
+      --rule: #3a3832;
+      --accent: #f0a08f;
+      --accent-2: #9cc7dc;
+      --accent-soft: #3a241f;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 1.02rem/1.65 ui-serif, Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+    text-rendering: optimizeLegibility;
+  }
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    padding: .6rem .9rem;
+    background: var(--text);
+    color: var(--bg);
+    border-radius: .3rem;
+    font: 600 .9rem/1.2 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    text-decoration: none;
+  }
+  .skip-link:focus { top: 1rem; }
+  .wrap { width: min(100% - 2rem, var(--max)); margin-inline: auto; }
+  header.site {
+    border-bottom: 1px solid var(--rule);
+    background: linear-gradient(180deg, var(--surface), var(--bg));
+    padding: 2.6rem 0 2rem;
+  }
+  .kicker {
+    margin: 0 0 .7rem;
+    color: var(--accent);
+    font: 700 .75rem/1.2 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  h1, h2, h3 {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.18;
+    letter-spacing: -.015em;
+  }
+  h1 { font-size: clamp(1.8rem, 4.4vw, 3rem); margin: 0 0 .8rem; max-width: 20ch; }
+  .standfirst { font-size: clamp(1.05rem, 2vw, 1.25rem); color: var(--muted); max-width: 62ch; margin: 0 0 1.3rem; }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: .45rem 1.2rem;
+    color: var(--muted);
+    font: .82rem/1.4 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .meta span { display: inline-flex; gap: .35rem; align-items: baseline; }
+  .meta strong { color: var(--text); font-weight: 650; }
+  main { padding: 2.2rem 0 1rem; }
+  section { margin: 0 0 2.3rem; }
+  h2 { font-size: clamp(1.25rem, 2.4vw, 1.6rem); margin: 0 0 .7rem; padding-top: .2rem; }
+  h3 { font-size: 1.05rem; margin: 1.4rem 0 .4rem; }
+  p { margin: 0 0 .95rem; }
+  a { color: var(--accent-2); text-underline-offset: .16em; }
+  a:hover { color: var(--accent); }
+  a.cite {
+    font: 600 .74em/1 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    text-decoration: none;
+    padding: .08em .18em;
+    border-radius: .18em;
+    background: var(--accent-soft);
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  a.cite:hover, a.cite:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: .3rem solid var(--accent);
+    border-radius: .45rem;
+    padding: 1.15rem 1.25rem .5rem;
+    box-shadow: var(--shadow);
+    margin: 1.2rem 0 1.6rem;
+  }
+  .callout p:last-child { margin-bottom: .8rem; }
+  .callout .answer { font-size: 1.18rem; margin-bottom: .65rem; }
+  .callout .answer strong { color: var(--accent); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1rem;
+    margin: 1.1rem 0 1.4rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: .45rem;
+    padding: 1rem 1.05rem;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { margin: 0 0 .35rem; font-size: .95rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .table-wrap { overflow-x: auto; margin: 1.1rem 0 1.4rem; border: 1px solid var(--rule); border-radius: .45rem; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 38rem; font-size: .93rem; }
+  caption { caption-side: top; text-align: left; padding: .8rem 1rem .2rem; color: var(--muted); font: .82rem/1.4 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  th, td { padding: .65rem .8rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+  th { font: 650 .8rem/1.3 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--text); background: var(--surface-2); }
+  tr:last-child td { border-bottom: 0; }
+  .conf-high { color: #1f6b3a; font-weight: 700; }
+  .conf-med { color: #8a5a00; font-weight: 700; }
+  .conf-low { color: #8a2b1f; font-weight: 700; }
+  @media (prefers-color-scheme: dark) {
+    .conf-high { color: #8fd6a8; }
+    .conf-med { color: #e7c06a; }
+    .conf-low { color: #f0a08f; }
+  }
+  blockquote {
+    margin: 1rem 0;
+    padding: .2rem 0 .2rem 1rem;
+    border-left: .2rem solid var(--accent-2);
+    color: var(--muted);
+    font-style: italic;
+  }
+  ul, ol { margin: 0 0 1rem; padding-left: 1.35rem; }
+  li { margin-bottom: .4rem; }
+  .references { border-top: 1px solid var(--rule); padding-top: 1.4rem; }
+  .references ol { padding-left: 1.6rem; }
+  .references li { margin-bottom: .85rem; font-size: .93rem; }
+  .references .url { overflow-wrap: anywhere; }
+  footer.site {
+    border-top: 1px solid var(--rule);
+    margin-top: 2rem;
+    padding: 1.4rem 0 2.4rem;
+    color: var(--muted);
+    font: .82rem/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  footer.site p { margin: 0 0 .35rem; }
+  @media print {
+    :root { --bg: #fff; --surface: #fff; --surface-2: #f4f4f4; --text: #000; --muted: #333; --rule: #bbb; --accent: #000; --accent-2: #000; --accent-soft: #eee; }
+    body { font-size: 10.5pt; }
+    .skip-link { display: none; }
+    header.site { padding-top: 0; background: none; }
+    main { padding-top: 1rem; }
+    a.cite { background: none; padding: 0; }
+    a { color: #000; }
+    section { break-inside: avoid-page; }
+    .table-wrap { overflow: visible; }
+    table { min-width: 0; }
+    .references li { break-inside: avoid; }
+  }
+  @media (max-width: 36rem) {
+    .wrap { width: min(100% - 1.2rem, var(--max)); }
+    header.site { padding-top: 1.6rem; }
+    .callout { padding: 1rem 1rem .3rem; }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <p class="kicker">Research brief · Cyber conflict</p>
+    <h1>What was the NSA-linked air-gapped attack on Iran’s nuclear programme called?</h1>
+    <p class="standfirst">The weapon was <strong>Stuxnet</strong>. The broader classified programme was <strong>Operation Olympic Games</strong>. The target was Iran’s <strong>Natanz uranium-enrichment plant</strong>, not a nuclear power station — and the operation was a US–Israeli joint effort, not a standalone NSA “funded hack”.</p>
+    <p class="meta">
+      <span><strong>Prepared</strong> 7 November 2026</span>
+      <span><strong>Depth</strong> quick, with manual source review</span>
+      <span><strong>Citations</strong> 10 sources</span>
+    </p>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <section aria-labelledby="short-answer">
+    <h2 id="short-answer">Short answer</h2>
+    <div class="callout">
+      <p class="answer">It was <strong>Stuxnet</strong>, a computer worm built and deployed as part of the classified US–Israeli programme code-named <strong>Operation Olympic Games</strong> <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a>.</p>
+      <p>The strongest reporting says the <strong>National Security Agency developed the weapon</strong>, the <strong>CIA supplied covert-operation authority</strong>, and <strong>Israeli intelligence, including Unit 8200, was a partner</strong> <a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a>. The US government has never formally acknowledged the operation <a class="cite" href="#ref-3">[3]</a>.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="name-operation">
+    <h2 id="name-operation">The name and the operation</h2>
+    <p>Stuxnet was a malicious computer worm first uncovered in June 2010 after it escaped the Iranian plant it was targeting and spread around the world <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-3">[3]</a><a class="cite" href="#ref-4">[4]</a>. The programme that produced it was code-named <strong>Olympic Games</strong>; it began in the Bush administration and was accelerated under President Obama <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a>.</p>
+    <p>The worm was unusually large and complex for its time — about 500 kilobytes — and infected the software of at least 14 industrial sites in Iran, including a uranium-enrichment plant <a class="cite" href="#ref-4">[4]</a>. It targeted Siemens SIMATIC WinCC and STEP 7 systems, the software used to program and monitor industrial controllers <a class="cite" href="#ref-5">[5]</a><a class="cite" href="#ref-6">[6]</a>.</p>
+  </section>
+
+  <section aria-labelledby="target">
+    <h2 id="target">What it actually targeted — and the “nuclear power plant” correction</h2>
+    <p>The target was <strong>Natanz</strong>, Iran’s underground uranium-enrichment plant, not a nuclear power station in the electricity-generating sense <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a>. The New York Times account notes that at the time Iran had only one nuclear power reactor, Bushehr, whose fuel came from Russia, and that the concern was Iran’s enrichment capability <a class="cite" href="#ref-1">[1]</a>.</p>
+    <p>Some early coverage speculated that Bushehr was an intended target; the BBC’s March 2011 report carried an image caption saying Bushehr was “believed to have been on[e] of the intended targets,” while also reporting that Iran denied Stuxnet had caused a shutdown there <a class="cite" href="#ref-7">[7]</a>. The detailed 2012 reporting and the technical evidence centre on Natanz <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-5">[5]</a>. A December 2010 Congressional Research Service report loosely described the infected systems as controlling “a nuclear power plant,” but also cautioned that the “actual target, if any, is unknown” at that stage <a class="cite" href="#ref-8">[8]</a>. The accurate phrasing is therefore <strong>Iranian nuclear facilities</strong>, specifically the <strong>Natanz enrichment plant</strong>.</p>
+  </section>
+
+  <section aria-labelledby="air-gap">
+    <h2 id="air-gap">How it crossed the air gap</h2>
+    <p>Natanz’s centrifuge controls were isolated from the internet by an air gap <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-3">[3]</a>. Stuxnet crossed that gap through <strong>USB thumb drives</strong> and human access — engineers, maintenance workers, spies and unwitting accomplices — rather than by a remote internet connection <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-3">[3]</a><a class="cite" href="#ref-4">[4]</a><a class="cite" href="#ref-8">[8]</a>. The New York Times reported that “thumb drives turned out to be critical in spreading the first variants of the computer worm” <a class="cite" href="#ref-1">[1]</a>; Wired describes the same physical-access problem and the air gap around the centrifuge controls <a class="cite" href="#ref-3">[3]</a>.</p>
+  </section>
+
+  <section aria-labelledby="payload">
+    <h2 id="payload">What the worm did</h2>
+    <p>Symantec’s reverse-engineering dossier, the primary technical analysis, found that Stuxnet exploited <strong>four zero-day vulnerabilities</strong>, compromised <strong>two digital certificates</strong>, and injected code into Siemens programmable logic controllers while hiding that code from the operator <a class="cite" href="#ref-5">[5]</a>. Its PLC payload monitored the normal operating frequency of the centrifuge drives (between 807 Hz and 1210 Hz), then sent sequences that drove them to 1410 Hz, then 2 Hz, then 1064 Hz — “slowing down or speeding up the motor to different rates at different times” <a class="cite" href="#ref-5">[5]</a>. It also hooked the Siemens monitoring software so that operators saw normal readings while the sabotage was under way <a class="cite" href="#ref-5">[5]</a>.</p>
+    <p>The physical effect is usually described as roughly <strong>1,000 centrifuges damaged</strong>. The New York Times says the last attack in the series “temporarily took out nearly 1,000 of the 5,000 centrifuges Iran had spinning” <a class="cite" href="#ref-1">[1]</a>; the Washington Post says the campaign destroyed “nearly 1,000 of Iran’s 6,000 centrifuges” <a class="cite" href="#ref-2">[2]</a>; Wired says “about a thousand” <a class="cite" href="#ref-3">[3]</a>; IEEE Spectrum’s later update says “approximately 1,000” <a class="cite" href="#ref-4">[4]</a>. The Institute for Science and International Security, analysing IAEA safeguards data, found that Iran decommissioned and replaced about 1,000 IR-1 centrifuges at Natanz in late 2009 or early 2010, and concluded that the breakage “could have resulted from” Stuxnet — a more cautious formulation than the later journalism <a class="cite" href="#ref-9">[9]</a>.</p>
+  </section>
+
+  <section aria-labelledby="attribution">
+    <h2 id="attribution">Who was behind it</h2>
+    <p>The strongest evidence comes from 2012 investigative reporting based on unnamed current and former officials:</p>
+    <div class="grid">
+      <div class="card">
+        <h3>The Washington Post</h3>
+        <p>“The National Security Agency developed the cyberweapon with help of Israel.” Olympic Games was “a collaborative effort among NSA, the CIA and Israel,” and the CIA “lent its covert operation authority to the program” <a class="cite" href="#ref-2">[2]</a>.</p>
+      </div>
+      <div class="card">
+        <h3>The New York Times</h3>
+        <p>The worm “had been developed by the United States and Israel”; the N.S.A. and “a secret Israeli unit” developed it, and Israel’s <strong>Unit 8200</strong> had technical expertise “that rivaled the N.S.A.’s” and deep intelligence on Natanz <a class="cite" href="#ref-1">[1]</a>.</p>
+      </div>
+      <div class="card">
+        <h3>Wired</h3>
+        <p>Stuxnet “was created and built by the NSA in partnership with the CIA and Israeli intelligence in the mid-2000s” <a class="cite" href="#ref-3">[3]</a>.</p>
+      </div>
+    </div>
+    <p>Earlier, in March 2011, the security researcher Ralph Langner publicly claimed that Israel and the United States created Stuxnet and that “there is only one leading source, and that is the United States”; the BBC noted at the time that there was “no hard evidence to link either country to the creation of Stuxnet” <a class="cite" href="#ref-7">[7]</a>. In July 2013, Edward Snowden said “NSA and Israel co-wrote it,” but the same CBS report records Langner’s doubt that Snowden had evidence for the allegation <a class="cite" href="#ref-10">[10]</a>.</p>
+    <p>The US government has never formally acknowledged the operation <a class="cite" href="#ref-3">[3]</a>. The attribution therefore rests on investigative reporting with anonymous officials, repeated in broad outline by later accounts; Snowden’s statement is a further claim, which Langner disputed. It does not rest on a declassified document, court record, or official admission <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a><a class="cite" href="#ref-10">[10]</a>.</p>
+  </section>
+
+  <section aria-labelledby="funding">
+    <h2 id="funding">Is “NSA-funded” the right description?</h2>
+    <p>It is close, but it compresses several distinct roles. The sources support <strong>NSA development</strong> of the cyberweapon <a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a>, <strong>CIA covert-action authority</strong> and operational planning <a class="cite" href="#ref-2">[2]</a>, <strong>Israeli intelligence participation</strong> including Unit 8200 <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a>, and <strong>presidential authorization</strong> under Bush and Obama <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a>. They do not describe a separate, publicly documented “NSA funding line” for Stuxnet. “NSA-built” or “NSA-linked” is more precise than “NSA-funded”; “US–Israeli joint operation” is more precise still <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a>.</p>
+  </section>
+
+  <section aria-labelledby="confidence">
+    <h2 id="confidence">Confidence and disagreements</h2>
+    <div class="table-wrap">
+      <table>
+        <caption>What the sources establish, and how firmly.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Claim</th>
+            <th scope="col">What the evidence supports</th>
+            <th scope="col">Confidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Name and programme</th>
+            <td>Stuxnet; Operation Olympic Games <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a></td>
+            <td><span class="conf-high">High</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Target</th>
+            <td>Natanz uranium-enrichment plant; not a nuclear power reactor <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a></td>
+            <td><span class="conf-high">High</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Air-gap crossing</th>
+            <td>USB removable media and human access <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-3">[3]</a><a class="cite" href="#ref-4">[4]</a><a class="cite" href="#ref-8">[8]</a></td>
+            <td><span class="conf-high">High</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Technical effect</th>
+            <td>Siemens PLC injection; frequency manipulation; operator deception; roughly 1,000 centrifuges <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a><a class="cite" href="#ref-4">[4]</a><a class="cite" href="#ref-5">[5]</a><a class="cite" href="#ref-9">[9]</a></td>
+            <td><span class="conf-high">High</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Division of labour</th>
+            <td>Joint US–Israeli programme; NSA development, CIA authority, Unit 8200 participation <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-3">[3]</a></td>
+            <td><span class="conf-med">Moderate</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Snowden’s “co-wrote it”</th>
+            <td>Claim reported by CBS; Langner doubted Snowden had evidence <a class="cite" href="#ref-10">[10]</a></td>
+            <td><span class="conf-low">Disputed</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Correction to the question’s premise:</strong> Stuxnet was used against an enrichment plant, not a nuclear power plant; and the operation was jointly run, not a standalone NSA “funded hack” <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a><a class="cite" href="#ref-7">[7]</a><a class="cite" href="#ref-8">[8]</a>.</p>
+  </section>
+
+  <section id="references" class="references" aria-labelledby="references-heading">
+    <h2 id="references-heading">References</h2>
+    <ol>
+      <li id="ref-1">David E. Sanger, “Obama Order Sped Up Wave of Cyberattacks Against Iran,” <em>The New York Times</em>, 1 June 2012. <span class="url">https://www.nytimes.com/2012/06/01/world/middleeast/obama-ordered-wave-of-cyberattacks-against-iran.html</span> (accessed 2026-11-07).</li>
+      <li id="ref-2">Ellen Nakashima and Joby Warrick, “Stuxnet was work of U.S. and Israeli experts, officials say,” <em>The Washington Post</em>, 2 June 2012. <span class="url">https://www.washingtonpost.com/world/national-security/stuxnet-was-work-of-us-and-israeli-experts-officials-say/2012/06/01/gJQAlnEy6U_story.html</span> (accessed 2026-11-07).</li>
+      <li id="ref-3">James Bamford, “NSA Snooping Was Only the Beginning. Meet the Spy Chief Leading Us Into Cyberwar,” <em>Wired</em>, 12 June 2013. <span class="url">https://www.wired.com/2013/06/general-keith-alexander-cyberwar/</span> (accessed 2026-11-07).</li>
+      <li id="ref-4">David Kushner, “The Real Story of Stuxnet,” <em>IEEE Spectrum</em>, 26 February 2013, updated 20 June 2025. <span class="url">https://spectrum.ieee.org/the-real-story-of-stuxnet</span> (accessed 2026-11-07).</li>
+      <li id="ref-5">Nicolas Falliere, Liam O Murchu and Eric Chien, <em>W32.Stuxnet Dossier, Version 1.4</em>, Symantec Security Response, February 2011. <span class="url">https://nsarchive2.gwu.edu/NSAEBB/NSAEBB424/docs/Cyber-044.pdf</span> (accessed 2026-11-07).</li>
+      <li id="ref-6">European Union Agency for Cybersecurity (ENISA), “Stuxnet Analysis,” n.d. <span class="url">https://www.enisa.europa.eu/news/enisa-news/stuxnet-analysis</span> (accessed 2026-11-07).</li>
+      <li id="ref-7">BBC News, “US and Israel were behind Stuxnet claims researcher,” 4 March 2011. <span class="url">https://www.bbc.com/news/technology-12633240</span> (accessed 2026-11-07).</li>
+      <li id="ref-8">Congressional Research Service, <em>The Stuxnet Computer Worm: Harbinger of an Emerging Warfare Capability</em>, R41524, 9 December 2010. <span class="url">https://www.congress.gov/crs_external_products/R/PDF/R41524/R41524.3.pdf</span> (accessed 2026-11-07).</li>
+      <li id="ref-9">David Albright, Paul Brannan and Christina Walrond, “Did Stuxnet Take Out 1,000 Centrifuges at the Natanz Enrichment Plant?,” Institute for Science and International Security, 22 December 2010. <span class="url">https://isis-online.org/isis-reports/did-stuxnet-take-out-1000-centrifuges-at-the-natanz-enrichment-plant/</span> (accessed 2026-11-07).</li>
+      <li id="ref-10">Chenda Ngak, “NSA leaker Snowden claimed U.S. and Israel co-wrote Stuxnet virus,” <em>CBS News</em>, 9 July 2013. <span class="url">https://www.cbsnews.com/news/nsa-leaker-snowden-claimed-us-and-israel-co-wrote-stuxnet-virus/</span> (accessed 2026-11-07).</li>
+    </ol>
+  </section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p><strong>Bundle:</strong> research/2026-11-07-what-was-the-nsa-linked-airgapped-cyberweapon-us</p>
+    <p>Research question: “What was that NSA-funded airgapped hack of the Iranian nuclear power plants called?” The answer corrects two premises: the weapon was Stuxnet (Operation Olympic Games), the target was the Natanz enrichment plant rather than a power reactor, and the operation was a US–Israeli joint effort rather than a standalone NSA-funded programme.</p>
+    <p>Evidence was collected on 7 November 2026. All citations resolve to the numbered reference list above; the Markdown and HTML reports carry the same source order.</p>
+  </div>
+</footer>
+
+</body>
+</html>

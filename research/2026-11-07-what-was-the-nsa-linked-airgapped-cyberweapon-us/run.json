@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "job_id": "01a1b7ef-63cf-753a-ba84-6e6a58a4dcca",
+  "question": "What was the NSA-linked airgapped cyberweapon used against Iranian nuclear facilities called, and what is the evidence for US and Israeli involvement?",
+  "depth": "quick",
+  "provider": "tavily",
+  "planner": "agent-v1",
+  "synthesizer": "agent-v1",
+  "engine": "agent-v1",
+  "llm_provider": "opencode-go",
+  "llm_model": "deepseek-v4.1-flash",
+  "prompt_version": "agent-v1",
+  "agent_rounds": 16,
+  "stop_reason": "max_rounds,budget_queries",
+  "status": "completed-with-audit-findings",
+  "started_at": "2026-11-07T21:34:41.637108809Z",
+  "finished_at": "2026-11-07T21:36:45.180496039Z",
+  "output_dir": "/home/sshine/Projects/nursery/research-station/research/2026-11-07-what-was-the-nsa-linked-airgapped-cyberweapon-us",
+  "usage": {
+    "queries": 12,
+    "sources": 44,
+    "claims": 4,
+    "credits": 12,
+    "llm_tokens": 53617,
+    "llm_cost_usd": 0.0
+  },
+  "audit": {
+    "total_claims": 4,
+    "supported_claims": 4,
+    "covered_subquestions": 2,
+    "total_subquestions": 3,
+    "findings": [],
+    "passed": false
+  }
+}
